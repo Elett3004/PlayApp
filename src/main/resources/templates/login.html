@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayApp - Iniciar Sesion / Registrarse</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="icon" href="/img/Logo.png" type="image/png">
+    <link rel="stylesheet" href="/css/stylelogin.css">
+</head>
+
+<body class="jakarta-regular">
+<video class="video-background" autoplay loop muted playsinline>
+    <source src="/img/olas del mar.mp4" type="video/mp4">
+    Tu navegador no soporta el elemento de video.
+</video>
+
+<div class="container-subs">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary rounded" aria-label="Thirteenth navbar example">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
+                <a class="navbar-brand col-lg-3 me-0" href="/">
+                    <img src="/img/Logo_oficial.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                    PlayApp
+                </a>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container mt-5">
+    <div class="header text-center">
+        <h1>PlayApp</h1>
+        <p>Evita estafas en las playas de Cartagena</p>
+    </div>
+
+    <div class="form-container">
+        <div th:if="${param.error != null and param.error[0] == 'role'}" class="alert alert-danger">
+            El rol seleccionado no coincide con esta cuenta. Intenta de nuevo con el rol correcto.
+        </div>
+        <div th:if="${param.error != null and (param.error[0] == '' or param.error[0] != 'role')}" class="alert alert-danger">
+            Correo o contrasena incorrectos. Intentalo de nuevo.
+        </div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${registroExitoso}" class="alert alert-success" th:text="${registroExitoso}"></div>
+
+        <div class="tab">
+            <button class="tablinks active" onclick="openForm(event, 'login')">Iniciar Sesion</button>
+            <button class="tablinks" onclick="openForm(event, 'register')">Registrarse</button>
+        </div>
+
+        <div id="login" class="tabcontent" style="display: block;">
+            <h2>Iniciar Sesion</h2>
+            <form th:action="@{/login}" method="post" class="form">
+                <label for="login-role">Ingresar como</label>
+                <select id="login-role" name="roleSelection" class="form-select" th:value="${selectedRole}">
+                    <option value="USER" th:selected="${selectedRole == null or selectedRole == 'USER'}">Usuario</option>
+                    <option value="ADMIN" th:selected="${selectedRole == 'ADMIN'}">Administrador</option>
+                </select>
+
+                <label for="username">Correo electronico</label>
+                <input type="email" id="username" name="username" placeholder="Ingresa tu correo" required>
+
+                <label for="password">Contrasena</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Ingresa tu contrasena" required>
+                    <button type="button" class="toggle-password-btn" onclick="togglePassword('password', this)">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+
+                <button type="submit">Ingresar</button>
+            </form>
+        </div>
+
+        <div id="register" class="tabcontent" style="display: none;">
+            <h2>Registrarse</h2>
+            <form th:action="@{/register}" method="post" th:object="${formulario}" class="form">
+                <label for="register-role">Registrarme como</label>
+                <select id="register-role" name="roleSelection" class="form-select" th:value="${selectedRole}">
+                    <option value="USER" th:selected="${selectedRole == null or selectedRole == 'USER'}">Usuario</option>
+                    <option value="ADMIN" th:selected="${selectedRole == 'ADMIN'}">Administrador</option>
+                </select>
+
+                <label for="nombreCompleto">Nombre Completo</label>
+                <input type="text" id="nombreCompleto" name="nombreCompleto" th:value="*{nombreCompleto}" placeholder="Ingresa tu nombre completo" required>
+
+                <label for="email">Correo electronico</label>
+                <input type="email" id="email" name="correo" th:value="*{correo}" placeholder="Ingresa tu correo" required>
+
+                <label for="register-password">Contrasena</label>
+                <div class="password-wrapper">
+                    <input type="password" id="register-password" name="password" placeholder="Crea una contrasena" required>
+                    <button type="button" class="toggle-password-btn" onclick="togglePassword('register-password', this)">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+
+                <button type="submit">Registrarse</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/log.js"></script>
+<script>
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('.eye-icon');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+        } else {
+            input.type = 'password';
+            icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        }
+    }
+
+    const selectedRole = /*[[${selectedRole}]]*/ 'USER';
+    if (selectedRole === 'ADMIN') {
+        document.getElementById('login-role').value = 'ADMIN';
+        document.getElementById('register-role').value = 'ADMIN';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

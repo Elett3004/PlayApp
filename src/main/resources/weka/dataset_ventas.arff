@@ -1,0 +1,87 @@
+@relation dataset_playapp
+
+@attribute dia_semana {Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo}
+@attribute producto {'Cerveza Club Colombia','Ceviche de camaron','Clase de surf','Alquiler de moto acuática','Coco frio','Coctel de maracuya','Pescado frito','Ostras frescas','Limonada de coco','Tinto frio'}
+@attribute categoria {Bebida,Comida,Servicio}
+@attribute precio numeric
+@attribute clima {Lluvioso,Nublado,Soleado}
+@attribute temporada {Alta,Baja,Normal}
+@attribute cantidad_vendida numeric
+
+@data
+Lunes,'Cerveza Club Colombia',Bebida,9000,Soleado,Alta,22
+Lunes,'Ceviche de camaron',Comida,25000,Nublado,Baja,11
+Lunes,'Clase de surf',Servicio,60000,Soleado,Normal,5
+Lunes,'Alquiler de moto acuática',Servicio,120000,Lluvioso,Baja,2
+Lunes,'Coco frio',Bebida,7000,Soleado,Alta,18
+Lunes,'Coctel de maracuya',Bebida,15000,Nublado,Normal,7
+Lunes,'Pescado frito',Comida,30000,Soleado,Alta,14
+Lunes,'Ostras frescas',Comida,35000,Lluvioso,Normal,3
+Lunes,'Limonada de coco',Bebida,12000,Nublado,Baja,6
+Lunes,'Tinto frio',Bebida,5000,Soleado,Alta,20
+
+Martes,'Cerveza Club Colombia',Bebida,9000,Nublado,Normal,15
+Martes,'Ceviche de camaron',Comida,25000,Soleado,Alta,19
+Martes,'Clase de surf',Servicio,60000,Lluvioso,Baja,1
+Martes,'Alquiler de moto acuática',Servicio,120000,Soleado,Alta,4
+Martes,'Coco frio',Bebida,7000,Nublado,Normal,10
+Martes,'Coctel de maracuya',Bebida,15000,Soleado,Baja,5
+Martes,'Pescado frito',Comida,30000,Lluvioso,Normal,8
+Martes,'Ostras frescas',Comida,35000,Soleado,Alta,13
+Martes,'Limonada de coco',Bebida,12000,Soleado,Alta,21
+Martes,'Tinto frio',Bebida,5000,Nublado,Baja,7
+
+Miercoles,'Cerveza Club Colombia',Bebida,9000,Soleado,Alta,28
+Miercoles,'Ceviche de camaron',Comida,25000,Lluvioso,Baja,6
+Miercoles,'Clase de surf',Servicio,60000,Soleado,Normal,9
+Miercoles,'Alquiler de moto acuática',Servicio,120000,Nublado,Alta,3
+Miercoles,'Coco frio',Bebida,7000,Lluvioso,Normal,4
+Miercoles,'Coctel de maracuya',Bebida,15000,Soleado,Alta,17
+Miercoles,'Pescado frito',Comida,30000,Nublado,Normal,11
+Miercoles,'Ostras frescas',Comida,35000,Soleado,Baja,5
+Miercoles,'Limonada de coco',Bebida,12000,Soleado,Alta,25
+Miercoles,'Tinto frio',Bebida,5000,Nublado,Normal,8
+
+Jueves,'Cerveza Club Colombia',Bebida,9000,Nublado,Normal,13
+Jueves,'Ceviche de camaron',Comida,25000,Soleado,Baja,4
+Jueves,'Clase de surf',Servicio,60000,Soleado,Alta,12
+Jueves,'Alquiler de moto acuática',Servicio,120000,Lluvioso,Normal,2
+Jueves,'Coco frio',Bebida,7000,Soleado,Alta,20
+Jueves,'Coctel de maracuya',Bebida,15000,Nublado,Baja,7
+Jueves,'Pescado frito',Comida,30000,Soleado,Alta,23
+Jueves,'Ostras frescas',Comida,35000,Nublado,Normal,6
+Jueves,'Limonada de coco',Bebida,12000,Soleado,Alta,19
+Jueves,'Tinto frio',Bebida,5000,Lluvioso,Baja,3
+
+Viernes,'Cerveza Club Colombia',Bebida,9000,Soleado,Alta,40
+Viernes,'Ceviche de camaron',Comida,25000,Soleado,Alta,26
+Viernes,'Clase de surf',Servicio,60000,Nublado,Normal,8
+Viernes,'Alquiler de moto acuática',Servicio,120000,Soleado,Alta,10
+Viernes,'Coco frio',Bebida,7000,Lluvioso,Baja,5
+Viernes,'Coctel de maracuya',Bebida,15000,Soleado,Alta,22
+Viernes,'Pescado frito',Comida,30000,Soleado,Alta,27
+Viernes,'Ostras frescas',Comida,35000,Nublado,Baja,7
+Viernes,'Limonada de coco',Bebida,12000,Nublado,Normal,12
+Viernes,'Tinto frio',Bebida,5000,Soleado,Alta,33
+
+Sabado,'Cerveza Club Colombia',Bebida,9000,Soleado,Alta,55
+Sabado,'Ceviche de camaron',Comida,25000,Nublado,Alta,31
+Sabado,'Clase de surf',Servicio,60000,Soleado,Alta,18
+Sabado,'Alquiler de moto acuática',Servicio,120000,Nublado,Alta,14
+Sabado,'Coco frio',Bebida,7000,Soleado,Alta,29
+Sabado,'Coctel de maracuya',Bebida,15000,Nublado,Normal,12
+Sabado,'Pescado frito',Comida,30000,Soleado,Alta,34
+Sabado,'Ostras frescas',Comida,35000,Soleado,Alta,16
+Sabado,'Limonada de coco',Bebida,12000,Lluvioso,Baja,6
+Sabado,'Tinto frio',Bebida,5000,Nublado,Normal,10
+
+Domingo,'Cerveza Club Colombia',Bebida,9000,Soleado,Alta,60
+Domingo,'Ceviche de camaron',Comida,25000,Nublado,Alta,33
+Domingo,'Clase de surf',Servicio,60000,Soleado,Alta,20
+Domingo,'Alquiler de moto acuática',Servicio,120000,Soleado,Alta,17
+Domingo,'Coco frio',Bebida,7000,Nublado,Normal,14
+Domingo,'Coctel de maracuya',Bebida,15000,Soleado,Alta,26
+Domingo,'Pescado frito',Comida,30000,Lluvioso,Baja,9
+Domingo,'Ostras frescas',Comida,35000,Nublado,Alta,15
+Domingo,'Limonada de coco',Bebida,12000,Soleado,Alta,32
+Domingo,'Tinto frio',Bebida,5000,Nublado,Normal,12
