@@ -228,7 +228,8 @@ public class ChatbotService {
         }
 
         String context = buildShortContext(sessionId);
-        String reply = buildLocalFallbackReply(userMessage, context);
+        String fallbackReply = buildLocalFallbackReply(userMessage, context);
+        String reply = generateGeneralPlayAppReply(userMessage, context, fallbackReply);
         return new AssistantReply(reply, List.of(ChatAction.link("Ir a tienda", "/shop")));
     }
 
@@ -292,6 +293,27 @@ public class ChatbotService {
             return geminiService.generateReply(prompt);
         } catch (Exception ex) {
             log.warn("Fallo respuesta natural con contexto factual. Se usa fallback local.", ex);
+            return fallbackResponse;
+        }
+    }
+
+    private String generateGeneralPlayAppReply(String userMessage, String conversationContext, String fallbackResponse) {
+        String prompt = """
+                Eres el asistente de PlayApp.
+                Responde en espanol claro, breve y amable.
+                Mantente estrictamente dentro del contexto de PlayApp: productos, precios, carrito, pedidos, compras, pagos, cuenta y soporte basico de la app.
+                No respondas preguntas de cultura general, politica, deportes, programacion, salud, finanzas ni otros temas externos.
+                Si el usuario pide algo fuera de PlayApp, redirige brevemente hacia productos, compras, pagos o pedidos.
+                Si no tienes datos concretos de inventario o precios, no inventes informacion.
+                Devuelve listas cortas cuando aplique.
+
+                Contexto reciente de conversacion:
+                """ + (conversationContext == null || conversationContext.isBlank() ? "Sin contexto previo." : conversationContext)
+                + "\n\nMensaje del usuario:\n" + userMessage;
+        try {
+            return geminiService.generateReply(prompt);
+        } catch (Exception ex) {
+            log.warn("Fallo respuesta general con Gemini. Se usa fallback local.", ex);
             return fallbackResponse;
         }
     }
