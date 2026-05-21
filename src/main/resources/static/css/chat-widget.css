@@ -217,8 +217,11 @@
 .playapp-chat-actions {
     margin-top: 8px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
     gap: 6px;
+    width: 100%;
 }
 
 .playapp-chat-action-btn {
@@ -231,6 +234,8 @@
     cursor: pointer;
     color: #ffffff;
     background: #0b6c61;
+    width: 100%;
+    text-align: center;
 }
 
 .playapp-chat-action-btn:hover {
