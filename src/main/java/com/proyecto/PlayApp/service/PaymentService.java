@@ -18,12 +18,15 @@ import com.mercadopago.resources.preference.Preference;
 @Service
 public class PaymentService {
     private final String mpAccessToken;
+    private final boolean useSandboxInitPoint;
     private final String playAppBaseUrl;
 
     public PaymentService(
             @Value("${playapp.payment.mp.access-token:}") String mpAccessToken,
+            @Value("${playapp.payment.mp.use-sandbox-init-point:false}") boolean useSandboxInitPoint,
             @Value("${playapp.payment.base-url:http://localhost:8080}") String playAppBaseUrl) {
         this.mpAccessToken = mpAccessToken;
+        this.useSandboxInitPoint = useSandboxInitPoint;
         this.playAppBaseUrl = normalizeBaseUrl(playAppBaseUrl);
     }
 
@@ -39,27 +42,38 @@ public class PaymentService {
                 PreferenceItemRequest.builder()
                         .title(title)
                         .quantity(quantity)
-                        .unitPrice(new BigDecimal(amount.intValue()))
+                        .unitPrice(BigDecimal.valueOf(amount.longValue()))
                         .currencyId("COP")
                         .build();
 
-        PreferenceBackUrlsRequest backUrls =
-                PreferenceBackUrlsRequest.builder()
-                        .success(playAppBaseUrl + "/payment/proceed?estado=SUCCESS&orden=" + ordenId)
-                        .pending(playAppBaseUrl + "/payment/proceed?estado=PENDING&orden=" + ordenId)
-                        .failure(playAppBaseUrl + "/payment/proceed?estado=FAILED&orden=" + ordenId)
-                        .build();
+        PreferenceRequest preferenceRequest;
+        if (canUseMercadoPagoBackUrls(playAppBaseUrl)) {
+            PreferenceBackUrlsRequest backUrls =
+                    PreferenceBackUrlsRequest.builder()
+                            .success(playAppBaseUrl + "/payment/proceed?estado=SUCCESS&orden=" + ordenId)
+                            .pending(playAppBaseUrl + "/payment/proceed?estado=PENDING&orden=" + ordenId)
+                            .failure(playAppBaseUrl + "/payment/proceed?estado=FAILED&orden=" + ordenId)
+                            .build();
 
-        PreferenceRequest preferenceRequest =
-                PreferenceRequest.builder()
-                        .items(Collections.singletonList(item))
-                        .backUrls(backUrls)
-                        .autoReturn("approved")
-                        .build();
+            preferenceRequest =
+                    PreferenceRequest.builder()
+                            .items(Collections.singletonList(item))
+                            .backUrls(backUrls)
+                            .autoReturn("approved")
+                            .build();
+        } else {
+            preferenceRequest =
+                    PreferenceRequest.builder()
+                            .items(Collections.singletonList(item))
+                            .build();
+        }
 
         PreferenceClient client = new PreferenceClient();
         try {
             Preference preference = client.create(preferenceRequest);
+            if (shouldUseSandboxInitPoint(preference)) {
+                return preference.getSandboxInitPoint();
+            }
             return preference.getInitPoint();
         } catch (MPApiException apiEx) {
             throw apiEx;
@@ -76,5 +90,18 @@ public class PaymentService {
             return "http://localhost:8080";
         }
         return baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+    }
+
+    private boolean canUseMercadoPagoBackUrls(String baseUrl) {
+        String normalizedUrl = baseUrl.toLowerCase();
+        return normalizedUrl.startsWith("https://")
+                && !normalizedUrl.contains("localhost")
+                && !normalizedUrl.contains("127.0.0.1");
+    }
+
+    private boolean shouldUseSandboxInitPoint(Preference preference) {
+        return (useSandboxInitPoint || mpAccessToken.startsWith("TEST-"))
+                && preference.getSandboxInitPoint() != null
+                && !preference.getSandboxInitPoint().isBlank();
     }
 }
