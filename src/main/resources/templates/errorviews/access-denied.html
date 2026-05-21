@@ -12,16 +12,7 @@
 <body class="background-grey jakarta-regular">
 
 <!-- Barra de navegación -->
-<header class="bg-dark sticky-top">
-  <nav class="container d-flex flex-wrap align-carritoItems-center justify-content-center justify-content-md-between p-2">
-    <div class="col-md-3 mb-2 mb-md-0">
-      <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-        <img th:src="@{/img/Logo.png}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-        <span class="jakarta-extrabold text-light"> PLAYAPP</span>
-      </a>
-    </div>
-  </nav>
-</header>
+<header th:replace="~{components/navbar :: publicNavbar('inicio')}"></header>
 
 
 <div class="container">
