@@ -31,5 +31,16 @@ public class ManagementModelAdvice {
         }
 
         model.addAttribute("nombreAdmin", nombre);
+        model.addAttribute("rolAdmin", nombreRol(usuario));
+    }
+
+    private String nombreRol(Usuario usuario) {
+        if (usuario == null || usuario.getRol() == null) {
+            return "Usuario";
+        }
+        if ("ROLE_ADMIN".equals(usuario.getRol())) {
+            return "Administrador";
+        }
+        return "Usuario";
     }
 }

@@ -57,14 +57,8 @@
                     <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}">Restaurante</strong>
                 </a>
-                <ul class="dropdown-menu text-small shadow">
-                    <li><a class="dropdown-carritoItem" href="#">New project...</a></li>
-                    <li><a class="dropdown-carritoItem" href="#">Settings</a></li>
-                    <li><a class="dropdown-carritoItem" href="#">Profile</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li><a class="dropdown-carritoItem" href="#">Sign out</a></li>
+                <ul class="dropdown-menu text-small shadow"
+                    th:insert="fragments/logout-button :: logoutButton">
                 </ul>
             </div>
         </div>

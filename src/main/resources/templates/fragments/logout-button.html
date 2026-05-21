@@ -1,4 +1,11 @@
 <div th:fragment="logoutButton">
+    <li class="px-3 py-2" style="max-width: 260px;">
+        <div class="fw-bold text-wrap" th:text="${nombreAdmin}">Nombre completo</div>
+        <div class="small text-muted" th:text="${rolAdmin}">Tipo de usuario</div>
+    </li>
+    <li>
+        <hr class="dropdown-divider">
+    </li>
     <li>
         <button type="button"
                 class="dropdown-item"
