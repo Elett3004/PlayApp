@@ -129,6 +129,30 @@ Luego revisa antes de push:
 git status
 ```
 
+## 7) Auto-deploy a Railway con GitHub Actions
+
+Se agrego el workflow:
+
+- `.github/workflows/railway-auto-deploy.yml`
+
+Comportamiento:
+
+- se ejecuta en cada `push` a `main`
+- compila el proyecto (`mvn clean package -DskipTests`)
+- despliega automaticamente a Railway con `railway up --ci`
+
+Configura estos secretos en GitHub (`Settings > Secrets and variables > Actions`):
+
+- `RAILWAY_TOKEN`: Project Token de Railway
+- `RAILWAY_PROJECT_ID`: ID del proyecto
+- `RAILWAY_ENVIRONMENT`: nombre o ID del entorno (ejemplo: `production`)
+- `RAILWAY_SERVICE`: nombre o ID del servicio de la app
+
+Notas de seguridad:
+
+- no subas archivos de secretos al repo
+- usa variables de entorno en Railway para `MONGODB_URI`, `MP_ACCESS_TOKEN`, `GEMINI_API_KEY`, etc.
+
 ## Seguridad
 
 Se removieron secretos hardcodeados del codigo:
