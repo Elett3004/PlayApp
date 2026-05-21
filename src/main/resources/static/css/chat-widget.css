@@ -214,6 +214,29 @@
     opacity: 1;
 }
 
+.playapp-chat-actions {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.playapp-chat-action-btn {
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.2;
+    cursor: pointer;
+    color: #ffffff;
+    background: #0b6c61;
+}
+
+.playapp-chat-action-btn:hover {
+    background: #075e54;
+}
+
 .playapp-chat-typing {
     padding: 0 12px 8px;
     display: flex;

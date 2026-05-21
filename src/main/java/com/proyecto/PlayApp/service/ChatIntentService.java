@@ -1,6 +1,7 @@
 package com.proyecto.PlayApp.service;
 
 import com.proyecto.PlayApp.dto.BusquedaDTO;
+import com.proyecto.PlayApp.dto.ChatAction;
 import com.proyecto.PlayApp.entity.CarritoItem;
 import com.proyecto.PlayApp.entity.Pedido;
 import com.proyecto.PlayApp.entity.Producto;
@@ -8,6 +9,8 @@ import com.proyecto.PlayApp.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -31,12 +34,22 @@ public class ChatIntentService {
 
     private static final Set<String> STOP_WORDS = Set.of(
             "de", "del", "la", "las", "el", "los", "un", "una", "unos", "unas", "por", "para", "me", "quiero",
-            "muestrame", "muestreme", "que", "cual", "cuanto", "vale", "cuesta", "precio", "precios", "valor", "tienen"
+            "muestrame", "muestreme", "que", "cual", "cuanto", "vale", "cuesta", "precio", "precios", "valor", "tienen",
+            "como", "hago", "hacer", "favor", "porfa", "ayuda", "con", "al", "mi", "algo"
+    );
+
+    private static final Set<String> CONTEXT_FOLLOWUPS = Set.of(
+            "y", "tambien", "otra", "otro", "mas", "eso", "asi", "igual", "entonces"
+    );
+
+    private static final Set<String> DOMAIN_TERMS = Set.of(
+            "producto", "productos", "bebida", "bebidas", "comida", "servicio", "servicios", "pago", "pagar", "pedido",
+            "comprar", "compra", "carrito", "checkout", "precio", "precios", "recomendar", "recomendacion", "estado", "orden"
     );
 
     private static final List<String> REFRESHING_KEYWORDS = List.of(
             "refrescante", "refrescantes", "frio", "fria", "frias", "frios", "helado", "helada", "calor",
-            "bebida", "bebidas", "jugo", "jugo", "jugos", "refresco", "refrescos", "limonada", "gaseosa", "coca", "cola"
+            "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "limonada", "gaseosa", "coca", "cola", "agua", "hielo"
     );
 
     private static final List<String> SNACK_KEYWORDS = List.of(
@@ -48,7 +61,7 @@ public class ChatIntentService {
     );
 
     private static final List<String> DRINK_KEYWORDS = List.of(
-            "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "gaseosa", "agua", "cerveza", "coctel", "coca"
+            "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "gaseosa", "agua", "cerveza", "coctel", "coca", "limonada"
     );
 
     private static final List<String> SERVICE_KEYWORDS = List.of(
@@ -61,22 +74,111 @@ public class ChatIntentService {
     private final UsuarioService usuarioService;
 
     public IntentResolution resolve(String userMessage, String userId) {
-        String normalized = normalize(userMessage);
+        return resolve(userMessage, userId, List.of());
+    }
 
-        if (isPedidoIntent(normalized)) {
-            return IntentResolution.handled("pedidos", buildPedidosResponse(userId));
+    public IntentResolution resolve(String userMessage, String userId, List<String> recentUserMessages) {
+        String normalizedCurrent = normalize(userMessage);
+        String contextualSeed = extractContextSeed(recentUserMessages);
+        String normalizedIntentMessage = enrichMessageWithContext(normalizedCurrent, contextualSeed);
+        String extractionSource = buildExtractionSource(userMessage, contextualSeed, normalizedCurrent, normalizedIntentMessage);
+
+        if (isPurchaseIntent(normalizedIntentMessage)) {
+            return buildPurchaseFlowResponse(userId);
         }
-        if (isPrecioIntent(normalized)) {
-            return buildPriceIntentResponse(userMessage, normalized);
+        if (isPaymentIntent(normalizedIntentMessage)) {
+            return buildPaymentFlowResponse(userId);
         }
-        if (isRecommendIntent(normalized) || isProductBrowseIntent(normalized)) {
-            return buildProductIntentResponse(userMessage, normalized);
+        if (isCheckoutNavigationIntent(normalizedIntentMessage)) {
+            return buildCheckoutNavigationResponse(userId);
         }
-        if (isFaqIntent(normalized)) {
-            return IntentResolution.handled("faq", buildFaqResponse(normalized));
+        if (isPedidoIntent(normalizedIntentMessage)) {
+            return IntentResolution.handled(
+                    "pedidos",
+                    buildPedidosResponse(userId),
+                    buildOrderActions(userId)
+            );
+        }
+        if (isPrecioIntent(normalizedIntentMessage)) {
+            return buildPriceIntentResponse(extractionSource, normalizedIntentMessage);
+        }
+        if (isRecommendIntent(normalizedIntentMessage) || isProductBrowseIntent(normalizedIntentMessage)) {
+            return buildProductIntentResponse(extractionSource, normalizedIntentMessage);
+        }
+        if (isFaqIntent(normalizedIntentMessage)) {
+            return IntentResolution.handled(
+                    "faq",
+                    buildFaqResponse(normalizedIntentMessage),
+                    List.of(ChatAction.link("Ir a tienda", "/shop"))
+            );
         }
 
         return IntentResolution.fallback("fallback");
+    }
+
+    private IntentResolution buildPurchaseFlowResponse(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return IntentResolution.handled(
+                    "compra",
+                    "Para comprar en PlayApp: 1) inicia sesion 2) entra a Tienda 3) agrega productos al carrito 4) abre checkout 5) confirma envio y pago.",
+                    List.of(
+                            ChatAction.link("Iniciar sesion", "/login"),
+                            ChatAction.link("Ver tienda", "/shop")
+                    )
+            );
+        }
+
+        return IntentResolution.handled(
+                "compra",
+                "Paso a paso para comprar: 1) Selecciona un producto. 2) Agregalo al carrito. 3) Ve a checkout. 4) Completa datos de envio. 5) Confirma pago en pasarela.",
+                List.of(
+                        ChatAction.link("Ir a tienda", "/shop"),
+                        ChatAction.link("Abrir carrito", "/cart/checkout"),
+                        ChatAction.link("Ver mis pedidos", "/user/orders")
+                )
+        );
+    }
+
+    private IntentResolution buildPaymentFlowResponse(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return IntentResolution.handled(
+                    "pago",
+                    "Para pagar necesitas iniciar sesion y crear un pedido: selecciona productos, abre checkout y sigue la pasarela de pago.",
+                    List.of(
+                            ChatAction.link("Iniciar sesion", "/login"),
+                            ChatAction.link("Ir a tienda", "/shop")
+                    )
+            );
+        }
+
+        return IntentResolution.handled(
+                "pago",
+                "Flujo de pago: 1) agrega productos al carrito 2) entra a checkout 3) completa direccion y detalles 4) presiona Ir a pasarela 5) confirma el pago.",
+                List.of(
+                        ChatAction.link("Abrir carrito", "/cart/checkout"),
+                        ChatAction.link("Ir a envio y pago", "/shipment/place"),
+                        ChatAction.link("Ver pedidos", "/user/orders")
+                )
+        );
+    }
+
+    private IntentResolution buildCheckoutNavigationResponse(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return IntentResolution.handled(
+                    "navegacion",
+                    "Para abrir carrito o checkout primero debes iniciar sesion.",
+                    List.of(ChatAction.link("Iniciar sesion", "/login"))
+            );
+        }
+
+        return IntentResolution.handled(
+                "navegacion",
+                "Perfecto, te dejo accesos directos para continuar tu compra.",
+                List.of(
+                        ChatAction.link("Abrir carrito", "/cart/checkout"),
+                        ChatAction.link("Ir a checkout", "/shipment/place")
+                )
+        );
     }
 
     private IntentResolution buildProductIntentResponse(String originalMessage, String normalizedMessage) {
@@ -84,13 +186,23 @@ public class ChatIntentService {
         List<Producto> products = findRelevantProducts(query, 6);
 
         if (products.isEmpty()) {
-            return IntentResolution.handled("productos", "No encontre productos disponibles para esa solicitud en este momento.");
+            return IntentResolution.handled(
+                    "productos",
+                    "No encontre productos disponibles para esa solicitud en este momento.",
+                    List.of(ChatAction.link("Ver tienda", "/shop"))
+            );
         }
 
         String response = buildProductListResponse(products, query.responseTitle());
         String modelContext = buildProductModelContext(products, query.responseTitle());
 
-        return IntentResolution.handledWithContext("productos", response, modelContext, true);
+        return IntentResolution.handledWithContext(
+                "productos",
+                response,
+                modelContext,
+                true,
+                buildProductActions(products)
+        );
     }
 
     private IntentResolution buildPriceIntentResponse(String originalMessage, String normalizedMessage) {
@@ -108,32 +220,46 @@ public class ChatIntentService {
         List<Producto> products = findRelevantProducts(query, 3);
         if (products.isEmpty()) {
             if (productTarget != null && !productTarget.isBlank()) {
-                return IntentResolution.handled("precios", "No encontre precios para \"" + productTarget + "\" en el inventario actual.");
+                return IntentResolution.handled(
+                        "precios",
+                        "No encontre precios para \"" + productTarget + "\" en el inventario actual.",
+                        List.of(ChatAction.link("Ver tienda", "/shop"))
+                );
             }
-            return IntentResolution.handled("precios", "No hay informacion de precios disponible para esa consulta en este momento.");
+            return IntentResolution.handled(
+                    "precios",
+                    "No hay informacion de precios disponible para esa consulta en este momento.",
+                    List.of(ChatAction.link("Ver tienda", "/shop"))
+            );
         }
 
         String response = buildPriceResponse(products, productTarget);
         String modelContext = buildPriceModelContext(products, productTarget);
-        return IntentResolution.handledWithContext("precios", response, modelContext, true);
+        return IntentResolution.handledWithContext(
+                "precios",
+                response,
+                modelContext,
+                true,
+                buildProductActions(products)
+        );
     }
 
     private String buildFaqResponse(String normalizedMessage) {
-        if (containsAny(normalizedMessage, "metodo de pago", "pago", "pagos")) {
-            return "Metodos de pago: efectivo y pago en linea. Si prefieres, te ayudo con el flujo de pago de tu pedido.";
+        if (containsAny(normalizedMessage, "metodo de pago", "pago", "pagos", "como pagar")) {
+            return "Pagos en PlayApp: agrega productos, abre checkout, completa envio y usa la pasarela para confirmar el pedido.";
         }
         if (containsAny(normalizedMessage, "horario", "hora", "abren", "cierran")) {
-            return "Nuestro horario depende de cada vendedor en playa. Te recomiendo validar disponibilidad al momento de pedir.";
+            return "El horario puede variar por vendedor. Te recomiendo revisar disponibilidad al momento de comprar.";
         }
         if (containsAny(normalizedMessage, "donde", "ubicacion", "cobertura", "playa")) {
-            return "PlayApp conecta productos y servicios en playas de Cartagena. Si quieres, te sugiero opciones disponibles ahora.";
+            return "PlayApp conecta productos y servicios en playas de Cartagena.";
         }
-        return "Puedo ayudarte con preguntas frecuentes, recomendaciones, precios y estado de pedidos. Dime que necesitas.";
+        return "Puedo ayudarte con recomendaciones, precios, compras, pagos y estado de pedidos. Dime que necesitas.";
     }
 
     private String buildPedidosResponse(String userId) {
         if (userId == null || userId.isBlank()) {
-            return "Para ayudarte con pedidos, comparte tu correo de usuario registrado en PlayApp.";
+            return "Para revisar pedidos, comparte tu correo de usuario registrado en PlayApp o inicia sesion.";
         }
 
         Usuario usuario = usuarioService.buscarUsuario(userId.trim());
@@ -253,7 +379,10 @@ public class ChatIntentService {
         if (searchTerm != null && !searchTerm.isBlank()) {
             String normalizedTerm = normalize(searchTerm);
             if (normalizedName.equals(normalizedTerm)) {
-                score += 200;
+                score += 220;
+            }
+            if (normalizedName.startsWith(normalizedTerm)) {
+                score += 170;
             }
             if (normalizedName.contains(normalizedTerm)) {
                 score += 140;
@@ -316,7 +445,7 @@ public class ChatIntentService {
         if (containsAny(normalizedMessage, "comida", "comidas", "almuerzo", "cena")) {
             hints.addAll(FOOD_KEYWORDS);
         }
-        if (containsAny(normalizedMessage, "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos")) {
+        if (containsAny(normalizedMessage, "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "gaseosa", "limonada")) {
             hints.addAll(DRINK_KEYWORDS);
         }
 
@@ -439,7 +568,7 @@ public class ChatIntentService {
             }
         }
 
-        if (containsAny(normalizedMessage, "coca", "pepsi", "cerveza", "jugo", "limonada")) {
+        if (containsAny(normalizedMessage, "coca", "pepsi", "cerveza", "jugo", "limonada", "pescado", "ceviche", "arepa")) {
             return cleanSearchTerm(originalMessage);
         }
 
@@ -479,21 +608,47 @@ public class ChatIntentService {
     }
 
     private Integer detectCategoryFromMessage(String normalizedMessage) {
-        if (isRefreshingIntent(normalizedMessage) || containsAny(normalizedMessage, "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "gaseosa", "cerveza")) {
+        if (isRefreshingIntent(normalizedMessage) || containsAny(normalizedMessage, "bebida", "bebidas", "jugo", "jugos", "refresco", "refrescos", "gaseosa", "cerveza", "limonada", "fria", "frio")) {
             return CATEGORY_DRINK;
         }
-        if (containsAny(normalizedMessage, "snack", "snacks", "pasaboca", "pasabocas", "comida", "comidas", "almuerzo", "cena", "desayuno")) {
+        if (containsAny(normalizedMessage, "snack", "snacks", "pasaboca", "pasabocas", "comida", "comidas", "almuerzo", "cena", "desayuno", "pescado", "marisco")) {
             return CATEGORY_FOOD;
         }
-        if (containsAny(normalizedMessage, "servicio", "servicios", "carpa", "sombrilla", "alquiler", "moto")) {
+        if (containsAny(normalizedMessage, "servicio", "servicios", "carpa", "sombrilla", "alquiler", "moto", "mesa")) {
             return CATEGORY_SERVICE;
         }
         return null;
     }
 
+    private List<ChatAction> buildProductActions(List<Producto> products) {
+        List<ChatAction> actions = new ArrayList<>();
+        products.stream().limit(3).forEach(product ->
+                actions.add(ChatAction.link("Ver " + product.getNombre(), toShopProductUrl(product.getNombre()))));
+        actions.add(ChatAction.link("Ver tienda", "/shop"));
+        return actions;
+    }
+
+    private List<ChatAction> buildOrderActions(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return List.of(ChatAction.link("Iniciar sesion", "/login"));
+        }
+        return List.of(
+                ChatAction.link("Ver mis pedidos", "/user/orders"),
+                ChatAction.link("Abrir carrito", "/cart/checkout")
+        );
+    }
+
+    private String toShopProductUrl(String productName) {
+        if (productName == null || productName.isBlank()) {
+            return "/shop";
+        }
+        String encoded = URLEncoder.encode(productName, StandardCharsets.UTF_8).replace("+", "%20");
+        return "/shop?nombre=" + encoded;
+    }
+
     private boolean isRefreshingIntent(String normalizedMessage) {
         return containsAny(normalizedMessage, "refrescante", "refrescantes", "frio", "fria", "frios", "frias", "calor", "hidrat")
-                || containsAny(normalizedMessage, "bebidas frias", "algo frio", "algo para el calor");
+                || containsAny(normalizedMessage, "bebidas frias", "algo frio", "algo para el calor", "para el calor");
     }
 
     private String normalize(String value) {
@@ -507,25 +662,89 @@ public class ChatIntentService {
 
     private boolean isFaqIntent(String normalizedMessage) {
         return containsAny(normalizedMessage,
-                "horario", "hora", "metodo de pago", "pagos", "donde", "ubicacion", "cobertura");
+                "horario", "hora", "metodo de pago", "pagos", "donde", "ubicacion", "cobertura", "que es playapp");
     }
 
     private boolean isRecommendIntent(String normalizedMessage) {
-        return containsAny(normalizedMessage, "recom", "suger", "opcion", "opciones", "que me recomiendas");
+        return containsAny(normalizedMessage,
+                "recom", "suger", "opcion", "opciones", "que me recomiendas", "que me sugiere", "que puedo tomar", "que puedo pedir");
     }
 
     private boolean isProductBrowseIntent(String normalizedMessage) {
         return containsAny(normalizedMessage,
                 "producto", "productos", "que tienen", "tienen", "muestrame", "muestreme", "mostrar", "hay",
-                "bebidas", "comida", "snacks", "refrescantes", "frio", "calor", "servicios");
+                "bebidas", "comida", "snacks", "refrescantes", "frio", "calor", "servicios", "catalogo", "menu");
     }
 
     private boolean isPrecioIntent(String normalizedMessage) {
-        return containsAny(normalizedMessage, "precio", "precios", "cuanto cuesta", "cuanto vale", "valor");
+        return containsAny(normalizedMessage, "precio", "precios", "cuanto cuesta", "cuanto vale", "valor", "a como");
     }
 
     private boolean isPedidoIntent(String normalizedMessage) {
-        return containsAny(normalizedMessage, "pedido", "pedidos", "estado", "orden", "compra", "carrito");
+        return containsAny(normalizedMessage, "pedido", "pedidos", "estado", "orden", "compra", "carrito", "mis pedidos");
+    }
+
+    private boolean isPurchaseIntent(String normalizedMessage) {
+        return containsAny(normalizedMessage,
+                "como compro", "como comprar", "como hago un pedido", "como pido", "quiero comprar", "proceso de compra", "hacer pedido", "comprar");
+    }
+
+    private boolean isPaymentIntent(String normalizedMessage) {
+        return containsAny(normalizedMessage,
+                "como pago", "como pagar", "metodo de pago", "metodos de pago", "quiero pagar", "pagar pedido", "pago");
+    }
+
+    private boolean isCheckoutNavigationIntent(String normalizedMessage) {
+        return containsAny(normalizedMessage,
+                "ir al carrito", "abrir carrito", "ver carrito", "ir a checkout", "checkout", "ir a pagar");
+    }
+
+    private String extractContextSeed(List<String> recentUserMessages) {
+        if (recentUserMessages == null || recentUserMessages.isEmpty()) {
+            return "";
+        }
+        for (int i = recentUserMessages.size() - 1; i >= 0; i--) {
+            String candidate = normalize(recentUserMessages.get(i));
+            if (!candidate.isBlank()) {
+                return candidate;
+            }
+        }
+        return "";
+    }
+
+    private String enrichMessageWithContext(String currentNormalized, String contextSeed) {
+        if (currentNormalized.isBlank() || contextSeed == null || contextSeed.isBlank()) {
+            return currentNormalized;
+        }
+        if (!isLikelyFollowUp(currentNormalized)) {
+            return currentNormalized;
+        }
+        return contextSeed + " " + currentNormalized;
+    }
+
+    private String buildExtractionSource(String originalMessage, String contextSeed, String normalizedCurrent, String normalizedIntent) {
+        if (normalizedCurrent.equals(normalizedIntent)) {
+            return originalMessage;
+        }
+        return contextSeed + " " + originalMessage;
+    }
+
+    private boolean isLikelyFollowUp(String normalizedMessage) {
+        List<String> tokens = splitTokens(normalizedMessage);
+        if (tokens.isEmpty()) {
+            return false;
+        }
+
+        if (tokens.size() <= 4 && CONTEXT_FOLLOWUPS.contains(tokens.getFirst())) {
+            return true;
+        }
+
+        if (containsAny(normalizedMessage, "y para", "y cuanto", "y como", "otra opcion", "algo mas", "mas opciones", "del mismo")) {
+            return true;
+        }
+
+        boolean hasDomainTerm = tokens.stream().anyMatch(DOMAIN_TERMS::contains);
+        return tokens.size() <= 3 && !hasDomainTerm;
     }
 
     private boolean containsAny(String message, String... values) {
@@ -557,27 +776,38 @@ public class ChatIntentService {
             List<String> keywordHints,
             String responseTitle,
             boolean preferNaturalResponse
-    ) {}
+    ) {
+    }
 
-    private record ProductScore(Producto product, int score) {}
+    private record ProductScore(Producto product, int score) {
+    }
 
     public record IntentResolution(
             String intent,
             boolean handled,
             String response,
             String modelContext,
-            boolean preferNaturalResponse
+            boolean preferNaturalResponse,
+            List<ChatAction> actions
     ) {
         public static IntentResolution handled(String intent, String response) {
-            return new IntentResolution(intent, true, response, null, false);
+            return new IntentResolution(intent, true, response, null, false, List.of());
+        }
+
+        public static IntentResolution handled(String intent, String response, List<ChatAction> actions) {
+            return new IntentResolution(intent, true, response, null, false, actions == null ? List.of() : actions);
         }
 
         public static IntentResolution handledWithContext(String intent, String response, String modelContext, boolean preferNaturalResponse) {
-            return new IntentResolution(intent, true, response, modelContext, preferNaturalResponse);
+            return new IntentResolution(intent, true, response, modelContext, preferNaturalResponse, List.of());
+        }
+
+        public static IntentResolution handledWithContext(String intent, String response, String modelContext, boolean preferNaturalResponse, List<ChatAction> actions) {
+            return new IntentResolution(intent, true, response, modelContext, preferNaturalResponse, actions == null ? List.of() : actions);
         }
 
         public static IntentResolution fallback(String intent) {
-            return new IntentResolution(intent, false, null, null, false);
+            return new IntentResolution(intent, false, null, null, false, List.of());
         }
     }
 }

@@ -35,6 +35,7 @@ public class ChatHistoryResponse {
         private String role;
         private String content;
         private LocalDateTime timestamp;
+        private List<ChatAction> actions;
 
         public ChatHistoryMessage() {
         }
@@ -43,6 +44,13 @@ public class ChatHistoryResponse {
             this.role = role;
             this.content = content;
             this.timestamp = timestamp;
+        }
+
+        public ChatHistoryMessage(String role, String content, LocalDateTime timestamp, List<ChatAction> actions) {
+            this.role = role;
+            this.content = content;
+            this.timestamp = timestamp;
+            this.actions = actions;
         }
 
         public String getRole() {
@@ -67,6 +75,14 @@ public class ChatHistoryResponse {
 
         public void setTimestamp(LocalDateTime timestamp) {
             this.timestamp = timestamp;
+        }
+
+        public List<ChatAction> getActions() {
+            return actions;
+        }
+
+        public void setActions(List<ChatAction> actions) {
+            this.actions = actions;
         }
     }
 }

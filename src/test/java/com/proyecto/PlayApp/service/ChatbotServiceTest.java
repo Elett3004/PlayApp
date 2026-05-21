@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -59,7 +60,7 @@ class ChatbotServiceTest {
         });
         when(chatMessageRepository.save(any(ChatMessage.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        when(chatIntentService.resolve(eq("Hola"), nullable(String.class)))
+        when(chatIntentService.resolve(eq("Hola"), nullable(String.class), anyList()))
                 .thenReturn(ChatIntentService.IntentResolution.handled("faq", "Respuesta de reglas"));
 
         ChatSendResponse response = chatbotService.sendMessage(request);
@@ -78,7 +79,7 @@ class ChatbotServiceTest {
         assertEquals("assistant", savedAssistantMessage.getRole());
         assertEquals("Respuesta de reglas", savedAssistantMessage.getContent());
 
-        verify(chatIntentService).resolve(eq("Hola"), eq(null));
+        verify(chatIntentService).resolve(eq("Hola"), eq(null), anyList());
     }
 
     @Test

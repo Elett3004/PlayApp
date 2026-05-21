@@ -35,6 +35,24 @@
         .replace(/[<>]/g, "")
         .trim();
 
+    const isSafeInternalUrl = (url) => typeof url === "string" && /^\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]*$/.test(url);
+
+    const normalizeActions = (actions) => {
+        if (!Array.isArray(actions)) {
+            return [];
+        }
+
+        return actions
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+                type: (item.type || "link").toString().trim().toLowerCase(),
+                label: (item.label || "").toString().trim(),
+                url: (item.url || "").toString().trim()
+            }))
+            .filter((item) => item.type === "link" && item.label && isSafeInternalUrl(item.url))
+            .slice(0, 4);
+    };
+
     const toggleChat = (isOpen) => {
         isChatOpen = isOpen;
         root.classList.toggle("playapp-chat-open", isOpen);
@@ -62,11 +80,36 @@
         return date.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
     };
 
-    const appendMessage = (role, content, timestamp) => {
+    const appendActions = (bubble, actions) => {
+        const normalized = normalizeActions(actions);
+        if (!normalized.length) {
+            return;
+        }
+
+        const container = document.createElement("div");
+        container.className = "playapp-chat-actions";
+
+        normalized.forEach((action) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "playapp-chat-action-btn";
+            button.textContent = action.label;
+            button.addEventListener("click", () => {
+                window.location.href = action.url;
+            });
+            container.appendChild(button);
+        });
+
+        bubble.appendChild(container);
+    };
+
+    const appendMessage = (role, content, timestamp, actions = []) => {
         const bubble = document.createElement("article");
         const normalizedRole = role === "user" ? "user" : (role === "assistant" ? "assistant" : "system");
         bubble.className = `playapp-chat-bubble playapp-chat-bubble-${normalizedRole}`;
         bubble.textContent = content;
+
+        appendActions(bubble, actions);
 
         const time = formatTime(timestamp);
         if (time) {
@@ -110,7 +153,7 @@
             messagesContainer.innerHTML = "";
             const items = Array.isArray(payload.messages) ? payload.messages : [];
             items.forEach((message) => {
-                appendMessage(message.role, message.content, message.timestamp);
+                appendMessage(message.role, message.content, message.timestamp, message.actions);
             });
             loadedHistoryForSession = sessionId;
         } catch (error) {
@@ -166,7 +209,12 @@
             if (sessionId) {
                 localStorage.setItem(storageKey, sessionId);
             }
-            appendMessage("assistant", payload.reply || "Ahora no pude responder, intenta de nuevo.", payload.timestamp);
+            appendMessage(
+                "assistant",
+                payload.reply || "Ahora no pude responder, intenta de nuevo.",
+                payload.timestamp,
+                payload.actions
+            );
         } catch (error) {
             showError(true, "No fue posible responder. Intenta de nuevo.");
             appendMessage("assistant", "No fue posible responder. Intenta de nuevo.");
@@ -215,5 +263,5 @@
         }
     });
 
-    appendMessage("assistant", "Hola, soy el asistente de PlayApp. En que te ayudo?");
+    appendMessage("assistant", "Hola, soy el asistente de PlayApp. Te ayudo con recomendaciones, compras y pagos.");
 })();
