@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,8 +36,20 @@ public class ChatbotService {
     private static final String ROLE_ASSISTANT = "assistant";
     private static final String FALLBACK_REPLY = "Puedo ayudarte con productos, precios, pedidos y pagos. Prueba por ejemplo: quiero algo refrescante, como compro o como pago.";
     private static final String GEMINI_UNAVAILABLE_REPLY = "En este momento estoy en modo asistente local. Igual puedo ayudarte con productos, pagos y pedidos.";
+    private static final String OUT_OF_SCOPE_REPLY = "Solo puedo ayudarte con temas de PlayApp: productos, precios, carrito, pedidos, compras y pagos.";
+    private static final String DOMAIN_REDIRECT_REPLY = "Puedo ayudarte dentro de PlayApp. Dime por ejemplo: como comprar, como pagar, que recomiendas para el calor o ver mis pedidos.";
     private static final int CONTEXT_MESSAGES = 6;
     private static final int CONTEXT_USER_MESSAGES = 3;
+    private static final Set<String> DOMAIN_KEYWORDS = Set.of(
+            "playapp", "producto", "productos", "precio", "precios", "catalogo", "menu",
+            "recomienda", "recomendacion", "bebida", "comida", "servicio", "carrito", "checkout",
+            "pedido", "pedidos", "orden", "compra", "comprar", "pago", "pagar", "pasarela",
+            "envio", "tienda", "stock", "disponible", "usuario", "cuenta", "login", "sesion"
+    );
+    private static final Set<String> SOCIAL_WORDS = Set.of(
+            "hola", "buenas", "buenos", "dias", "tardes", "noches", "gracias", "ok", "vale", "listo",
+            "si", "no", "dale", "perfecto"
+    );
 
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -69,7 +82,7 @@ public class ChatbotService {
                 recentUserMessages
         );
 
-        AssistantReply assistantReply = resolveAssistantReply(intentResolution, session.getId(), sanitizedMessage);
+        AssistantReply assistantReply = resolveAssistantReply(intentResolution, session.getId(), sanitizedMessage, recentUserMessages);
         ChatMessage assistantMessage = new ChatMessage();
         assistantMessage.setSessionId(session.getId());
         assistantMessage.setRole(ROLE_ASSISTANT);
@@ -185,7 +198,12 @@ public class ChatbotService {
                 .trim();
     }
 
-    private AssistantReply resolveAssistantReply(ChatIntentService.IntentResolution intentResolution, String sessionId, String userMessage) {
+    private AssistantReply resolveAssistantReply(
+            ChatIntentService.IntentResolution intentResolution,
+            String sessionId,
+            String userMessage,
+            List<String> recentUserMessages
+    ) {
         if (intentResolution.handled()) {
             String response = intentResolution.response();
             if (intentResolution.preferNaturalResponse() && intentResolution.modelContext() != null && !intentResolution.modelContext().isBlank()) {
@@ -197,57 +215,21 @@ public class ChatbotService {
             }
             return new AssistantReply(response, safeActions(intentResolution.actions()));
         }
+
+        if (isOutOfScopeMessage(userMessage, recentUserMessages)) {
+            return new AssistantReply(
+                    OUT_OF_SCOPE_REPLY,
+                    List.of(
+                            ChatAction.link("Ir a tienda", "/shop"),
+                            ChatAction.link("Ver carrito", "/cart/checkout"),
+                            ChatAction.link("Ver pedidos", "/user/orders")
+                    )
+            );
+        }
+
         String context = buildShortContext(sessionId);
-        String reply = generateAssistantReply(userMessage, context);
+        String reply = buildLocalFallbackReply(userMessage, context);
         return new AssistantReply(reply, List.of(ChatAction.link("Ir a tienda", "/shop")));
-    }
-
-    private String generateAssistantReply(String userMessage, String context) {
-        String prompt = buildGeneralAssistantPrompt(userMessage, context);
-        try {
-            return geminiService.generateReply(prompt);
-        } catch (Exception ex) {
-            log.warn("Fallo al generar respuesta con Gemini. Se devolvera fallback.", ex);
-            return buildLocalFallbackReply(userMessage, ex.getMessage());
-        }
-    }
-
-    private String generateGroundedReply(String userMessage, String factualContext, String fallbackResponse) {
-        String prompt = """
-                Eres el asistente de PlayApp.
-                Responde en espanol claro, breve y amable.
-                Regla critica: usa SOLO la informacion del contexto factual. No inventes productos, precios ni disponibilidad.
-                Si el usuario pide compra o pago, explica pasos concretos y ordenados.
-                Si el contexto no alcanza para responder algo, dilo explicitamente.
-                Devuelve listas cortas cuando aplique.
-
-                Contexto factual:
-                """ + factualContext + "\n\nMensaje del usuario:\n" + userMessage;
-        try {
-            return geminiService.generateReply(prompt);
-        } catch (Exception ex) {
-            log.warn("Fallo respuesta natural con contexto factual. Se usa fallback local.", ex);
-            return fallbackResponse;
-        }
-    }
-
-    private String buildGeneralAssistantPrompt(String userMessage, String context) {
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("Eres el asistente de PlayApp. ")
-                .append("Responde en espanol, de forma breve, natural y util. ")
-                .append("No inventes productos, precios ni estados de pedidos.\n")
-                .append("Si piden comprar o pagar, explica un paso a paso practico.\n")
-                .append("Si no hay datos suficientes, dilo con transparencia.\n\n");
-
-        if (context != null && !context.isBlank()) {
-            prompt.append("Contexto breve del chat:\n")
-                    .append(context)
-                    .append("\n\n");
-        }
-
-        prompt.append("Mensaje actual del usuario:\n")
-                .append(userMessage);
-        return prompt.toString();
     }
 
     private String buildShortContext(String sessionId) {
@@ -278,7 +260,7 @@ public class ChatbotService {
         return userMessages.subList(userMessages.size() - CONTEXT_USER_MESSAGES, userMessages.size());
     }
 
-    private String buildLocalFallbackReply(String userMessage, String errorMessage) {
+    private String buildLocalFallbackReply(String userMessage, String context) {
         String normalized = normalize(userMessage);
         if (containsAny(normalized, "hola", "buenas", "buenos dias", "buenas tardes", "buenas noches")) {
             return GEMINI_UNAVAILABLE_REPLY + " Dime que necesitas y te guio paso a paso.";
@@ -289,10 +271,29 @@ public class ChatbotService {
         if (containsAny(normalized, "ayuda", "help", "soporte", "no se")) {
             return "Claro. Te puedo ayudar en 4 frentes: 1) recomendaciones 2) precios 3) compras/pagos 4) estado de pedidos.";
         }
-        if (errorMessage != null && errorMessage.contains("GEMINI_API_KEY")) {
-            return GEMINI_UNAVAILABLE_REPLY + " Puedes hacer consultas concretas como: que recomiendas para el calor, como pago o cuanto cuesta pescado.";
+        if (context != null && !context.isBlank() && hasDomainHint(context)) {
+            return "Puedo continuar ayudandote con tu compra en PlayApp. Si quieres, te explico el siguiente paso.";
         }
-        return FALLBACK_REPLY;
+        return DOMAIN_REDIRECT_REPLY;
+    }
+
+    private String generateGroundedReply(String userMessage, String factualContext, String fallbackResponse) {
+        String prompt = """
+                Eres el asistente de PlayApp.
+                Responde en espanol claro, breve y amable.
+                Regla critica: usa SOLO la informacion del contexto factual. No inventes productos, precios ni disponibilidad.
+                Si el usuario pide compra o pago, explica pasos concretos y ordenados.
+                Si el contexto no alcanza para responder algo, dilo explicitamente.
+                Devuelve listas cortas cuando aplique.
+
+                Contexto factual:
+                """ + factualContext + "\n\nMensaje del usuario:\n" + userMessage;
+        try {
+            return geminiService.generateReply(prompt);
+        } catch (Exception ex) {
+            log.warn("Fallo respuesta natural con contexto factual. Se usa fallback local.", ex);
+            return fallbackResponse;
+        }
     }
 
     private String normalize(String value) {
@@ -311,6 +312,59 @@ public class ChatbotService {
             }
         }
         return false;
+    }
+
+    private boolean isOutOfScopeMessage(String userMessage, List<String> recentUserMessages) {
+        String normalized = normalize(userMessage);
+        if (normalized.isBlank()) {
+            return false;
+        }
+        if (hasDomainHint(normalized)) {
+            return false;
+        }
+        if (isSocialMessage(normalized)) {
+            return false;
+        }
+        if (isContextualPlayAppFollowUp(normalized, recentUserMessages)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean hasDomainHint(String text) {
+        for (String keyword : DOMAIN_KEYWORDS) {
+            if (text.contains(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isSocialMessage(String normalized) {
+        List<String> tokens = List.of(normalized.split("\\s+"));
+        if (tokens.isEmpty()) {
+            return false;
+        }
+        if (tokens.size() > 4) {
+            return false;
+        }
+        return tokens.stream().allMatch(SOCIAL_WORDS::contains);
+    }
+
+    private boolean isContextualPlayAppFollowUp(String normalized, List<String> recentUserMessages) {
+        if (recentUserMessages == null || recentUserMessages.isEmpty()) {
+            return false;
+        }
+        boolean recentHasDomain = recentUserMessages.stream()
+                .map(this::normalize)
+                .anyMatch(this::hasDomainHint);
+        if (!recentHasDomain) {
+            return false;
+        }
+
+        List<String> tokens = List.of(normalized.split("\\s+"));
+        return tokens.size() <= 4
+                || containsAny(normalized, "y", "tambien", "otra opcion", "algo mas", "siguiente paso", "y despues");
     }
 
     private Map<String, Object> buildAssistantMetadata(String intent, List<ChatAction> actions) {
