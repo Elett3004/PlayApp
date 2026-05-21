@@ -7,7 +7,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Locale;
 
 @RequiredArgsConstructor
 @Service
@@ -17,27 +16,17 @@ public class UsuarioService {
     private final PasswordEncoder passwordEncoder;
 
     public Usuario crearUsuario(Usuario formulario){
+        validarCorreoDisponible(formulario.getCorreo());
         formulario.setPassword(passwordEncoder.encode(formulario.getPassword()));
         formulario.setRol("ROLE_USER");
         return users.save(formulario);
     }
 
     public Usuario createRestaurant(Usuario formulario){
+        validarCorreoDisponible(formulario.getCorreo());
         formulario.setPassword(passwordEncoder.encode(formulario.getPassword()));
         formulario.setRol("ROLE_ADMIN");
         return users.save(formulario);
-    }
-
-    public Usuario crearUsuarioPorRol(Usuario formulario, String roleSelection) {
-        if (buscarUsuario(formulario.getCorreo()) != null) {
-            throw new IllegalArgumentException("Ya existe una cuenta registrada con ese correo.");
-        }
-
-        String normalizedRole = roleSelection == null ? "USER" : roleSelection.trim().toUpperCase(Locale.ROOT);
-        if ("ADMIN".equals(normalizedRole)) {
-            return createRestaurant(formulario);
-        }
-        return crearUsuario(formulario);
     }
 
     public Usuario buscarUsuario(String mail){
@@ -56,5 +45,10 @@ public class UsuarioService {
         return "/shop";
     }
 
+    private void validarCorreoDisponible(String correo) {
+        if (buscarUsuario(correo) != null) {
+            throw new IllegalArgumentException("Ya existe una cuenta registrada con ese correo.");
+        }
+    }
 
 }

@@ -9,6 +9,7 @@ import com.proyecto.PlayApp.util.PaginationMaker;
 import lombok.RequiredArgsConstructor;
 import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,10 @@ public class ManagementController {
     private final PedidoService pedidos;
     private final ReporteService reportes;
     private final ModeloMatematicoService modeloMatematico;
+    private final UsuarioService usuarios;
+
+    @Value("${playapp.admin.email:adminplayapp01@gmail.com}")
+    private String adminGlobalCorreo;
 
     @GetMapping("/dashboard")
     public String viewAdminPage(Principal principal, Model model) {
@@ -162,6 +167,37 @@ public class ManagementController {
         return "Management/modelo-matematico";
     }
 
+    @GetMapping("/admins/new")
+    public String mostrarFormularioNuevoAdmin(Principal principal, Model model) {
+        if (!esAdminGlobal(principal)) {
+            return "redirect:/access-denied";
+        }
+        model.addAttribute("formulario", new Usuario());
+        return "Management/crear-admin";
+    }
+
+    @PostMapping("/admins/new")
+    public String crearNuevoAdmin(
+            Principal principal,
+            @ModelAttribute("formulario") Usuario formulario,
+            Model model
+    ) {
+        if (!esAdminGlobal(principal)) {
+            return "redirect:/access-denied";
+        }
+        try {
+            usuarios.createRestaurant(formulario);
+            model.addAttribute("formulario", new Usuario());
+            model.addAttribute("registroExitoso", "Administrador creado correctamente.");
+        } catch (Exception e) {
+            model.addAttribute("formulario", formulario);
+            model.addAttribute("error", e instanceof IllegalArgumentException
+                    ? e.getMessage()
+                    : "Hubo un problema al crear el administrador. Intentalo de nuevo.");
+        }
+        return "Management/crear-admin";
+    }
+
     @PostMapping("/modelo-matematico/resolver")
     @ResponseBody
     public Object resolverModeloMatematico(@RequestBody java.util.Map<String, Object> parametros) {
@@ -171,5 +207,11 @@ public class ManagementController {
             return org.springframework.http.ResponseEntity.badRequest()
                     .body(java.util.Map.of("error", e.getMessage()));
         }
+    }
+
+    private boolean esAdminGlobal(Principal principal) {
+        return principal != null
+                && principal.getName() != null
+                && adminGlobalCorreo.equalsIgnoreCase(principal.getName());
     }
 }
