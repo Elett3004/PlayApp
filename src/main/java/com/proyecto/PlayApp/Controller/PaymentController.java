@@ -3,15 +3,18 @@ package com.proyecto.PlayApp.Controller;
 import com.proyecto.PlayApp.service.PaymentService;
 
 import java.math.BigDecimal;
-import java.security.Principal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/mercadopago")
 public class PaymentController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 
     private final PaymentService paymentService;
 
@@ -35,9 +38,17 @@ public class PaymentController {
             return "redirect:" + url;
 
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("ERROR MERCADOPAGO: " + e.getMessage());
-            // return "redirect:/payment/paymentgateway?valor=" + valor + "&orden=" + orden + "&error=1";
+            logger.error("No fue posible crear la preferencia de Mercado Pago para la orden {}", orden, e);
+            String redirectUrl = UriComponentsBuilder.fromPath("/payment/paymentgateway")
+                    .queryParam("valor", valor)
+                    .queryParam("orden", orden)
+                    .queryParam("metodo", "Mercado Pago")
+                    .queryParam("error", "No fue posible conectar con Mercado Pago. Revisa el token de acceso e intenta nuevamente.")
+                    .build()
+                    .encode()
+                    .toUriString();
+
+            return "redirect:" + redirectUrl;
         }
     }
 

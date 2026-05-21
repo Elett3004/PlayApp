@@ -31,6 +31,7 @@
             <div class="card">
                 <div class="card-body p-3">
                     <h2 class="jakarta-bold">Realizar Pago</h2>
+                    <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="${param.error[0]}"></div>
                     <p class="jakarta-medium card-text" th:text="'Valor de la compra: '+${#numbers.formatCurrency(valor)}"></p>
                     <p class="jakarta-medium card-text" th:text="'Metodo de Pago: '+${metodo}"></p>
                     <div class="row">

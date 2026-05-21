@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collections;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,9 +37,14 @@ public class PagoController {
             @RequestParam(name = "orden", required = false) String orden,
             Model model
     ){
-        carritos.limpiar(userInSession.getName());
-        model.addAttribute("pedidos", carritos.listarCarrito(userInSession.getName()));
-        if(!estado.equalsIgnoreCase("SUCCESS")){
+        if (userInSession != null) {
+            carritos.limpiar(userInSession.getName());
+            model.addAttribute("pedidos", carritos.listarCarrito(userInSession.getName()));
+        } else {
+            model.addAttribute("pedidos", Collections.emptyList());
+        }
+
+        if(!"SUCCESS".equalsIgnoreCase(estado)){
             model.addAttribute("error", "Ha ocurrido un error al procesar el pago por favor revise la sección de pedidos para intentar nuevamente el pago.");
             pedidos.actualizarEstadoPagoPedido(2, orden);
             return "pedido-confirmacion";
