@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo Matemático</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="icon" href="/img/Logo.png" type="image/png">
+    <style>
+        html, body {
+            min-height: 100%;
+        }
+        body {
+            background: #fff;
+            color: #0f172a;
+        }
+        .modelo-main {
+            height: 100vh;
+            overflow-y: auto;
+            padding: 1.25rem 1.25rem 2rem;
+        }
+        .modelo-title {
+            font-size: clamp(1.75rem, 3vw, 2.5rem);
+            line-height: 1.1;
+            margin-bottom: .35rem;
+        }
+        .modelo-subtitle {
+            color: #0d6efd;
+            font-weight: 700;
+            margin-bottom: .4rem;
+        }
+        .modelo-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, .04);
+        }
+        .modelo-card-header {
+            color: #0d6efd;
+            font-weight: 800;
+            font-size: .9rem;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .95rem 1rem .25rem;
+        }
+        .modelo-card-body {
+            padding: .9rem 1rem 1rem;
+        }
+        .help-card {
+            display: grid;
+            grid-template-columns: 34px 1fr;
+            gap: .8rem;
+            align-items: flex-start;
+        }
+        .help-icon {
+            width: 26px;
+            height: 26px;
+            margin-top: .15rem;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .help-card p {
+            line-height: 1.45;
+        }
+        .cost-benefit-card {
+            display: grid;
+            gap: .75rem;
+        }
+        .cost-benefit-button {
+            min-height: 58px;
+            font-weight: 800;
+            border-radius: 8px;
+        }
+        .cost-benefit-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: .5rem;
+            font-size: .78rem;
+        }
+        .cost-benefit-chip {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: .45rem .5rem;
+            background: #f8fbff;
+            color: #334155;
+            font-weight: 800;
+        }
+        .price-loader {
+            border: 1px solid #cfe2ff;
+            border-radius: 8px;
+            background: #f8fbff;
+            padding: .75rem;
+            margin-top: .9rem;
+        }
+        .price-loader-title {
+            color: #0d6efd;
+            font-size: .8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: .55rem;
+        }
+        .price-input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .5rem;
+            margin: .65rem 0;
+        }
+        .price-loader-result {
+            color: #334155;
+            font-size: .8rem;
+            font-weight: 800;
+            min-height: 1.2rem;
+        }
+        .input-row {
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            gap: .65rem;
+            align-items: center;
+            margin-bottom: .85rem;
+        }
+        .input-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: 800;
+            font-size: .8rem;
+        }
+        .icon-green { background: #198754; }
+        .icon-purple { background: #6f42c1; }
+        .icon-orange { background: #fd7e14; }
+        .icon-blue { background: #0d6efd; }
+        .input-row label {
+            font-weight: 700;
+            font-size: .82rem;
+            margin-bottom: .25rem;
+            color: #334155;
+        }
+        .input-row .form-control {
+            min-height: 42px;
+            font-weight: 700;
+        }
+        .run-button {
+            min-height: 64px;
+            font-weight: 800;
+            border-radius: 8px;
+        }
+        .result-card {
+            min-height: 135px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: .25rem;
+        }
+        .result-icon {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+        .result-label {
+            font-weight: 800;
+            font-size: .8rem;
+        }
+        .result-value {
+            font-size: clamp(1.25rem, 2.4vw, 1.9rem);
+            font-weight: 900;
+            color: #0f172a;
+            overflow-wrap: anywhere;
+        }
+        .result-unit {
+            font-size: .82rem;
+            color: #334155;
+            font-weight: 700;
+        }
+        .success-pill {
+            background: #e7f6ec;
+            color: #198754;
+            border: 1px solid #b9e7ca;
+            border-radius: 999px;
+            padding: .28rem .6rem;
+            font-size: .78rem;
+            font-weight: 800;
+        }
+        .text-purple {
+            color: #6f42c1;
+        }
+        .chart-holder {
+            height: 260px;
+        }
+        .chart-holder canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: .75rem;
+        }
+        .summary-item {
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr);
+            gap: .65rem;
+            align-items: center;
+            padding: .9rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+            min-width: 0;
+        }
+        .summary-item > div:last-child {
+            min-width: 0;
+        }
+        .summary-kicker {
+            color: #64748b;
+            font-size: clamp(.72rem, .8vw, .8rem);
+            font-weight: 800;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+        .summary-value {
+            font-size: clamp(.92rem, 1vw, 1.08rem);
+            font-weight: 900;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .formula-box {
+            background: #f8fbff;
+            border: 1px dashed #8bbcff;
+            border-radius: 8px;
+            padding: .9rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .formula-box span:nth-child(1) { color: #198754; }
+        .formula-box span:nth-child(2) { color: #0d6efd; }
+        .formula-box span:nth-child(3) { color: #fd7e14; }
+        .constraint-note {
+            border: 1px solid #cfe2ff;
+            border-radius: 8px;
+            background: #f8fbff;
+            color: #334155;
+            padding: .75rem .9rem;
+            font-size: .86rem;
+            font-weight: 700;
+        }
+        @media (max-width: 992px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-item {
+                border: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body class="container-fluid jakarta-regular">
+<main class="row flex-nowrap">
+    <div class="col-2 border-end p-0">
+        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
+            <a href="/manager/dashboard"
+               class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
+                <span class="fs-4 jakarta-bold">Playapp</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li>
+                    <a href="/manager/dashboard" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16" alt="dashboard"/>
+                        Panel
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/orders" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stickies me-2" viewBox="0 0 16 16">
+                            <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5V13a1 1 0 0 0 1 1V1.5a.5.5 0 0 1 .5-.5H14a1 1 0 0 0-1-1z"/>
+                            <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v11A1.5 1.5 0 0 0 3.5 16h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 16 9.586V3.5A1.5 1.5 0 0 0 14.5 2zM3 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V9h-4.5A1.5 1.5 0 0 0 9 10.5V15H3.5a.5.5 0 0 1-.5-.5zm7 11.293V10.5a.5.5 0 0 1 .5-.5h4.293z"/>
+                        </svg>
+                        Órdenes
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/products" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/boxes.svg" class="bi pe-none me-2" width="16" height="16" alt="inventory"/>
+                        Catálogo
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/prediccion" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/graph-up.svg" class="bi pe-none me-2" width="16" height="16" alt="predict"/>
+                        Predecir Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/modelo-matematico" class="nav-link active">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h7A1.5 1.5 0 0 1 13 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5zM4.5 1a.5.5 0 0 0-.5.5V4h8V1.5a.5.5 0 0 0-.5-.5zM4 5v9.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V5zm1 1h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v3H9z"/>
+                        </svg>
+                        Modelo Matemático
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong th:text="${nombreRestaurante}"></strong>
+                </a>
+                <ul class="dropdown-menu text-small shadow"
+                    th:insert="fragments/logout-button :: logoutButton">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-10 modelo-main">
+        <div class="row align-items-start g-3 mb-3">
+            <div class="col-12 col-xl-8">
+                <h1 class="modelo-title jakarta-bold">Modelo Matemático PlayApp</h1>
+                <div class="modelo-subtitle">Simulador de optimización de ventas, domicilios y ganancias</div>
+                <p class="text-muted mb-0">Ajusta los parámetros y calcula la mejor combinación para maximizar las ganancias de PlayApp usando Python, Pyomo y GLPK.</p>
+            </div>
+            <div class="col-12 col-xl-4">
+                <div class="modelo-card">
+                    <div class="modelo-card-body">
+                        <div class="cost-benefit-card">
+                            <button type="button" class="btn btn-primary cost-benefit-button" data-bs-toggle="modal" data-bs-target="#costoBeneficioModal">
+                                Costo/Beneficio
+                                <span class="d-block small fw-semibold">Editar costos y ganancias</span>
+                            </button>
+                            <div class="cost-benefit-summary">
+                                <div class="cost-benefit-chip">
+                                    <span class="d-block text-success">Comida</span>
+                                    <span id="chipComida">$7.150</span>
+                                </div>
+                                <div class="cost-benefit-chip">
+                                    <span class="d-block text-primary">Bebida</span>
+                                    <span id="chipBebida">$3.240</span>
+                                </div>
+                                <div class="cost-benefit-chip">
+                                    <span class="d-block text-warning">Domicilio</span>
+                                    <span id="chipDomicilio">$2.000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modeloError" class="alert alert-danger d-none" role="alert"></div>
+
+        <div class="row g-3">
+            <div class="col-12 col-xl-3">
+                <div class="modelo-card h-100">
+                    <div class="modelo-card-header">⚙ 1. Configuración del modelo</div>
+                    <div class="modelo-card-body">
+                        <form id="modeloForm">
+                            <div class="input-row">
+                                <div class="input-icon icon-green">$</div>
+                                <div>
+                                    <label for="presupuesto">Presupuesto operativo disponible ($)</label>
+                                    <input id="presupuesto" class="form-control" type="number" min="0" step="1000" value="100000000">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-icon icon-purple">P</div>
+                                <div>
+                                    <label for="capacidadPedidos">Capacidad máxima de pedidos (P)</label>
+                                    <input id="capacidadPedidos" class="form-control" type="number" min="1" step="1" value="2000">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-icon icon-orange">C</div>
+                                <div>
+                                    <label for="minimoComidas">Mínimo de comidas (C)</label>
+                                    <input id="minimoComidas" class="form-control" type="number" min="0" step="1" value="300">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-icon icon-blue">B</div>
+                                <div>
+                                    <label for="minimoBebidas">Mínimo de bebidas (B)</label>
+                                    <input id="minimoBebidas" class="form-control" type="number" min="0" step="1" value="400">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-icon icon-blue">%</div>
+                                <div>
+                                    <label for="relacionBebidasComidas">Relación mínima bebidas/comidas (B ≥)</label>
+                                    <input id="relacionBebidasComidas" class="form-control" type="number" min="0" step="0.01" value="0.60">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-icon icon-orange">×</div>
+                                <div>
+                                    <label for="productosMinimosPedido">Mínimo promedio de productos por pedido (C+B ≥ xP)</label>
+                                    <input id="productosMinimosPedido" class="form-control" type="number" min="1" step="0.1" value="2">
+                                </div>
+                            </div>
+                            <button id="ejecutarBtn" class="btn btn-primary run-button w-100" type="submit">
+                                ▶ Ejecutar Modelo
+                                <span class="d-block small fw-semibold">Resolver con Pyomo</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-9">
+                <div class="modelo-card mb-3">
+                    <div class="modelo-card-header justify-content-between">
+                        <div>Ω 2. Resultados óptimos</div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span id="estadoModelo" class="success-pill">Listo para ejecutar</span>
+                            <span id="ultimaEjecucion" class="small text-muted fw-semibold"></span>
+                        </div>
+                    </div>
+                    <div class="modelo-card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-md">
+                                <div class="modelo-card result-card">
+                                    <div class="result-icon text-purple">🛍</div>
+                                    <div class="result-label text-purple">Pedidos (P)</div>
+                                    <div id="pedidosResultado" class="result-value">0</div>
+                                    <div class="result-unit">pedidos/mes</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="modelo-card result-card">
+                                    <div class="result-icon">🍔</div>
+                                    <div class="result-label text-warning">Comidas (C)</div>
+                                    <div id="comidasResultado" class="result-value">0</div>
+                                    <div class="result-unit">unidades</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="modelo-card result-card">
+                                    <div class="result-icon">🥤</div>
+                                    <div class="result-label text-primary">Bebidas (B)</div>
+                                    <div id="bebidasResultado" class="result-value">0</div>
+                                    <div class="result-unit">unidades</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="modelo-card result-card">
+                                    <div class="result-icon">🛵</div>
+                                    <div class="result-label text-warning">Domicilios (D)</div>
+                                    <div id="domiciliosResultado" class="result-value">0</div>
+                                    <div class="result-unit">domicilios/mes</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md">
+                                <div class="modelo-card result-card">
+                                    <div class="result-icon text-success">$</div>
+                                    <div class="result-label text-success">Ganancia máxima (Z)</div>
+                                    <div id="gananciaResultado" class="result-value">$0</div>
+                                    <div class="result-unit">ganancia total</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-xl-5">
+                        <div class="modelo-card h-100">
+                            <div class="modelo-card-header">Distribución de productos vendidos</div>
+                            <div class="modelo-card-body">
+                                <div class="chart-holder">
+                                    <canvas id="distribucionChart"></canvas>
+                                </div>
+                                <p class="small text-muted mb-0">Un pedido puede incluir varios productos.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-7">
+                        <div class="modelo-card h-100">
+                            <div class="modelo-card-header">Análisis financiero</div>
+                            <div class="modelo-card-body">
+                                <div class="chart-holder">
+                                    <canvas id="financieroChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modelo-card mb-3">
+                    <div class="modelo-card-header">Resumen financiero</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="input-icon icon-green">$</div>
+                            <div>
+                                <div class="summary-kicker">Ganancia máxima (Z)</div>
+                                <div id="gananciaResumen" class="summary-value">$0</div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="input-icon icon-purple">▦</div>
+                            <div>
+                                <div class="summary-kicker">Costo operativo total</div>
+                                <div id="costoResumen" class="summary-value">$0</div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="input-icon icon-blue">▰</div>
+                            <div>
+                                <div class="summary-kicker">Presupuesto sobrante</div>
+                                <div id="sobranteResumen" class="summary-value">$0</div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="input-icon icon-orange">★</div>
+                            <div>
+                                <div class="summary-kicker">Productos vendidos totales (C+B)</div>
+                                <div id="productosResumen" class="summary-value">0 unidades</div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="input-icon icon-blue">x</div>
+                            <div>
+                <div class="summary-kicker">Promedio productos/pedido mínimo</div>
+                                <div id="promedioResumen" class="summary-value">0 de 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="notaRestriccionProductos" class="constraint-note mb-3">
+                    El mínimo promedio de productos por pedido se evaluará al ejecutar el modelo.
+                </div>
+
+                <div class="modelo-card">
+                    <div class="modelo-card-header">Modelo usado por Pyomo</div>
+                    <div class="modelo-card-body">
+                        <div class="formula-box mb-3">
+                            Max Z = <span id="formulaGananciaComida">7150C</span> + <span id="formulaGananciaBebida">3240B</span> + <span id="formulaGananciaDomicilio">2000D</span>
+                        </div>
+                        <div class="row g-2 small text-muted">
+                            <div class="col-md-6" id="formulaPresupuesto">Presupuesto: 57850C + 14760B + 8000D ≤ presupuesto</div>
+                            <div class="col-md-6">Capacidad: P ≤ pedidos máximos</div>
+                            <div class="col-md-6">Composición: C+B ≥ promedio mínimo × P</div>
+                            <div class="col-md-6">Domicilios: D ≤ P</div>
+                            <div class="col-md-6">Mínimos: C ≥ comidas mínimas, B ≥ bebidas mínimas</div>
+                            <div class="col-md-6">Relación: con 0 no limita; con valores mayores balancea B frente a C</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="modal fade" id="costoBeneficioModal" tabindex="-1" aria-labelledby="costoBeneficioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 class="modal-title h5 jakarta-bold" id="costoBeneficioLabel">Costo/Beneficio</h2>
+                    <p class="text-muted small mb-0">Estos valores actualizan la función objetivo y la restricción de presupuesto.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <div class="modelo-card h-100">
+                            <div class="modelo-card-header">Comida (C)</div>
+                            <div class="modelo-card-body">
+                                <label for="modalCostoComida" class="form-label fw-bold">Costo operativo por comida ($)</label>
+                                <input id="modalCostoComida" class="form-control mb-3" type="number" min="0" step="100" value="57850">
+                                <label for="modalGananciaComida" class="form-label fw-bold">Ganancia por comida ($)</label>
+                                <input id="modalGananciaComida" class="form-control" type="number" min="0" step="100" value="7150">
+                                <button class="btn btn-outline-primary w-100 mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#preciosComida">
+                                    Cargar precios
+                                </button>
+                                <div id="preciosComida" class="collapse price-loader">
+                                    <div class="price-loader-title">Promedio de platos</div>
+                                    <label for="cantidadComida" class="form-label fw-bold small">Cantidad de comidas que vendes</label>
+                                    <div class="input-group input-group-sm">
+                                        <input id="cantidadComida" class="form-control" type="number" min="1" step="1" value="3">
+                                        <button class="btn btn-outline-primary" type="button" onclick="generarInputsPrecios('comida')">Generar</button>
+                                    </div>
+                                    <div id="listaPreciosComida" class="price-input-grid"></div>
+                                    <button class="btn btn-primary btn-sm w-100" type="button" onclick="calcularDesdePrecios('comida')">Calcular promedio</button>
+                                    <div id="resultadoPreciosComida" class="price-loader-result mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="modelo-card h-100">
+                            <div class="modelo-card-header">Bebida (B)</div>
+                            <div class="modelo-card-body">
+                                <label for="modalCostoBebida" class="form-label fw-bold">Costo operativo por bebida ($)</label>
+                                <input id="modalCostoBebida" class="form-control mb-3" type="number" min="0" step="100" value="14760">
+                                <label for="modalGananciaBebida" class="form-label fw-bold">Ganancia por bebida ($)</label>
+                                <input id="modalGananciaBebida" class="form-control" type="number" min="0" step="100" value="3240">
+                                <button class="btn btn-outline-primary w-100 mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#preciosBebida">
+                                    Cargar precios
+                                </button>
+                                <div id="preciosBebida" class="collapse price-loader">
+                                    <div class="price-loader-title">Promedio de bebidas</div>
+                                    <label for="cantidadBebida" class="form-label fw-bold small">Cantidad de bebidas que vendes</label>
+                                    <div class="input-group input-group-sm">
+                                        <input id="cantidadBebida" class="form-control" type="number" min="1" step="1" value="3">
+                                        <button class="btn btn-outline-primary" type="button" onclick="generarInputsPrecios('bebida')">Generar</button>
+                                    </div>
+                                    <div id="listaPreciosBebida" class="price-input-grid"></div>
+                                    <button class="btn btn-primary btn-sm w-100" type="button" onclick="calcularDesdePrecios('bebida')">Calcular promedio</button>
+                                    <div id="resultadoPreciosBebida" class="price-loader-result mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="modelo-card h-100">
+                            <div class="modelo-card-header">Domicilio (D)</div>
+                            <div class="modelo-card-body">
+                                <label for="modalCostoDomicilio" class="form-label fw-bold">Costo operativo por domicilio ($)</label>
+                                <input id="modalCostoDomicilio" class="form-control mb-3" type="number" min="0" step="100" value="8000">
+                                <label for="modalGananciaDomicilio" class="form-label fw-bold">Ganancia por domicilio ($)</label>
+                                <input id="modalGananciaDomicilio" class="form-control" type="number" min="0" step="100" value="2000">
+                                <button class="btn btn-outline-primary w-100 mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#preciosDomicilio">
+                                    Cargar precios
+                                </button>
+                                <div id="preciosDomicilio" class="collapse price-loader">
+                                    <div class="price-loader-title">Promedio de domicilios</div>
+                                    <label for="cantidadDomicilio" class="form-label fw-bold small">Cantidad de tarifas de domicilio</label>
+                                    <div class="input-group input-group-sm">
+                                        <input id="cantidadDomicilio" class="form-control" type="number" min="1" step="1" value="3">
+                                        <button class="btn btn-outline-primary" type="button" onclick="generarInputsPrecios('domicilio')">Generar</button>
+                                    </div>
+                                    <div id="listaPreciosDomicilio" class="price-input-grid"></div>
+                                    <button class="btn btn-primary btn-sm w-100" type="button" onclick="calcularDesdePrecios('domicilio')">Calcular promedio</button>
+                                    <div id="resultadoPreciosDomicilio" class="price-loader-result mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="guardarCostoBeneficio">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:insert="fragments/logout-modal :: logoutModal"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const numero = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 });
+    const entero = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+    const pesos = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+    let distribucionChart;
+    let financieroChart;
+    const costoBeneficio = {
+        costoComida: 57850,
+        gananciaComida: 7150,
+        costoBebida: 14760,
+        gananciaBebida: 3240,
+        costoDomicilio: 8000,
+        gananciaDomicilio: 2000
+    };
+    const calculadorasPrecios = {
+        comida: {
+            cantidadId: 'cantidadComida',
+            listaId: 'listaPreciosComida',
+            resultadoId: 'resultadoPreciosComida',
+            costoId: 'modalCostoComida',
+            gananciaId: 'modalGananciaComida',
+            costoPorcentaje: 0.85,
+            gananciaPorcentaje: 0.15,
+            etiqueta: 'comida'
+        },
+        bebida: {
+            cantidadId: 'cantidadBebida',
+            listaId: 'listaPreciosBebida',
+            resultadoId: 'resultadoPreciosBebida',
+            costoId: 'modalCostoBebida',
+            gananciaId: 'modalGananciaBebida',
+            costoPorcentaje: 0.75,
+            gananciaPorcentaje: 0.25,
+            etiqueta: 'bebida'
+        },
+        domicilio: {
+            cantidadId: 'cantidadDomicilio',
+            listaId: 'listaPreciosDomicilio',
+            resultadoId: 'resultadoPreciosDomicilio',
+            costoId: 'modalCostoDomicilio',
+            gananciaId: 'modalGananciaDomicilio',
+            costoPorcentaje: 0.90,
+            gananciaPorcentaje: 0.10,
+            etiqueta: 'domicilio'
+        }
+    };
+
+    function valor(id) {
+        return Number(document.getElementById(id).value);
+    }
+
+    function generarInputsPrecios(tipo) {
+        const config = calculadorasPrecios[tipo];
+        const cantidad = Math.max(1, Math.floor(valor(config.cantidadId) || 1));
+        const contenedor = document.getElementById(config.listaId);
+        contenedor.innerHTML = '';
+        for (let i = 1; i <= cantidad; i++) {
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '0';
+            input.step = '100';
+            input.className = 'form-control form-control-sm';
+            input.placeholder = `Precio ${i}`;
+            input.dataset.priceInput = tipo;
+            contenedor.appendChild(input);
+        }
+        document.getElementById(config.resultadoId).textContent = `${cantidad} precios listos para cargar.`;
+    }
+
+    function calcularDesdePrecios(tipo) {
+        const config = calculadorasPrecios[tipo];
+        const inputs = Array.from(document.querySelectorAll(`[data-price-input="${tipo}"]`));
+        const precios = inputs
+            .map(input => Number(input.value))
+            .filter(value => Number.isFinite(value) && value > 0);
+
+        if (!precios.length) {
+            document.getElementById(config.resultadoId).textContent = 'Ingresa al menos un precio válido.';
+            return;
+        }
+
+        const promedio = precios.reduce((total, price) => total + price, 0) / precios.length;
+        const costo = Math.round(promedio * config.costoPorcentaje);
+        const ganancia = Math.round(promedio * config.gananciaPorcentaje);
+
+        document.getElementById(config.costoId).value = costo;
+        document.getElementById(config.gananciaId).value = ganancia;
+        document.getElementById(config.resultadoId).textContent =
+            `Promedio ${pesos.format(promedio)}: costo ${pesos.format(costo)} y ganancia ${pesos.format(ganancia)}.`;
+
+        aplicarCostoBeneficioDesdeModal();
+    }
+
+    function payload() {
+        return {
+            presupuesto: valor('presupuesto'),
+            capacidadPedidos: valor('capacidadPedidos'),
+            minimoComidas: valor('minimoComidas'),
+            minimoBebidas: valor('minimoBebidas'),
+            relacionBebidasComidas: valor('relacionBebidasComidas'),
+            productosMinimosPedido: valor('productosMinimosPedido'),
+            ...costoBeneficio
+        };
+    }
+
+    function setText(id, text) {
+        document.getElementById(id).textContent = text;
+    }
+
+    function aplicarCostoBeneficioDesdeModal() {
+        costoBeneficio.costoComida = valor('modalCostoComida');
+        costoBeneficio.gananciaComida = valor('modalGananciaComida');
+        costoBeneficio.costoBebida = valor('modalCostoBebida');
+        costoBeneficio.gananciaBebida = valor('modalGananciaBebida');
+        costoBeneficio.costoDomicilio = valor('modalCostoDomicilio');
+        costoBeneficio.gananciaDomicilio = valor('modalGananciaDomicilio');
+        actualizarFormulaCostoBeneficio();
+    }
+
+    function actualizarFormulaCostoBeneficio() {
+        setText('chipComida', pesos.format(costoBeneficio.gananciaComida));
+        setText('chipBebida', pesos.format(costoBeneficio.gananciaBebida));
+        setText('chipDomicilio', pesos.format(costoBeneficio.gananciaDomicilio));
+        setText('formulaGananciaComida', `${entero.format(costoBeneficio.gananciaComida)}C`);
+        setText('formulaGananciaBebida', `${entero.format(costoBeneficio.gananciaBebida)}B`);
+        setText('formulaGananciaDomicilio', `${entero.format(costoBeneficio.gananciaDomicilio)}D`);
+        setText(
+            'formulaPresupuesto',
+            `Presupuesto: ${entero.format(costoBeneficio.costoComida)}C + ${entero.format(costoBeneficio.costoBebida)}B + ${entero.format(costoBeneficio.costoDomicilio)}D ≤ presupuesto`
+        );
+    }
+
+    function actualizarResultados(data) {
+        setText('pedidosResultado', numero.format(data.pedidos));
+        setText('comidasResultado', numero.format(data.comidas));
+        setText('bebidasResultado', numero.format(data.bebidas));
+        setText('domiciliosResultado', numero.format(data.domicilios));
+        setText('gananciaResultado', pesos.format(data.ganancia));
+        setText('gananciaResumen', pesos.format(data.ganancia));
+        setText('costoResumen', pesos.format(data.costo));
+        setText('sobranteResumen', pesos.format(data.presupuestoSobrante));
+        setText('productosResumen', `${numero.format(data.productos)} unidades`);
+        setText('promedioResumen', `${numero.format(data.promedioProductosPedido)} de ${numero.format(data.productosMinimosPedido)}`);
+        actualizarNotaProductos(data);
+        setText('ultimaEjecucion', `Última ejecución: ${new Date().toLocaleString('es-CO')}`);
+        setText('estadoModelo', 'Solución calculada con Pyomo');
+
+        pintarDistribucion(data);
+        pintarFinanciero(data);
+    }
+
+    function actualizarNotaProductos(data) {
+        const nota = document.getElementById('notaRestriccionProductos');
+        const promedio = numero.format(data.promedioProductosPedido);
+        const maximo = numero.format(data.productosMinimosPedido);
+        if (data.restriccionProductosActiva) {
+            nota.textContent = `El mínimo promedio de productos por pedido está activo: el modelo usa exactamente ${promedio} productos por pedido, con mínimo requerido de ${maximo}.`;
+            nota.classList.remove('text-muted');
+            return;
+        }
+        nota.textContent = `El mínimo promedio de productos por pedido se cumple: el modelo usa ${promedio} productos por pedido, por encima del mínimo requerido de ${maximo}.`;
+    }
+
+    function pintarDistribucion(data) {
+        const ctx = document.getElementById('distribucionChart');
+        const chartData = {
+            labels: ['Comidas (C)', 'Bebidas (B)', 'Domicilios (D)'],
+            datasets: [{
+                data: [data.comidas, data.bebidas, data.domicilios],
+                backgroundColor: ['#4caf50', '#0d6efd', '#fd7e14'],
+                borderWidth: 0
+            }]
+        };
+
+        if (distribucionChart) {
+            distribucionChart.data = chartData;
+            distribucionChart.update();
+            return;
+        }
+
+        distribucionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '54%',
+                plugins: { legend: { position: 'right' } }
+            }
+        });
+    }
+
+    function pintarFinanciero(data) {
+        const presupuesto = data.presupuesto || 1;
+        const ctx = document.getElementById('financieroChart');
+        const chartData = {
+            labels: ['Presupuesto usado', 'Ganancia obtenida (Z)', 'Presupuesto sobrante'],
+            datasets: [{
+                data: [
+                    Math.max(0, (data.costo / presupuesto) * 100),
+                    Math.max(0, (data.ganancia / presupuesto) * 100),
+                    Math.max(0, (data.presupuestoSobrante / presupuesto) * 100)
+                ],
+                backgroundColor: ['#0d6efd', '#4caf50', '#6f42c1']
+            }]
+        };
+
+        if (financieroChart) {
+            financieroChart.data = chartData;
+            financieroChart.update();
+            return;
+        }
+
+        financieroChart = new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: context => `${numero.format(context.raw)}%` } }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { callback: value => `${value}%` },
+                        title: { display: true, text: 'Porcentaje del presupuesto' }
+                    }
+                }
+            }
+        });
+    }
+
+    async function ejecutarModelo(event) {
+        event.preventDefault();
+        const button = document.getElementById('ejecutarBtn');
+        const error = document.getElementById('modeloError');
+        button.disabled = true;
+        button.innerHTML = 'Resolviendo...<span class="d-block small fw-semibold">Ejecutando Pyomo</span>';
+        error.classList.add('d-none');
+
+        try {
+            const response = await fetch('/manager/modelo-matematico/resolver', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(payload())
+            });
+
+            if (!response.ok) {
+                let mensaje = 'No fue posible resolver el modelo.';
+                try {
+                    const errorJson = await response.json();
+                    mensaje = errorJson.error || mensaje;
+                } catch (ignored) {
+                    mensaje = await response.text();
+                }
+                throw new Error(mensaje);
+            }
+
+            actualizarResultados(await response.json());
+        } catch (e) {
+            error.textContent = e.message || 'El costo de los productos excede el presupuesto disponible.';
+            error.classList.remove('d-none');
+            setText('estadoModelo', 'Error al resolver');
+        } finally {
+            button.disabled = false;
+            button.innerHTML = '▶ Ejecutar Modelo<span class="d-block small fw-semibold">Resolver con Pyomo</span>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        actualizarFormulaCostoBeneficio();
+        ['comida', 'bebida', 'domicilio'].forEach(generarInputsPrecios);
+        document.getElementById('guardarCostoBeneficio').addEventListener('click', () => {
+            aplicarCostoBeneficioDesdeModal();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('costoBeneficioModal')).hide();
+            document.getElementById('modeloForm').dispatchEvent(new Event('submit', { cancelable: true }));
+        });
+        document.getElementById('modeloForm').addEventListener('submit', ejecutarModelo);
+        document.getElementById('modeloForm').dispatchEvent(new Event('submit', { cancelable: true }));
+    });
+</script>
+</body>
+</html>

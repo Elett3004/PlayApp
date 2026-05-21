@@ -12,6 +12,12 @@ RUN ./mvnw -q -DskipTests package
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
+RUN apk add --no-cache python3 py3-pip glpk \
+    && python3 -m venv /opt/pyomo \
+    && /opt/pyomo/bin/pip install --no-cache-dir pyomo
+
+ENV PYTHON_EXECUTABLE=/opt/pyomo/bin/python
+
 COPY --from=build /workspace/target/PlayApp-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080

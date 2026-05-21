@@ -26,6 +26,7 @@ public class ManagementController {
     private final ProductoService servicio;
     private final PedidoService pedidos;
     private final ReporteService reportes;
+    private final ModeloMatematicoService modeloMatematico;
 
     @GetMapping("/dashboard")
     public String viewAdminPage(Principal principal, Model model) {
@@ -153,5 +154,22 @@ public class ManagementController {
     public String mostrarVistaPrediccion(Principal principal, Model model) {
         model.addAttribute("nombreRestaurante", principal.getName());
         return "Management/manager-prediccion";
+    }
+
+    @GetMapping("/modelo-matematico")
+    public String mostrarModeloMatematico(Principal principal, Model model) {
+        model.addAttribute("nombreRestaurante", principal.getName());
+        return "Management/modelo-matematico";
+    }
+
+    @PostMapping("/modelo-matematico/resolver")
+    @ResponseBody
+    public Object resolverModeloMatematico(@RequestBody java.util.Map<String, Object> parametros) {
+        try {
+            return modeloMatematico.resolver(parametros);
+        } catch (IllegalStateException e) {
+            return org.springframework.http.ResponseEntity.badRequest()
+                    .body(java.util.Map.of("error", e.getMessage()));
+        }
     }
 }
