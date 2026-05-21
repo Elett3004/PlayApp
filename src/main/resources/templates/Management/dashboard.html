@@ -74,6 +74,13 @@
             max-height: 285px;
             overflow: auto;
         }
+        .powerbi-frame {
+            width: 100%;
+            height: calc(100vh - 106px);
+            min-height: 620px;
+            border: 0;
+            display: block;
+        }
     </style>
 </head>
 <body class="container-fluid jakarta-regular">
@@ -148,12 +155,22 @@
                         </a>
                     </li>
                     <li class="breadcrumb-carritoItem active" aria-current="page">
-                        <span th:text="${dashboardGeneral} ? 'Dashboard general' : 'Dashboard de restaurante'">Dashboard</span>
+                        <span th:if="${#authentication.name == 'adminplayapp01@gmail.com'}">Dashboard Power BI</span>
+                        <span th:unless="${#authentication.name == 'adminplayapp01@gmail.com'}"
+                              th:text="${dashboardGeneral} ? 'Dashboard general' : 'Dashboard de restaurante'">Dashboard</span>
                     </li>
                 </ol>
             </nav>
         </div>
-        <div class="dashboard-content">
+        <div class="dashboard-content" th:if="${#authentication.name == 'adminplayapp01@gmail.com'}">
+            <iframe
+                    class="powerbi-frame"
+                    title="Dashboard global Power BI PlayApp"
+                    src="https://app.powerbi.com/view?r=eyJrIjoiNDk0ZTY2NmItZTIzZi00ZjNhLWE1Y2MtNmY0MGIzOTU2OTAxIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9&pageName=b4215e43acd8f40cd48f"
+                    allowfullscreen="true">
+            </iframe>
+        </div>
+        <div class="dashboard-content" th:unless="${#authentication.name == 'adminplayapp01@gmail.com'}">
         <div class="row mb-3">
             <div class="col-12">
                 <div class="alert alert-info mb-0" role="status">
@@ -280,7 +297,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script>
+    <script th:unless="${#authentication.name == 'adminplayapp01@gmail.com'}">
         const pesos = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
         const numero = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1 });
         const charts = {};
