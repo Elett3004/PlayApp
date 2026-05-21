@@ -1,7 +1,7 @@
 import json
 import sys
 
-from pyomo.environ import ConcreteModel, Constraint, NonNegativeReals, Objective, SolverFactory, Var, maximize, value
+from pyomo.environ import ConcreteModel, Constraint, NonNegativeIntegers, Objective, SolverFactory, Var, maximize, value
 
 
 def pesos(valor):
@@ -49,13 +49,13 @@ def resolver(datos):
         )
 
     model = ConcreteModel()
-    model.P = Var(domain=NonNegativeReals)
-    model.C = Var(domain=NonNegativeReals)
-    model.B = Var(domain=NonNegativeReals)
-    model.D = Var(domain=NonNegativeReals)
+    model.P = Var(domain=NonNegativeIntegers)
+    model.C = Var(domain=NonNegativeIntegers)
+    model.B = Var(domain=NonNegativeIntegers)
+    model.D = Var(domain=NonNegativeIntegers)
 
     model.obj = Objective(
-        expr=ganancia_comida * model.C + ganancia_bebida * model.B + ganancia_domicilio * model.D,
+        expr=ganancia_comida * model.C + ganancia_bebida * model.B + ganancia_domicilio * model.D + 0.000001 * model.P,
         sense=maximize,
     )
 
