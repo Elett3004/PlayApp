@@ -37,9 +37,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Set-Location $root
-docker-compose -f $composeFile up -d mongo redis
+$mongoUri = if ($env:MONGODB_URI) { $env:MONGODB_URI } else { "mongodb://localhost:27017/playappdb" }
+if ($mongoUri -match "^mongodb://(localhost|127\.0\.0\.1|mongo)(:|/)") {
+    docker-compose -f $composeFile up -d mongo redis
+} else {
+    Write-Host "MONGODB_URI apunta a MongoDB Atlas/remoto. Se levantara solo Redis local." -ForegroundColor Cyan
+    docker-compose -f $composeFile up -d redis
+}
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Error al iniciar MongoDB y Redis." -ForegroundColor Red
+    Write-Host "Error al iniciar servicios locales." -ForegroundColor Red
     exit $LASTEXITCODE
 }
-Write-Host "Servicios locales listos: MongoDB y Redis." -ForegroundColor Green
+Write-Host "Servicios locales listos." -ForegroundColor Green

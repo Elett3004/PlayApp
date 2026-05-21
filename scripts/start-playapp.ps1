@@ -187,19 +187,28 @@ if ($useDockerMode) {
 }
 
 $skipDocker = $env:PLAYAPP_SKIP_DOCKER -eq "true"
+$mongoUri = if ($env:MONGODB_URI) { $env:MONGODB_URI } else { "mongodb://localhost:27017/playappdb" }
+$usesLocalMongo = $mongoUri -match "^mongodb://(localhost|127\.0\.0\.1|mongo)(:|/)"
 if (!$skipDocker -and (Test-Path $composeFile)) {
     if (Get-Command docker -ErrorAction SilentlyContinue) {
         if (!(Ensure-DockerEngine)) {
-            Write-Host "Docker no esta activo. Se continua sin iniciar MongoDB/Redis automaticamente." -ForegroundColor Yellow
+            Write-Host "Docker no esta activo. Se continua sin iniciar servicios auxiliares automaticamente." -ForegroundColor Yellow
         } else {
-        Write-Host "Levantando MongoDB y Redis de forma local para este proyecto..." -ForegroundColor Cyan
-            docker-compose -f $composeFile up -d mongo redis | Out-Null
+            $services = @("redis")
+            if ($usesLocalMongo) {
+                $services = @("mongo", "redis")
+                Write-Host "Levantando MongoDB y Redis de forma local para este proyecto..." -ForegroundColor Cyan
+            } else {
+                Write-Host "Usando MongoDB Atlas. Levantando solo Redis local para este proyecto..." -ForegroundColor Cyan
+            }
+
+            docker-compose -f $composeFile up -d $services | Out-Null
             if ($LASTEXITCODE -ne 0) {
-                Write-Host "No fue posible iniciar MongoDB/Redis con Docker." -ForegroundColor Yellow
+                Write-Host "No fue posible iniciar los servicios auxiliares con Docker." -ForegroundColor Yellow
             }
         }
     } else {
-        Write-Host "Docker no esta disponible. Se asume MongoDB/Redis ya estan corriendo." -ForegroundColor Yellow
+        Write-Host "Docker no esta disponible. Se asume que los servicios auxiliares ya estan disponibles." -ForegroundColor Yellow
     }
 }
 
@@ -207,7 +216,7 @@ $redisHost = if ($env:REDIS_HOST) { $env:REDIS_HOST } else { "localhost" }
 $redisPort = if ($env:REDIS_PORT) { [int]$env:REDIS_PORT } else { 6379 }
 $mongoHost = "localhost"
 $mongoPort = 27017
-if ($env:MONGODB_URI -and $env:MONGODB_URI -match "mongodb:\/\/([^:\/]+):(\d+)") {
+if ($mongoUri -match "mongodb:\/\/([^:\/]+):(\d+)") {
     $mongoHost = $matches[1]
     $mongoPort = [int]$matches[2]
 }

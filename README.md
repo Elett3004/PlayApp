@@ -1,13 +1,13 @@
 # PlayApp
 
-Proyecto Spring Boot 3 + Java 21 con MongoDB y Redis.
+Proyecto Spring Boot 3 + Java 21 con MongoDB Atlas y Redis.
 
 ## Objetivo de esta sincronizacion local
 
 Esta configuracion esta pensada para que **todo quede aislado por proyecto**:
 
 - Docker con nombre de proyecto propio: `playapp-local`
-- Volumenes Docker propios: `playapp_mongo_data`, `playapp_redis_data`
+- Volumenes Docker propios para desarrollo local: `playapp_mongo_data`, `playapp_redis_data`
 - Variables de entorno solo en `config/application-secrets.env`
 - VS Code configurado en `.vscode/` para este workspace
 - Sin cambios en configuraciones globales de Git, Docker Desktop o VS Code
@@ -15,7 +15,7 @@ Esta configuracion esta pensada para que **todo quede aislado por proyecto**:
 ## Requisitos
 
 - Java 21 (opcional si usas el instalador local `scripts/setup-java21.ps1`)
-- Docker Desktop + Docker Compose
+- Docker Desktop + Docker Compose, usado principalmente para Redis local
 - Git (opcional para conectar a GitHub)
 
 ## Java 21 local (sin tocar tu Java global)
@@ -52,13 +52,20 @@ Variables importantes:
 - `PLAYAPP_ADMIN_EMAIL`
 - `PLAYAPP_ADMIN_PASSWORD`
 
+Para usar MongoDB Atlas, configura:
+
+```env
+MONGODB_URI=mongodb+srv://usuario:password@cluster/playappdb?retryWrites=true&w=majority&appName=playapp-prod
+MONGODB_DATABASE=playappdb
+```
+
 Puertos recomendados para no chocar con otros proyectos:
 
 - Mongo local del proyecto: `27018`
 - Redis local del proyecto: `6380`
 - App local: `8080`
 
-## 2) Levantar Mongo y Redis solo para PlayApp
+## 2) Levantar servicios locales para PlayApp
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\dev-up.ps1
@@ -79,14 +86,21 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-playapp.ps1
 El script:
 
 - carga `config/application-secrets.env`
-- levanta `mongo` y `redis` del `docker-compose.yml` (si Docker esta disponible)
+- si `MONGODB_URI` apunta a Atlas/remoto, levanta solo `redis` local
+- si `MONGODB_URI` apunta a localhost, levanta `mongo` y `redis` locales
 - si detecta Java 21, inicia Spring Boot local
-- si NO detecta Java 21 (por ejemplo Java 17), cambia automaticamente a modo Docker (mongo + redis + app)
+- si NO detecta Java 21 (por ejemplo Java 17), cambia automaticamente a modo Docker (redis + app)
 
 ## 4) Ejecutar todo en Docker (incluyendo app)
 
 ```powershell
 docker-compose --profile app up -d --build
+```
+
+Mongo local queda disponible solo para desarrollo puntual:
+
+```powershell
+docker-compose --profile local-mongo up -d mongo
 ```
 
 ## 5) VS Code (solo workspace)

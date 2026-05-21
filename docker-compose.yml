@@ -2,6 +2,7 @@ name: playapp-local
 
 services:
   mongo:
+    profiles: ["local-mongo"]
     image: mongo:7
     restart: unless-stopped
     ports:
@@ -38,12 +39,9 @@ services:
     env_file:
       - ./config/application-secrets.env
     environment:
-      MONGODB_URI: mongodb://mongo:27017/${MONGODB_DATABASE:-playappdb}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      mongo:
-        condition: service_healthy
       redis:
         condition: service_healthy
     ports:
