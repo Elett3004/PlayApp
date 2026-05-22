@@ -9,7 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,9 +17,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,10 @@ public class GeminiService {
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
     private static final Duration READ_TIMEOUT = Duration.ofSeconds(20);
     private static final List<String> PREFERRED_MODELS = List.of(
+            "gemini-flash-latest",
+            "gemini-flash-lite-latest",
             "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
             "gemini-2.0-flash",
             "gemini-2.5-pro",
             "gemini-2.0-flash-lite",
@@ -41,7 +46,7 @@ public class GeminiService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.model:gemini-1.5-flash}")
+    @Value("${gemini.model:gemini-flash-latest}")
     private String model;
 
     @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}")
@@ -63,44 +68,40 @@ public class GeminiService {
         }
 
         String requestedModel = normalizeModelName(model);
-        if (activeModel == null || activeModel.isBlank()) {
-            activeModel = requestedModel;
-        }
-
+        List<String> candidateModels;
         try {
-            return callGenerateContent(activeModel, userMessage);
-        } catch (HttpClientErrorException ex) {
-            if (!isModelNotFound(ex)) {
-                throwForGeminiPermissionErrors(ex);
-                throw new IllegalStateException("Error invocando Gemini", ex);
-            }
-        } catch (RestClientException ex) {
-            throw new IllegalStateException("Error invocando Gemini", ex);
-        }
-
-        String fallbackModel;
-        try {
-            fallbackModel = resolveFallbackModel(requestedModel);
-        } catch (HttpClientErrorException ex) {
+            candidateModels = resolveCandidateModels(requestedModel);
+        } catch (HttpStatusCodeException ex) {
             throwForGeminiPermissionErrors(ex);
             throw new IllegalStateException("Error invocando Gemini", ex);
         } catch (RestClientException ex) {
             throw new IllegalStateException("Error invocando Gemini", ex);
         }
 
-        if (fallbackModel == null || fallbackModel.isBlank()) {
+        if (candidateModels.isEmpty()) {
             throw new IllegalStateException("No hay modelos Gemini compatibles con generateContent");
         }
-        activeModel = fallbackModel;
 
-        try {
-            return callGenerateContent(fallbackModel, userMessage);
-        } catch (HttpClientErrorException ex) {
-            throwForGeminiPermissionErrors(ex);
-            throw new IllegalStateException("Error invocando Gemini", ex);
-        } catch (RestClientException ex) {
-            throw new IllegalStateException("Error invocando Gemini", ex);
+        RuntimeException lastFailure = null;
+        for (String candidateModel : candidateModels) {
+            try {
+                String reply = callGenerateContent(candidateModel, userMessage);
+                activeModel = candidateModel;
+                return reply;
+            } catch (HttpStatusCodeException ex) {
+                throwForGeminiPermissionErrors(ex);
+                lastFailure = new IllegalStateException("Error invocando Gemini con el modelo " + candidateModel, ex);
+                if (!isRecoverableModelError(ex)) {
+                    throw lastFailure;
+                }
+            } catch (RestClientException ex) {
+                throw new IllegalStateException("Error invocando Gemini", ex);
+            }
         }
+
+        throw lastFailure == null
+                ? new IllegalStateException("No fue posible invocar Gemini")
+                : lastFailure;
     }
 
     private String callGenerateContent(String modelName, String userMessage) {
@@ -184,16 +185,30 @@ public class GeminiService {
         return clean;
     }
 
-    private boolean isModelNotFound(HttpClientErrorException ex) {
+    private boolean isRecoverableModelError(HttpStatusCodeException ex) {
         HttpStatusCode code = ex.getStatusCode();
-        if (code.value() != 404) {
-            return false;
+        if (code.value() == 429) {
+            return true;
+        }
+        if (code.value() == 500 || code.value() == 502 || code.value() == 503 || code.value() == 504) {
+            return true;
         }
         String body = ex.getResponseBodyAsString();
-        return body != null && body.contains("models/");
+        if (code.value() == 404) {
+            return body != null && body.contains("models/");
+        }
+        return code.value() == 400
+                && body != null
+                && body.toLowerCase().contains("model");
     }
 
-    private String resolveFallbackModel(String requestedModel) {
+    private List<String> resolveCandidateModels(String requestedModel) {
+        Set<String> candidateModels = new LinkedHashSet<>();
+        if (activeModel != null && !activeModel.isBlank()) {
+            candidateModels.add(normalizeModelName(activeModel));
+        }
+        candidateModels.add(normalizeModelName(requestedModel));
+
         URI uri = UriComponentsBuilder.fromHttpUrl(normalizeBaseUrl(baseUrl))
                 .pathSegment("models")
                 .build()
@@ -205,12 +220,12 @@ public class GeminiService {
         ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.GET, request, Map.class);
         Map body = response.getBody();
         if (body == null) {
-            return null;
+            return new ArrayList<>(candidateModels);
         }
 
         Object modelsObj = body.get("models");
         if (!(modelsObj instanceof List<?> models) || models.isEmpty()) {
-            return null;
+            return new ArrayList<>(candidateModels);
         }
 
         List<String> compatibleModels = new ArrayList<>();
@@ -230,23 +245,20 @@ public class GeminiService {
         }
 
         if (compatibleModels.isEmpty()) {
-            return null;
-        }
-
-        if (compatibleModels.contains(normalizeModelName(requestedModel))) {
-            return normalizeModelName(requestedModel);
+            return new ArrayList<>(candidateModels);
         }
 
         for (String preferred : PREFERRED_MODELS) {
             if (compatibleModels.contains(preferred)) {
-                return preferred;
+                candidateModels.add(preferred);
             }
         }
 
-        return compatibleModels.stream().sorted().collect(Collectors.toList()).getFirst();
+        candidateModels.addAll(compatibleModels.stream().sorted().collect(Collectors.toList()));
+        return new ArrayList<>(candidateModels);
     }
 
-    private void throwForGeminiPermissionErrors(HttpClientErrorException ex) {
+    private void throwForGeminiPermissionErrors(HttpStatusCodeException ex) {
         if (ex.getStatusCode().value() != 403) {
             return;
         }
