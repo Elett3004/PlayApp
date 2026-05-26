@@ -1,0 +1,17 @@
+Pregunta frecuente: Donde veo mis pedidos?
+Respuesta: Los pedidos del usuario se consultan en /user/orders. Para verlos debes iniciar sesion. En esa pantalla puedes revisar el estado y los datos principales de tus pedidos.
+
+Pregunta frecuente: Como se el estado de mi pedido?
+Respuesta: El estado de los pedidos se revisa en /user/orders. El chatbot tambien puede mostrar un resumen de pedidos recientes si el usuario esta autenticado.
+
+Pregunta frecuente: Como inicio sesion?
+Respuesta: Para iniciar sesion entra a /login y usa el correo y la contrasena registrados. Si no tienes cuenta puedes registrarte desde la misma pantalla de acceso.
+
+Pregunta frecuente: Como creo una cuenta?
+Respuesta: Puedes crear una cuenta desde /signup o desde la opcion de registro en /login. Debes completar los datos solicitados por el formulario.
+
+Pregunta frecuente: Que hago si tengo un problema o una duda?
+Respuesta: Para soporte basico puedes usar el chatbot o la pagina de contacto. El chatbot orienta sobre compras, pagos, pedidos, tienda, carrito y cuenta.
+
+Pregunta frecuente: La informacion de precios siempre es fija?
+Respuesta: No se debe asumir que los precios son fijos fuera del catalogo actual. Para precios reales hay que revisar la tienda /shop o preguntar al chatbot por productos disponibles.

@@ -1,0 +1,17 @@
+Pregunta frecuente: Como compro en PlayApp?
+Respuesta: Para comprar, entra a /shop, selecciona productos, agregalos al carrito, abre /cart/checkout, presiona Comprar, completa los datos de envio en /shipment/place y continua con la pasarela de pago.
+
+Pregunta frecuente: Como agrego productos al carrito?
+Respuesta: En la tienda /shop cada producto tiene una opcion para agregar al carrito. Despues de agregar productos puedes revisar el carrito en /cart/checkout.
+
+Pregunta frecuente: Donde reviso el carrito?
+Respuesta: El carrito se revisa en /cart/checkout. Desde esa pantalla puedes quitar productos y continuar el proceso de compra.
+
+Pregunta frecuente: Como pago un pedido?
+Respuesta: Para pagar primero debes tener productos en el carrito. Luego entra al checkout, confirma la compra, completa los datos de envio y continua a la pasarela de pago. La pantalla de pago permite confirmar o cancelar el pago.
+
+Pregunta frecuente: Necesito iniciar sesion para comprar?
+Respuesta: Si. Las rutas de carrito, envio, pago y pedidos son funciones de usuario. Para completar una compra debes iniciar sesion con una cuenta de usuario.
+
+Pregunta frecuente: Que pasa si cancelo el pago?
+Respuesta: Si cancelas el pago, la aplicacion vuelve con el pedido marcado segun el estado enviado por la pasarela. Puedes revisar tus pedidos en /user/orders cuando estes autenticado.

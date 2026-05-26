@@ -44,7 +44,9 @@ public class ChatbotService {
             "playapp", "producto", "productos", "precio", "precios", "catalogo", "menu",
             "recomienda", "recomendacion", "bebida", "comida", "servicio", "carrito", "checkout",
             "pedido", "pedidos", "orden", "compra", "comprar", "pago", "pagar", "pasarela",
-            "envio", "tienda", "stock", "disponible", "usuario", "cuenta", "login", "sesion"
+            "envio", "tienda", "stock", "disponible", "usuario", "cuenta", "login", "sesion",
+            "registro", "registrar", "chatbot", "asistente", "ayuda", "soporte",
+            "ubicacion", "playa", "horario"
     );
     private static final Set<String> SOCIAL_WORDS = Set.of(
             "hola", "buenas", "buenos", "dias", "tardes", "noches", "gracias", "ok", "vale", "listo",
@@ -55,6 +57,7 @@ public class ChatbotService {
     private final ChatMessageRepository chatMessageRepository;
     private final GeminiService geminiService;
     private final ChatIntentService chatIntentService;
+    private final PlayAppRagService playAppRagService;
 
     public ChatSendResponse sendMessage(ChatSendRequest request) {
         if (request == null) {
@@ -227,10 +230,23 @@ public class ChatbotService {
             );
         }
 
+        String ragReply = playAppRagService.generateChatbotAnswer(userMessage);
+        if (ragReply != null && !ragReply.isBlank()) {
+            return new AssistantReply(ragReply, buildRagActions());
+        }
+
         String context = buildShortContext(sessionId);
         String fallbackReply = buildLocalFallbackReply(userMessage, context);
         String reply = generateGeneralPlayAppReply(userMessage, context, fallbackReply);
         return new AssistantReply(reply, List.of(ChatAction.link("Ir a tienda", "/shop")));
+    }
+
+    private List<ChatAction> buildRagActions() {
+        return List.of(
+                ChatAction.link("Ir a tienda", "/shop"),
+                ChatAction.link("Ver carrito", "/cart/checkout"),
+                ChatAction.link("Ver pedidos", "/user/orders")
+        );
     }
 
     private String buildShortContext(String sessionId) {

@@ -39,11 +39,14 @@ class ChatbotServiceTest {
     @Mock
     private ChatIntentService chatIntentService;
 
+    @Mock
+    private PlayAppRagService playAppRagService;
+
     private ChatbotService chatbotService;
 
     @BeforeEach
     void setUp() {
-        chatbotService = new ChatbotService(chatSessionRepository, chatMessageRepository, geminiService, chatIntentService);
+        chatbotService = new ChatbotService(chatSessionRepository, chatMessageRepository, geminiService, chatIntentService, playAppRagService);
     }
 
     @Test

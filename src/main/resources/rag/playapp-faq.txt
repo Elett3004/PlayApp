@@ -1,0 +1,14 @@
+Pregunta frecuente: Que es PlayApp?
+Respuesta: PlayApp es una aplicacion web para explorar productos y servicios relacionados con la experiencia de playa. Desde la tienda se pueden ver comidas, bebidas y servicios disponibles.
+
+Pregunta frecuente: Donde veo el catalogo?
+Respuesta: El catalogo se consulta en la ruta /shop. En la tienda se pueden filtrar productos por nombre y categoria. Las categorias principales son comidas, bebidas y servicios.
+
+Pregunta frecuente: Como busco productos?
+Respuesta: En la tienda /shop se puede usar el buscador por nombre y los filtros de categoria. Tambien se puede entrar desde la pagina de inicio a comidas, bebidas o servicios.
+
+Pregunta frecuente: Que puede hacer el chatbot?
+Respuesta: El chatbot puede orientar sobre productos, precios, recomendaciones, carrito, compras, pagos, pedidos, cuenta y soporte basico de PlayApp. No responde temas externos a PlayApp.
+
+Pregunta frecuente: Que hago si no encuentro un producto?
+Respuesta: Si un producto no aparece en la tienda, puede no estar registrado o no coincidir con el filtro usado. Lo recomendado es limpiar filtros, probar otra palabra o revisar las categorias disponibles.
