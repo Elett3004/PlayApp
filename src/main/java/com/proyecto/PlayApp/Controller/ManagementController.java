@@ -29,6 +29,18 @@ public class ManagementController {
     private final ReporteService reportes;
     private final ModeloMatematicoService modeloMatematico;
     private final UsuarioService usuarios;
+    private final CurrentWeatherService currentWeather;
+
+    @GetMapping("/clima")
+    public String clima(Model model) {
+        model.addAttribute("weatherLocation", currentWeather.location());
+        try {
+            model.addAttribute("weather", currentWeather.current());
+        } catch (IllegalStateException ex) {
+            model.addAttribute("weatherError", ex.getMessage());
+        }
+        return "Management/clima";
+    }
 
     @Value("${playapp.admin.email:adminplayapp01@gmail.com}")
     private String adminGlobalCorreo;

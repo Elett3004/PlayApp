@@ -1,0 +1,122 @@
+[
+  {
+    "id": "optimal",
+    "condition": "Soleado y condiciones óptimas",
+    "criterion": "Índice de calor entre 32–40 °C y agua >27,5 °C",
+    "minimum": 80,
+    "maximum": 100,
+    "origin": "Excel original; requiere datos adicionales"
+  },
+  {
+    "id": "clear_warm",
+    "condition": "Despejado y cálido",
+    "criterion": "Sensación térmica entre 32–40 °C, sin lluvia ni viento fuerte",
+    "minimum": 60,
+    "maximum": 80,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "partly_warm",
+    "condition": "Parcialmente nublado y cálido",
+    "criterion": "Algunas nubes, sensación térmica entre 32–40 °C",
+    "minimum": 50,
+    "maximum": 70,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "extreme_heat",
+    "condition": "Calor extremo",
+    "criterion": "Sensación térmica >40 °C",
+    "minimum": 60,
+    "maximum": 75,
+    "origin": "Excel original"
+  },
+  {
+    "id": "clear_mild",
+    "condition": "Despejado y templado",
+    "criterion": "Sensación térmica entre 26 y menos de 32 °C",
+    "minimum": 40,
+    "maximum": 60,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "cloudy",
+    "condition": "Nublado o cubierto",
+    "criterion": "Nubosidad predominante, sin lluvia ni viento fuerte",
+    "minimum": 20,
+    "maximum": 40,
+    "origin": "Excel original"
+  },
+  {
+    "id": "cool",
+    "condition": "Ambiente fresco",
+    "criterion": "Sensación térmica <26 °C",
+    "minimum": 20,
+    "maximum": 40,
+    "origin": "Rango del Excel original; umbral propuesto"
+  },
+  {
+    "id": "mist",
+    "condition": "Bruma o neblina ligera",
+    "criterion": "Visibilidad de al menos 5 km, sin lluvia",
+    "minimum": 30,
+    "maximum": 50,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "fog",
+    "condition": "Niebla con poca visibilidad",
+    "criterion": "Visibilidad inferior a 5 km",
+    "minimum": 10,
+    "maximum": 25,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "light_rain",
+    "condition": "Llovizna o lluvia ligera actual",
+    "criterion": "La API reporta precipitación ligera",
+    "minimum": 15,
+    "maximum": 35,
+    "origin": "Adaptación propuesta; no supone una duración"
+  },
+  {
+    "id": "moderate_rain",
+    "condition": "Lluvia moderada",
+    "criterion": "La API reporta lluvia moderada",
+    "minimum": 5,
+    "maximum": 20,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "heavy_rain",
+    "condition": "Lluvia intensa o tormenta",
+    "criterion": "La API reporta precipitación intensa o tormenta",
+    "minimum": 0,
+    "maximum": 10,
+    "origin": "Propuesto"
+  },
+  {
+    "id": "wind",
+    "condition": "Viento fuerte",
+    "criterion": "Velocidad >30 km/h",
+    "minimum": 15,
+    "maximum": 35,
+    "origin": "Excel original"
+  },
+  {
+    "id": "night",
+    "condition": "Noche",
+    "criterion": "Fuera del intervalo entre amanecer y atardecer",
+    "minimum": 0,
+    "maximum": 1,
+    "origin": "Propuesto por el usuario: afluencia nocturna muy baja"
+  },
+  {
+    "id": "missing",
+    "condition": "Datos ausentes o desactualizados",
+    "criterion": "No hay información suficiente",
+    "minimum": null,
+    "maximum": null,
+    "origin": "Control de calidad"
+  }
+]

@@ -1,0 +1,108 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "clear",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic background for a small weather card, wide landscape composition. Scene: A sunlit Caribbean beach, clear vivid blue sky, sparkling turquoise sea and clean warm sand. Natural editorial travel photography. No people, buildings, text, labels, logos, watermarks or UI. Realistic weather must be immediately legible. The photo is decorative, not a live camera. Keep lower third uncluttered for a dark gradient and white text added by CSS.",
+      "source": "exec-c02adb30-aa2a-4209-ade4-b05431595b38.png",
+      "savedPath": "src/main/resources/static/img/weather/clear.jpg"
+    },
+    {
+      "key": "partly-cloudy",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic background for a small weather card, wide landscape composition. Scene: A Caribbean beach with scattered fluffy white clouds covering about half the blue sky, soft sun and turquoise water. Natural editorial travel photography. No people, buildings, text, labels, logos, watermarks or UI. Realistic weather must be immediately legible. The photo is decorative, not a live camera. Keep lower third uncluttered for a dark gradient and white text added by CSS.",
+      "source": "exec-f63e172e-5111-44a2-9230-760570bf4e5a.png",
+      "savedPath": "src/main/resources/static/img/weather/partly-cloudy.jpg"
+    },
+    {
+      "key": "cloudy",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic background for a small weather card, wide landscape composition. Scene: A quiet Caribbean shoreline under a completely overcast gray sky, muted turquoise water, no direct sun, no rainfall. Natural editorial travel photography. No people, buildings, text, labels, logos, watermarks or UI. Realistic weather must be immediately legible. The photo is decorative, not a live camera. Keep lower third uncluttered for a dark gradient and white text added by CSS.",
+      "source": "exec-d7682052-a32b-4494-9134-d9deabaa2195.png",
+      "savedPath": "src/main/resources/static/img/weather/cloudy.jpg"
+    },
+    {
+      "key": "heat",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic background for a small weather card, wide landscape composition. Scene: A tropical sandy beach at very hot midday, intense sunlight, subtle heat shimmer above the sand, brilliant light, pale blue cloudless sky. Natural editorial travel photography. No people, buildings, text, labels, logos, watermarks or UI. Realistic weather must be immediately legible. The photo is decorative, not a live camera. Keep lower third uncluttered for a dark gradient and white text added by CSS.",
+      "source": "exec-5f92b869-46a3-40a6-83c5-fc53cdb618ca.png",
+      "savedPath": "src/main/resources/static/img/weather/heat.jpg"
+    },
+    {
+      "key": "cool",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic background for a small weather card, wide landscape composition. Scene: A quiet coast in cool fresh weather, pale blue gray sky, soft muted blue water, diffused gentle daylight, calm subdued atmosphere. Natural editorial travel photography. No people, buildings, text, labels, logos, watermarks or UI. Realistic weather must be immediately legible. The photo is decorative, not a live camera. Keep lower third uncluttered for a dark gradient and white text added by CSS.",
+      "source": "exec-dde3b08d-e48d-4d05-8372-7b301d2ef178.png",
+      "savedPath": "src/main/resources/static/img/weather/cool.jpg"
+    },
+    {
+      "key": "wind",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic weather-card background, wide landscape. Scene: A tropical beach with strong wind, palm fronds visibly blown sideways at the edge of frame, choppy turquoise sea with whitecaps, blowing sand near the ground, no rain. Natural editorial travel photography. No people, buildings, text, logos, watermark or interface. Weather is instantly legible. Decorative illustration, not a live camera. Keep lower third uncluttered for text added in CSS.",
+      "source": "exec-3b7bb515-99c0-4ebb-83d0-bccc4c790be3.png",
+      "savedPath": "src/main/resources/static/img/weather/wind.jpg"
+    },
+    {
+      "key": "light-rain",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic weather-card background, wide landscape. Scene: A tropical shoreline in gentle drizzle, delicate light raindrops visible against gray blue sea, soft pale overcast sky, slight ripples, no lightning. Natural editorial travel photography. No people, buildings, text, logos, watermark or interface. Weather is instantly legible. Decorative illustration, not a live camera. Keep lower third uncluttered for text added in CSS.",
+      "source": "exec-a839c457-4e61-43ed-99f5-209ccb94d7ee.png",
+      "savedPath": "src/main/resources/static/img/weather/light-rain.jpg"
+    },
+    {
+      "key": "moderate-rain",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic weather-card background, wide landscape. Scene: A tropical shoreline in steady moderate rain, clearly visible rain streaks, gray sea and wet sand, subdued cloudy daylight, no lightning. Natural editorial travel photography. No people, buildings, text, logos, watermark or interface. Weather is instantly legible. Decorative illustration, not a live camera. Keep lower third uncluttered for text added in CSS.",
+      "source": "exec-995b0e4d-4472-4d31-909c-54da5fa17f5f.png",
+      "savedPath": "src/main/resources/static/img/weather/moderate-rain.jpg"
+    },
+    {
+      "key": "heavy-rain",
+      "prompt": "Use case: photorealistic-natural. Asset type: photographic weather-card background, wide landscape. Scene: A tropical shoreline in a heavy downpour, dense rain curtain, dark gray clouds, splashing puddles on wet sand and rough dark teal sea, no lightning. Natural editorial travel photography. No people, buildings, text, logos, watermark or interface. Weather is instantly legible. Decorative illustration, not a live camera. Keep lower third uncluttered for text added in CSS.",
+      "source": "exec-8aa03c5e-0fb1-4958-baa7-3112f2e2ea5b.png",
+      "savedPath": "src/main/resources/static/img/weather/heavy-rain.jpg"
+    },
+    {
+      "key": "thunderstorm",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A Caribbean coast during a thunderstorm, heavy dark clouds and one clear distant lightning bolt over rough sea, wet sand, dramatic but realistic. Natural photography, weather immediately clear, lower third uncluttered. No people, buildings, text, logos, watermark, interface. Decorative illustration, not a live camera.",
+      "source": "exec-fbc6c461-1916-4379-bc6f-2c1202d052b2.png",
+      "savedPath": "src/main/resources/static/img/weather/thunderstorm.jpg"
+    },
+    {
+      "key": "mist",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape weather-card background. Photograph a tropical shoreline with clearly visible atmospheric HAZE / LIGHT MIST. The background coastline and sea horizon fade into a milky gray veil, with reduced contrast and indistinct distant shapes, while nearby sand and gentle waves remain visible. Muted blue gray and pale beige palette. Soft diffused light with no direct sunshine. It must unmistakably communicate hazy conditions, less opaque than dense fog. No crisp blue sky, bright turquoise water, sharply defined distant clouds, people, text, watermark or UI. Decorative illustration rather than a live photograph.",
+      "source": "exec-5a35fb57-fd57-49ee-bf0b-1b5c7e81aba3.png",
+      "savedPath": "src/main/resources/static/img/weather/mist.jpg"
+    },
+    {
+      "key": "fog",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A shoreline enveloped in dense white gray fog, very low visibility, horizon nearly invisible, soft muted sea, damp pale sand, no sun or rain. Natural photography, weather immediately clear, lower third uncluttered. No people, buildings, text, logos, watermark, interface. Decorative illustration, not a live camera.",
+      "source": "exec-0eb655aa-efcc-4aba-8ad8-11bdf22dffd7.png",
+      "savedPath": "src/main/resources/static/img/weather/fog.jpg"
+    },
+    {
+      "key": "night",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A tranquil tropical beach at night under deep indigo sky and gentle moonlight reflected on dark blue ocean, soft white foam on sand, no daylight. Natural photography, weather immediately clear, lower third uncluttered. No people, buildings, text, logos, watermark, interface. Decorative illustration, not a live camera.",
+      "source": "exec-2b7cc650-0914-4ac1-ae51-0ae4929bc915.png",
+      "savedPath": "src/main/resources/static/img/weather/night.jpg"
+    },
+    {
+      "key": "snow",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A wintry coastal shoreline during snowfall or sleet, snowflakes against gray ocean, a little white snow along the shoreline, overcast cold daylight. Generic coast, not presented as documentary Cartagena. Natural editorial photography, condition clearly visible. Lower third uncluttered. No people, buildings, text, logo, watermark or UI. Decorative illustration, not a live camera.",
+      "source": "exec-20aedde5-26b7-4ed3-936c-eb218caf287f.png",
+      "savedPath": "src/main/resources/static/img/weather/snow.jpg"
+    },
+    {
+      "key": "dust",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A coastal shoreline obscured by suspended smoke, dust or ash haze, muted brown gray atmosphere, poor visibility over dull sea and sand, no fire visible. Natural editorial photography, condition clearly visible. Lower third uncluttered. No people, buildings, text, logo, watermark or UI. Decorative illustration, not a live camera.",
+      "source": "exec-afbd5e03-5950-4a77-ab0a-071b76785fdc.png",
+      "savedPath": "src/main/resources/static/img/weather/dust.jpg"
+    },
+    {
+      "key": "tornado",
+      "prompt": "Use case: photorealistic-natural. Asset type: wide landscape photographic weather-card background. Scene: A distant waterspout funnel connecting dark storm clouds to the ocean far off an empty shoreline, rough water, realistic weather photography, no people or damage. Natural editorial photography, condition clearly visible. Lower third uncluttered. No people, buildings, text, logo, watermark or UI. Decorative illustration, not a live camera.",
+      "source": "exec-0a9f5d6c-792f-4c02-aec0-1dd3031da697.png",
+      "savedPath": "src/main/resources/static/img/weather/tornado.jpg"
+    },
+    {
+      "key": "shore-background",
+      "prompt": "Aerial Caribbean shoreline with pale golden sand, gentle foamy waves and turquoise water. No people, text or UI. Decorative general background.",
+      "source": "exec-39ba904c-e191-47dc-9bd6-05462b0b0839.png",
+      "savedPath": "src/main/resources/static/img/weather/shore-background.jpg"
+    }
+  ],
+  "delivery": "Generated with built-in image_gen; converted to JPEG quality 85 for web delivery. Full prompts are recorded per image. Images are decorative, not live camera captures."
+}

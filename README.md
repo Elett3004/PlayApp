@@ -1,5 +1,64 @@
 # PlayApp
 
+## Clima y ocupación estimada
+
+Los administradores pueden entrar a `/manager/clima` desde el menú lateral.
+Configura `OPENWEATHER_API_KEY` en `config/application-secrets.env` y reinicia la app.
+Se usa Current Weather (`https://api.openweathermap.org/data/2.5/weather`), con
+coordenadas de Bocagrande (10.399667, -75.555001), unidades métricas e idioma español.
+Opcionalmente puedes ajustar `OPENWEATHER_LATITUDE` y `OPENWEATHER_LONGITUDE`.
+La clave permanece en el servidor. Los datos se reutilizan durante 10 minutos;
+hay tiempos de espera y pausa de reintentos cuando falla el proveedor. No se
+presentan observaciones de más de una hora como clima actual.
+
+La tabla ampliada de 15 condiciones está integrada. El Excel de referencia está en
+[docs/Tabla_porcentajes_ocupacion.xlsx](docs/Tabla_porcentajes_ocupacion.xlsx).
+Los porcentajes y textos se cargan de `src/main/resources/occupancy/rules.json`;
+el cálculo usa esta fuente y la pantalla presenta un resumen escrito de la
+ocupación con los datos meteorológicos actuales, sin exponer las reglas.
+La vista usa un fondo de playa, una tarjeta de clima actual con seis indicadores,
+un resumen breve de ocupación y un mapa Leaflet de Bocagrande. El análisis completo
+y los datos secundarios se consultan en el modal «Ver análisis y más datos». El marcador usa
+las mismas coordenadas configuradas para OpenWeatherMap. Los mapas base necesitan
+conexión a OpenStreetMap; si fallan, se ofrece un enlace a la ubicación.
+
+El fondo general usa una imagen de arena y olas. La tarjeta cambia su fotografía
+según los códigos de clima recibidos, sensación térmica, viento y visibilidad:
+sol, nubes parciales, cielo cubierto, calor, ambiente fresco, viento, lluvia ligera,
+moderada o intensa, tormenta, bruma, niebla y noche. Hay imágenes para nieve,
+partículas atmosféricas y tornado, y un respaldo para condiciones desconocidas.
+Se priorizan fenómenos adversos para no mostrar sol cuando también se reporta lluvia.
+El horario se determina con amanecer y atardecer; las imágenes nocturnas se oscurecen.
+Son ilustraciones decorativas generadas con `image_gen`, no fotografías en vivo.
+Los archivos están en `src/main/resources/static/img/weather/`; los prompts y
+la procedencia están en [docs/weather-artwork-manifest.json](docs/weather-artwork-manifest.json).
+Cambiar el Excel por sí solo no
+actualiza la aplicación: mantener Excel, JSON y criterios del estimador sincronizados.
+
+Se evalúan todos los códigos meteorológicos recibidos, sensación térmica, viento
+y visibilidad. Si coinciden reglas, se elige el rango con menor mínimo y, en caso
+de empate, menor máximo. No se suman ni promedian porcentajes ni se convierten a
+cantidad de personas. La tabla distingue rangos originales y propuestas orientativas.
+
+Correspondencias de OpenWeatherMap: 800 despejado, 801–802 parcialmente nublado,
+803–804 nublado; 701/721/741 bruma o niebla según visibilidad (5 km es el límite).
+Lluvia ligera/llovizna: 300/301/310/311/313/321/500/520; moderada:
+501/521/531; intensa: 302/312/314/502/503/504/522 y tormentas del grupo 2xx.
+La clasificación de llovizna fuerte y chubascos es una adaptación de la tabla.
+Referencia: https://openweathermap.org/api/weather-conditions.
+
+Durante la noche se estima 0–1 % de ocupación, como aproximación propuesta por el
+usuario para representar afluencia muy baja con posible presencia de algunas personas.
+Se determina la noche por amanecer y atardecer de la API, sin convertirla en una
+afirmación sobre horarios oficiales de acceso. Se mantiene el control de datos válidos.
+Sin visibilidad para bruma/niebla durante el día, sin datos actuales suficientes
+o sin regla aplicable, se muestra «Sin estimación concluyente». El rango óptimo
+80–100 % queda como referencia: requiere índice de calor y temperatura del mar,
+que esta consulta no entrega. Los porcentajes nuevos requieren validación con
+observaciones reales; no son mediciones de la ocupación de la playa.
+
+Pruebas sin MongoDB ni Redis: `mvnw.cmd "-Dtest=BeachOccupancyEstimatorTest,CurrentWeatherServiceTest,WeatherTemplateTest" test`.
+
 Proyecto Spring Boot 3 + Java 21 con MongoDB Atlas y Redis.
 
 ## Objetivo de esta sincronizacion local
