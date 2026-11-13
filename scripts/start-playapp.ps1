@@ -245,6 +245,11 @@ Open-Url $url
 
 Set-Location $root
 $env:MAVEN_OPTS = "-Xms128m -Xmx512m"
+try {
+    & (Join-Path $PSScriptRoot 'start-occupancy.ps1') -Background
+} catch {
+    Write-Host "Modelo no disponible: se usaran las reglas de respaldo. $($_.Exception.Message)" -ForegroundColor Yellow
+}
 & ".\mvnw.cmd" -DskipTests spring-boot:run "-Dspring-boot.run.jvmArguments=-Xms128m -Xmx384m" "-Dspring-boot.run.arguments=--server.port=$port"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Fallo al iniciar Spring Boot en modo local." -ForegroundColor Red

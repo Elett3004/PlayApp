@@ -47,6 +47,10 @@ class WeatherTemplateTest {
                         new CurrentWeatherService.Metric("Amanecer", "13/11/2026 05:58:00"),
                         new CurrentWeatherService.Metric("Atardecer", "13/11/2026 17:34:00")), estimator.estimate(List.of(804), 35, 10, 10000.0, true), WeatherArtwork.select(List.of(804), 35, 10, 10000.0, true));
         String html = render(weather, null);
+        var neuralWeather = new CurrentWeatherService.Weather(weather.description(), weather.observedAt(), weather.consultedAt(),
+                weather.metrics(), weather.estimate(), weather.artwork(), new NeuralOccupancyClient.Prediction(67.3, "sim-v1-test"));
+        assertThat(render(neuralWeather, null)).contains("neural-occupancy", "Red neuronal · simulación", "sim-v1-test")
+                .doesNotContain("Reglas · respaldo", "class=\"occupancy-band\"");
         assertThat(html).contains("--weather-photo:url(/img/weather/cloudy.jpg)");
         assertThat(html).contains("20</span>–<span>40", "30 °C", "logoutModal", "La ocupación de la playa podría situarse", "nubosidad predominante", "10 km/h", "74 %", "id=\"weather-map\"", "data-latitude=\"10.399667\"", "data-longitude=\"-75.555001\"", "05:58", "17:34")
                 .doesNotContain("Reglas de referencia", "Regla aplicada", "Origen:", "Tabla_porcentajes", "<table", "menor mínimo");

@@ -1,4 +1,7 @@
 target
+.venv-occupancy
+ml/__pycache__
+ml/.pytest_cache
 .git
 .vscode
 config/application-secrets.env

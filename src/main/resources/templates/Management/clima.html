@@ -179,9 +179,11 @@
                             <div>
                                 <p class="eyebrow">ASÍ SE VE EL DÍA</p>
                                 <h2 id="occupancy-title">Ocupación estimada</h2>
-                            </div><span class="estimate-badge">Según el clima</span>
+                            </div><span class="estimate-badge" th:text="${weather.predictionLabel}">Según el clima</span>
                         </div>
-                        <th:block th:if="${weather.estimate.minimum != null}">
+                        <div th:if="${weather.prediction != null}" class="occupancy-value neural-occupancy"><span
+                            th:text="${#numbers.formatDecimal(weather.prediction.percentage, 1, 1)}"></span><span class="percent-sign">%</span></div>
+                        <th:block th:if="${weather.prediction == null and weather.estimate.minimum != null}">
                             <div class="occupancy-value"><span th:text="${weather.estimate.minimum}"></span>–<span
                                     th:text="${weather.estimate.maximum}"></span><span class="percent-sign">%</span>
                             </div>
@@ -193,9 +195,9 @@
                             </div>
                             <div class="scale-labels"><span>0 %</span><span>50 %</span><span>100 %</span></div>
                         </th:block>
-                        <p th:unless="${weather.estimate.minimum != null}" class="unknown-occupancy">Sin estimación
+                        <p th:if="${weather.prediction == null and weather.estimate.minimum == null}" class="unknown-occupancy">Sin estimación
                             concluyente</p>
-                        <p class="occupancy-summary" th:text="${weather.estimate.summary}"></p>
+                        <p class="occupancy-summary" th:text="${weather.occupancySummary}"></p>
                         <div class="sun-times">
                             <div><span class="sun-symbol" aria-hidden="true">☀</span>
                                 <div><span>Amanecer</span><strong th:text="${weather.sunrise}"></strong></div>
@@ -252,7 +254,7 @@
                 <div class="modal-body">
                     <p class="analysis-observation">Observación: <span th:text="${weather.observedAt}"></span>
                         · Hora de Colombia</p>
-                    <p class="analysis-explanation" th:text="${weather.estimate.explanation}"></p>
+                    <p class="analysis-explanation" th:text="${weather.analysis}"></p>
                     <th:block th:if="${!weather.additionalMetrics.isEmpty()}">
                         <h3 class="h6 mt-4">Datos adicionales</h3>
                         <dl class="extra-metrics">

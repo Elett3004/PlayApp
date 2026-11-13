@@ -1,5 +1,12 @@
 # PlayApp
 
+## Ocupación con TensorFlow y FastAPI
+
+La pantalla de clima consulta una red neuronal entrenada con un dataset simulado
+de clima y calendario. Muestra el porcentaje del modelo y su procedencia; si no
+está disponible, conserva las reglas de respaldo. Instalación, entrenamiento,
+ejecución y límites: [ml/README.md](ml/README.md).
+
 ## Clima y ocupación estimada
 
 Los administradores pueden entrar a `/manager/clima` desde el menú lateral.

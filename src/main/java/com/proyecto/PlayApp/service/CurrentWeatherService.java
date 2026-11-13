@@ -36,7 +36,15 @@ public class CurrentWeatherService {
     }
     public record Location(double latitude, double longitude) {}
     public record Weather(String description, String observedAt, String consultedAt,
-                          List<Metric> metrics, BeachOccupancyEstimator.Estimate estimate, WeatherArtwork.Artwork artwork) {
+                          List<Metric> metrics, BeachOccupancyEstimator.Estimate estimate, WeatherArtwork.Artwork artwork,
+                          NeuralOccupancyClient.Prediction prediction) {
+        public Weather(String description, String observedAt, String consultedAt, List<Metric> metrics,
+                       BeachOccupancyEstimator.Estimate estimate, WeatherArtwork.Artwork artwork) {
+            this(description, observedAt, consultedAt, metrics, estimate, artwork, null);
+        }
+        public String predictionLabel() { return prediction == null ? "Reglas · respaldo" : "Red neuronal · simulación"; }
+        public String occupancySummary() { return prediction == null ? estimate.summary() : "Estimación de la red neuronal según el clima actual, la hora y el calendario turístico. Entrenada con datos simulados."; }
+        public String analysis() { return prediction == null ? estimate.explanation() : "La red neuronal estima una ocupación del " + String.format(Locale.forLanguageTag("es-CO"), "%.1f", prediction.percentage()) + " %. Considera clima, hora local, día de semana, festivos y temporadas configuradas. Versión: " + prediction.version() + ". Entrenada con datos simulados; pendiente de validación con observaciones reales del grupo."; }
         public String temperature() { return value("Temperatura"); }
         public String feelsLike() { return value("Sensación térmica"); }
         public String observationTime() { return observedAt.length() >= 16 ? observedAt.substring(11, 16) : observedAt; }
@@ -61,6 +69,7 @@ public class CurrentWeatherService {
     private final double latitude;
     private final double longitude;
     private final BeachOccupancyEstimator estimator;
+    private NeuralOccupancyClient neuralModel;
     private Weather cached;
     private Instant expiresAt = Instant.MIN;
     private Instant retryAfter = Instant.MIN;
@@ -73,8 +82,9 @@ public class CurrentWeatherService {
             @Value("${playapp.weather.api-key:}") String apiKey,
             @Value("${playapp.weather.latitude:10.399667}") double latitude,
             @Value("${playapp.weather.longitude:-75.555001}") double longitude,
-            BeachOccupancyEstimator estimator) {
+            BeachOccupancyEstimator estimator, NeuralOccupancyClient neuralModel) {
         this(buildClient(builder), apiKey, latitude, longitude, estimator);
+        this.neuralModel = neuralModel;
     }
 
     CurrentWeatherService(RestClient client, String apiKey, double latitude, double longitude,
@@ -176,7 +186,8 @@ public class CurrentWeatherService {
         var summary = new BeachOccupancyEstimator.Estimate(estimate.minimum(), estimate.maximum(), estimate.condition(), context + estimate.explanation(), estimate.summary());
         return new Weather(description,
                 FORMAT.format(Instant.ofEpochSecond(observed)), FORMAT.format(consulted), List.copyOf(metrics),
-                summary, WeatherArtwork.select(codes, feelsLike, wind, visibility, daylight));
+                summary, WeatherArtwork.select(codes, feelsLike, wind, visibility, daylight),
+                neuralModel == null ? null : neuralModel.predict(data, codes, daylight).orElse(null));
     }
 
     private static double required(JsonNode node, String name) {

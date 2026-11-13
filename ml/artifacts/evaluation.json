@@ -1,0 +1,15 @@
+{
+  "training_data": "SIMULATED_ONLY",
+  "split": "train 2022-2023, validation 2024, test 2025",
+  "epochs": 86,
+  "rows_train": 17520,
+  "rows_validation": 8784,
+  "rows_test": 8760,
+  "mae_percentage_points": 1.5748083591461182,
+  "rmse_percentage_points": 2.8576672077178955,
+  "mean_baseline_mae": 20.52843475341797,
+  "notice": "Measures agreement with simulator, NOT real-world accuracy.",
+  "night_policy": "Night output is clamped to 0-1 percent after inference.",
+  "day_mae_percentage_points": 2.8319849967956543,
+  "night_mae_percentage_points": 0.3176315724849701
+}
