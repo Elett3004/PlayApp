@@ -1,114 +1,527 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-    <link rel="stylesheet" href="/css/importJakartaFont.css">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/chat-widget.css">
-    <link rel="icon" href="/img/Logo.png" type="image/png">
+    <title>Mis Pedidos | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/importJakartaFont.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout-flow.css}">
+    <link rel="stylesheet" th:href="@{/css/chat-widget.css}">
+    <link rel="icon" th:href="@{/img/Logo.png}" type="image/png">
 </head>
-<body class="background-grey jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
-<!-- Barra de navegación -->
-<header th:replace="~{components/navbar :: publicNavbar('tienda')}"></header>
+<!-- Barra de navegación oficial PlayApp -->
+<header th:replace="~{components/navbar :: publicNavbar('pedidos')}"></header>
 
+<!-- Contenido Principal -->
+<main class="container py-4 flex-grow-1" id="mainContent">
 
-<!-- Categorías de Bebidas -->
-<div class="container">
+    <!-- Cabecera de Página -->
+    <section class="user-page-header">
+        <span class="user-page-eyebrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+            </svg>
+            Historial de Compras · PlayApp Cartagena
+        </span>
+        <h1 class="user-page-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-clock-history text-ocean" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/>
+                <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/>
+                <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
+            </svg>
+            <span>Mis Pedidos</span>
+        </h1>
+        <p class="user-page-subtitle">Revisa el estado de entrega en playa, resumen de productos y comprobante de tus compras en tiempo real.</p>
+    </section>
 
-    <form action="#" th:action="@{/user/search}" method="GET"  class="row my-2">
-        <div class="d-flex">
-            <div class="me-auto">
-                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="input-group">
-                        <select id="filtro" name="estado" class="form-select" aria-label="Default select example">
-                            <option selected value="">Todos</option>
-                            <option value="0">Recibidos</option>
-                            <option value="1">En preparación</option>
-                            <option value="2">Terminados</option>
-                        </select>
+    <!-- Tarjeta Principal con Filtro y Tabla -->
+    <div class="playapp-card">
+        <!-- Barra de Filtros -->
+        <form th:action="@{/user/search}" method="GET" class="playapp-filter-bar" role="search" aria-label="Filtrar pedidos">
+            <div class="playapp-filter-group">
+                <label for="filtroEstado" class="form-label mb-0 fw-bold small text-muted">Estado del pedido:</label>
+                <select id="filtroEstado" name="estado" class="playapp-select" aria-label="Filtrar por estado del pedido">
+                    <option value="" th:selected="${estadoActual == null or estadoActual == ''}">Todos los estados</option>
+                    <option value="0" th:selected="${estadoActual == '0'}">Recibidos</option>
+                    <option value="1" th:selected="${estadoActual == '1'}">En preparación</option>
+                    <option value="2" th:selected="${estadoActual == '2'}">Terminados / En camino</option>
+                </select>
+                <button type="submit" class="btn-ocean" title="Aplicar filtro">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                    <span>Filtrar</span>
+                </button>
+                <a th:if="${estadoActual != null and estadoActual != ''}" th:href="@{/user/orders}" class="btn-ocean-outline" title="Ver todos los pedidos">
+                    <span>Limpiar filtro</span>
+                </a>
+            </div>
+
+            <div class="text-muted small">
+                <span class="fw-bold text-dark" th:text="${pedidos.totalElements}">0</span>
+                <span th:text="${pedidos.totalElements == 1 ? 'pedido registrado' : 'pedidos registrados'}">pedidos</span>
+            </div>
+        </form>
+
+        <!-- Tabla Moderna Desktop / Tarjetas Responsive en Móvil -->
+        <div class="playapp-table-container">
+            <table class="playapp-table" aria-label="Listado de mis pedidos">
+                <thead>
+                <tr>
+                    <th scope="col">PEDIDO</th>
+                    <th scope="col">FECHA</th>
+                    <th scope="col">TOTAL</th>
+                    <th scope="col">ESTADO PAGO</th>
+                    <th scope="col">ESTADO PEDIDO</th>
+                    <th scope="col" class="text-center">PRODUCTOS</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pedido : ${pedidos}">
+                    <td data-label="Pedido">
+                        <strong class="fw-bold" style="color: var(--playapp-ocean);" th:text="'#' + ${pedido.id}">#id</strong>
+                    </td>
+                    <td data-label="Fecha" th:text="${#temporals.format(pedido.timestamp, 'dd/MM/yyyy HH:mm')}">
+                        16/11/2026 23:58
+                    </td>
+                    <td data-label="Total">
+                        <strong class="text-dark fw-bold" th:text="${#numbers.formatCurrency(pedido.total)}">$0.00</strong>
+                    </td>
+                    <td data-label="Pago">
+                        <div class="d-inline-flex flex-column align-items-start gap-1">
+                            <span class="badge playapp-badge"
+                                  th:classappend="${pedido.pago != null ? pedido.pago.obtenerClaseCSSEstado() : 'text-bg-secondary'}"
+                                  th:text="${pedido.pago != null ? pedido.pago.obtenerNombreEstado() : 'Sin estado'}">
+                                Pagado
+                            </span>
+                            <span class="text-muted" style="font-size: 11px;" th:if="${pedido.pago != null}" th:text="${pedido.pago.obtenerNombreMetodo()}">
+                                Tarjeta (Wompi)
+                            </span>
+                        </div>
+                    </td>
+                    <td data-label="Estado">
+                        <span class="badge playapp-badge"
+                              th:classappend="${pedido.obtenerClaseCSSEstado()}"
+                              th:text="${pedido.obtenerNombreEstado()}">
+                            Recibido
+                        </span>
+                    </td>
+                    <td data-label="Detalle" class="text-center">
+                        <button type="button"
+                                class="btn-ocean-outline btn-action-view"
+                                th:data-pedido-id="${pedido.id}"
+                                onclick="abrirModalDetalle(this.getAttribute('data-pedido-id'), this)"
+                                aria-haspopup="dialog"
+                                aria-controls="modalDetallePedido"
+                                th:aria-label="'Ver detalle del pedido #' + ${pedido.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                            </svg>
+                            <span>Ver detalle</span>
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Estado Vacío -->
+                <tr th:if="${#lists.isEmpty(pedidos.content)}">
+                    <td colspan="6" class="p-0 border-0">
+                        <div class="orders-empty-state">
+                            <div class="orders-empty-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-bag-x" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M6.146 8.146a.5.5 0 0 1 .708 0L8 9.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 10l1.147 1.146a.5.5 0 0 1-.708.708L8 10.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 10 6.146 8.854a.5.5 0 0 1 0-.708"/>
+                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                                </svg>
+                            </div>
+                            <h2 class="h5 fw-bold text-dark mb-2">No se encontraron pedidos</h2>
+                            <p class="text-muted small mb-3">No hay órdenes registradas con el filtro seleccionado o tu cuenta aún no ha realizado compras.</p>
+                            <a th:href="@{/shop}" class="btn-ocean">
+                                <span>Ir a la Tienda</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación Moderna -->
+        <div class="d-flex justify-content-center mt-4" th:if="${pedidos.totalPages > 1}">
+            <nav aria-label="Navegación de páginas de pedidos">
+                <ul class="pagination playapp-pagination mb-0">
+                    <li th:each="pageNumber : ${paginas}" class="page-item" th:classappend="${pageNumber == pedidos.number + 1} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/user/search(page=${pageNumber - 1}, estado=${estadoActual})}"
+                           th:text="${pageNumber}"
+                           th:aria-current="${pageNumber == pedidos.number + 1} ? 'page' : null"
+                           th:aria-label="'Ir a la página ' + ${pageNumber}">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+
+<!-- Modal Elegante y Accesible de Detalle de Pedido -->
+<div id="modalBackdrop" class="playapp-modal-backdrop" onclick="clickFueraModal(event)" aria-hidden="true">
+    <div id="modalDetallePedido"
+         class="playapp-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modalTitulo"
+         tabindex="-1">
+
+        <!-- Encabezado del Modal -->
+        <div class="playapp-modal-header">
+            <h2 id="modalTitulo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M1.92.5a.5.5 0 0 0-.84.453l.732 3.66a.5.5 0 0 1-.366.578L.156 5.5a.5.5 0 0 0 0 .964l1.29.31a.5.5 0 0 1 .366.578l-.732 3.66a.5.5 0 0 0 .84.453l1.202-.601a.5.5 0 0 1 .536.046l1.202.802a.5.5 0 0 0 .556 0l1.202-.802a.5.5 0 0 1 .536-.046l1.202.601a.5.5 0 0 0 .84-.453l-.732-3.66a.5.5 0 0 1 .366-.578l1.29-.31a.5.5 0 0 0 0-.964l-1.29-.31a.5.5 0 0 1-.366-.578l.732-3.66a.5.5 0 0 0-.84-.453l-1.202.601a.5.5 0 0 1-.536-.046l-1.202-.802a.5.5 0 0 0-.556 0l-1.202.802a.5.5 0 0 1-.536.046zm1.535 7.646a.5.5 0 0 1-.708 0l-1-1a.5.5 0 0 1 .708-.708l.646.647 1.646-1.647a.5.5 0 1 1 .708.708l-2 2z"/>
+                </svg>
+                <span id="modalHeaderTitulo">Detalle del Pedido</span>
+            </h2>
+            <button type="button"
+                    class="playapp-modal-close"
+                    onclick="cerrarModalDetalle()"
+                    aria-label="Cerrar modal de detalle"
+                    id="btnCerrarModalCruz">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cuerpo del Modal -->
+        <div class="playapp-modal-body" id="modalCuerpo">
+            <!-- Spinner mientras consulta la API segura -->
+            <div id="modalLoading" class="modal-spinner-container">
+                <div class="spinner-border text-primary" role="status" style="color: var(--playapp-ocean) !important;">
+                    <span class="visually-hidden">Cargando detalles del pedido...</span>
+                </div>
+                <p class="mb-0 fw-bold" style="color: var(--playapp-ocean);">Consultando detalles de tu pedido...</p>
+                <span class="small text-muted">Validando autenticación segura de PlayApp</span>
+            </div>
+
+            <!-- Alerta de Error si ocurre -->
+            <div id="modalError" class="alert alert-danger d-none my-3" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                    <strong id="modalErrorTexto">No se pudo cargar la información del pedido.</strong>
+                </div>
+            </div>
+
+            <!-- Contenido Dinámico del Pedido -->
+            <div id="modalContenido" class="d-none">
+                <!-- Metadata Grid -->
+                <div class="modal-meta-grid">
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Fecha y Hora</div>
+                        <div class="modal-meta-value" id="modalFecha">-</div>
                     </div>
-                    <div class="btn-group mx-2" role="group" aria-label="First group">
-                        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Estado Pedido</div>
+                        <div class="modal-meta-value">
+                            <span id="modalBadgePedido" class="badge playapp-badge">-</span>
+                        </div>
+                    </div>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Estado Pago</div>
+                        <div class="modal-meta-value">
+                            <span id="modalBadgePago" class="badge playapp-badge">-</span>
+                        </div>
+                    </div>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Método Pago</div>
+                        <div class="modal-meta-value" id="modalMetodoPago">-</div>
+                    </div>
+                </div>
+
+                <!-- Dirección de Entrega -->
+                <div class="modal-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                    </svg>
+                    <span>Lugar de Entrega en Playa</span>
+                </div>
+                <div class="modal-meta-card mb-3">
+                    <div class="fw-bold text-dark" id="modalDireccion">Playa de Bocagrande, Cartagena</div>
+                    <div class="text-muted small mt-1" id="modalDetalleUbicacion">-</div>
+                </div>
+
+                <!-- Lista de Productos Comprados -->
+                <div class="modal-section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-check-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0m-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
+                    </svg>
+                    <span>Productos Comprados</span>
+                </div>
+                <div id="modalItemsLista" role="list">
+                    <!-- Filas inyectadas dinámicamente -->
+                </div>
+
+                <!-- Resumen Financiero -->
+                <div class="modal-summary-box">
+                    <div class="modal-summary-line">
+                        <span>Subtotal productos:</span>
+                        <span class="fw-bold text-dark" id="modalSubtotal">$0.00</span>
+                    </div>
+                    <div class="modal-summary-line">
+                        <span>Costo de envío a playa:</span>
+                        <span class="fw-bold text-dark" id="modalEnvio">$5,000.00</span>
+                    </div>
+                    <div class="modal-summary-line total">
+                        <span>Total del pedido:</span>
+                        <span id="modalTotal">$0.00</span>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
-    <div class="row g-1">
-        <table class="table">
-            <thead class="table-secondary">
-            <tr>
-                <th scope="col">PEDIDO</th>
-                <th scope="col">FECHA</th>
-                <th scope="col">TOTAL</th>
-                <th scope="col">PAGO</th>
-                <th scope="col">ESTADO</th>
-                <th scope="col">PRODUCTOS</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="pedido : ${pedidos}">
-                <th scope="row" th:text="'#'+${pedido.id}"></th>
-                <td th:text="${#temporals.format(pedido.timestamp, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${#numbers.formatCurrency(pedido.total)}"></td>
-                <td>
-                    <span class="badge" th:classappend="${pedido.pago.obtenerClaseCSSEstado()}" th:text="${pedido.pago.obtenerNombreEstado()}"></span>
-                </td>
-                <td>
-                    <span class="badge" th:classappend="${pedido.obtenerClaseCSSEstado()}" th:text="${pedido.obtenerNombreEstado()}"></span>
-                </td>
-                <td th:text="${pedido.getCarrito().size()}"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="row my-3">
-        <nav th:if="${pedidos.totalPages > 0}" aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <li  th:each="pageNumber : ${paginas}" class="page-carritoItem">
-                    <a class="page-link" th:classappend="${pageNumber==pedidos.number + 1} ? active" th:href="@{/user/search(page=${pageNumber - 1})}" th:text="${pageNumber}"></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <!-- Footer -->
-    <div class="row">
-        <footer class="d-flex flex-wrap justify-content-between align-carritoItems-center py-3 my-4 border-top">
-            <div class="col-md-4 d-flex align-carritoItems-center">
-                <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-                    <img src="/img/Logo.png" class="bi" width="30" height="24" alt="home"/>
-                </a>
-                <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Playapp, Inc</span>
-            </div>
 
-            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#twitter"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#instagram"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#facebook"></use>
-                    </svg>
-                </a></li>
-            </ul>
-        </footer>
+        <!-- Pie del Modal -->
+        <div class="playapp-modal-footer">
+            <button type="button"
+                    class="btn-ocean-outline"
+                    onclick="cerrarModalDetalle()"
+                    id="btnCerrarModalAbajo">
+                Cerrar
+            </button>
+        </div>
     </div>
 </div>
 
+<!-- Footer Oficial PlayApp -->
+<footer class="container mt-auto py-4 border-top">
+    <div class="d-flex flex-wrap justify-content-between align-items-center">
+        <div class="col-md-4 d-flex align-items-center">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+                <img th:src="@{/img/Logo.png}" width="30" height="24" alt="PlayApp logo"/>
+            </a>
+            <span class="mb-3 mb-md-0 text-muted small">© 2025 PlayApp, Inc. Domicilios de Playa en Cartagena</span>
+        </div>
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex mb-0">
+            <li class="ms-3"><a class="text-muted small text-decoration-none" th:href="@{/shop}">Tienda</a></li>
+            <li class="ms-3"><a class="text-muted small text-decoration-none" th:href="@{/resena}">Contacto</a></li>
+        </ul>
+    </div>
+</footer>
 
+<!-- Widget de Asistente IA PlayApp -->
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
-<script src="/js/chat-widget.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/chat-widget.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Lógica de Consulta Segura Bajo Demanda y Accesibilidad del Modal -->
+<script>
+    let elementoActivoAntesDeModal = null;
+
+    function abrirModalDetalle(pedidoId, disparadorBtn) {
+        if (!pedidoId) return;
+
+        elementoActivoAntesDeModal = disparadorBtn || document.activeElement;
+
+        const backdrop = document.getElementById('modalBackdrop');
+        const modal = document.getElementById('modalDetallePedido');
+        const loading = document.getElementById('modalLoading');
+        const contenido = document.getElementById('modalContenido');
+        const errorBox = document.getElementById('modalError');
+        const headerTitulo = document.getElementById('modalHeaderTitulo');
+
+        headerTitulo.textContent = 'Detalle del Pedido #' + pedidoId;
+        loading.classList.remove('d-none');
+        contenido.classList.add('d-none');
+        errorBox.classList.add('d-none');
+
+        // Mostrar backdrop y modal
+        backdrop.setAttribute('aria-hidden', 'false');
+        backdrop.classList.add('is-visible');
+        modal.focus();
+
+        // Consulta bajo demanda segura al endpoint /user/api/orders/{id}
+        fetch('/user/api/orders/' + encodeURIComponent(pedidoId), {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function(response) {
+            if (response.status === 403) {
+                throw new Error('No tienes permiso para ver los detalles de este pedido (Acceso Denegado).');
+            }
+            if (response.status === 404) {
+                throw new Error('El pedido solicitado no existe o ya no está disponible.');
+            }
+            if (!response.ok) {
+                throw new Error('Error al consultar el pedido (Código ' + response.status + ').');
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            renderizarDetallePedido(data);
+            loading.classList.add('d-none');
+            contenido.classList.remove('d-none');
+        })
+        .catch(function(err) {
+            loading.classList.add('d-none');
+            errorBox.classList.remove('d-none');
+            document.getElementById('modalErrorTexto').textContent = err.message || 'Error inesperado al cargar el pedido.';
+        });
+    }
+
+    function renderizarDetallePedido(pedido) {
+        // Metadatos
+        document.getElementById('modalFecha').textContent = pedido.fecha || 'Fecha no disponible';
+
+        // Badge de Estado Pedido
+        const badgePedido = document.getElementById('modalBadgePedido');
+        badgePedido.textContent = pedido.estadoPedidoNombre || 'Sin estado';
+        badgePedido.className = 'badge playapp-badge ' + (pedido.estadoPedidoCss || 'text-bg-secondary');
+
+        // Badge de Estado Pago
+        const badgePago = document.getElementById('modalBadgePago');
+        badgePago.textContent = pedido.estadoPagoNombre || 'Sin estado';
+        badgePago.className = 'badge playapp-badge ' + (pedido.estadoPagoCss || 'text-bg-secondary');
+
+        // Método de pago
+        document.getElementById('modalMetodoPago').textContent = pedido.metodoPagoNombre || 'No especificado';
+
+        // Dirección de Entrega
+        document.getElementById('modalDireccion').textContent = pedido.direccionEntrega || 'Playa de Bocagrande, Cartagena';
+        
+        let ubicacionDetalles = [];
+        if (pedido.mesa !== null && pedido.mesa !== undefined) {
+            ubicacionDetalles.push('Mesa: ' + pedido.mesa);
+        }
+        if (pedido.carpa !== null && pedido.carpa !== undefined) {
+            ubicacionDetalles.push('Carpa: ' + pedido.carpa);
+        }
+        if (pedido.referenciaEntrega && pedido.referenciaEntrega.trim().length > 0) {
+            ubicacionDetalles.push('Referencia: ' + pedido.referenciaEntrega.trim());
+        }
+        document.getElementById('modalDetalleUbicacion').textContent = ubicacionDetalles.length > 0 
+            ? ubicacionDetalles.join(' · ') 
+            : 'Entrega directa en zona de playa.';
+
+        // Lista de Productos
+        const itemsContainer = document.getElementById('modalItemsLista');
+        itemsContainer.innerHTML = '';
+
+        if (pedido.items && pedido.items.length > 0) {
+            pedido.items.forEach(function(item) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'modal-item-row';
+                itemDiv.setAttribute('role', 'listitem');
+
+                const img = document.createElement('img');
+                img.className = 'modal-item-thumb';
+                img.src = item.imagenUrl || '/img/blank-product.jpg';
+                img.alt = item.nombre || 'Producto';
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.src = '/img/blank-product.jpg';
+                };
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'modal-item-info';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'modal-item-name';
+                nameDiv.textContent = item.nombre;
+
+                const vendorDiv = document.createElement('div');
+                vendorDiv.className = 'modal-item-vendor';
+                vendorDiv.textContent = 'Vendedor: ' + (item.vendedor || 'PlayApp Cartagena');
+
+                infoDiv.appendChild(nameDiv);
+                infoDiv.appendChild(vendorDiv);
+
+                const pricingDiv = document.createElement('div');
+                pricingDiv.className = 'modal-item-pricing';
+
+                const subtotalDiv = document.createElement('div');
+                subtotalDiv.className = 'modal-item-subtotal';
+                subtotalDiv.textContent = item.subtotalFormateado || ('$' + item.subtotal);
+
+                const unitDiv = document.createElement('div');
+                unitDiv.className = 'modal-item-unit';
+                unitDiv.textContent = item.cantidad + ' × ' + (item.precioUnitarioFormateado || ('$' + item.precioUnitario));
+
+                pricingDiv.appendChild(subtotalDiv);
+                pricingDiv.appendChild(unitDiv);
+
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(infoDiv);
+                itemDiv.appendChild(pricingDiv);
+
+                itemsContainer.appendChild(itemDiv);
+            });
+        } else {
+            const vacioDiv = document.createElement('div');
+            vacioDiv.className = 'text-muted small py-2 text-center';
+            vacioDiv.textContent = 'No hay detalles de productos registrados para esta orden.';
+            itemsContainer.appendChild(vacioDiv);
+        }
+
+        // Resumen Financiero
+        document.getElementById('modalSubtotal').textContent = pedido.subtotalFormateado || '$0.00';
+        document.getElementById('modalEnvio').textContent = pedido.costoEnvioFormateado || '$5,000.00';
+        document.getElementById('modalTotal').textContent = pedido.totalFormateado || '$0.00';
+    }
+
+    function cerrarModalDetalle() {
+        const backdrop = document.getElementById('modalBackdrop');
+        backdrop.classList.remove('is-visible');
+        backdrop.setAttribute('aria-hidden', 'true');
+
+        // Devolver foco al disparador previo para accesibilidad WCAG
+        if (elementoActivoAntesDeModal && typeof elementoActivoAntesDeModal.focus === 'function') {
+            elementoActivoAntesDeModal.focus();
+        }
+    }
+
+    function clickFueraModal(event) {
+        if (event.target === document.getElementById('modalBackdrop')) {
+            cerrarModalDetalle();
+        }
+    }
+
+    // Navegación por teclado: Cerrar con Escape y atrapar foco
+    document.addEventListener('keydown', function(event) {
+        const backdrop = document.getElementById('modalBackdrop');
+        if (!backdrop.classList.contains('is-visible')) return;
+
+        if (event.key === 'Escape') {
+            cerrarModalDetalle();
+            return;
+        }
+
+        // Atrapa foco con Tab dentro del modal
+        if (event.key === 'Tab') {
+            const modal = document.getElementById('modalDetallePedido');
+            const focusables = modal.querySelectorAll('button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+            if (focusables.length === 0) return;
+
+            const firstElement = focusables[0];
+            const lastElement = focusables[focusables.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    event.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    event.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

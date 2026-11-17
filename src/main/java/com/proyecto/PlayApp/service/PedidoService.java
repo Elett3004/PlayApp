@@ -277,7 +277,124 @@ public class PedidoService {
         return pedidos.save(pedido);
     }
 
+    public Optional<Pedido> buscarPorId(String id) {
+        if (id == null || id.isBlank()) {
+            return Optional.empty();
+        }
+        return pedidos.findById(id);
+    }
 
+    private static final java.time.format.DateTimeFormatter DETALLE_DATE_FORMATTER = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final java.util.Locale LOCALE_CO = new java.util.Locale("es", "CO");
 
+    public String formatearMoneda(Double valor) {
+        if (valor == null) {
+            valor = 0.0;
+        }
+        java.text.NumberFormat nf = java.text.NumberFormat.getCurrencyInstance(LOCALE_CO);
+        return nf.format(valor);
+    }
 
+    public PedidoDetalleDTO construirDetalleDTO(Pedido pedido) {
+        if (pedido == null) {
+            return null;
+        }
+
+        List<PedidoDetalleDTO.PedidoItemDetalleDTO> itemsDTO = new ArrayList<>();
+        double subtotalCalculado = 0.0;
+
+        if (pedido.getCarrito() != null) {
+            for (PedidoItem item : pedido.getCarrito()) {
+                Producto p = item.getProducto();
+                String nombre = (p != null && p.getNombre() != null) ? p.getNombre() : "Producto";
+                String vendedor = (p != null && p.getEntidad() != null && p.getEntidad().getNombreCompleto() != null)
+                        ? p.getEntidad().getNombreCompleto()
+                        : "PlayApp Cartagena";
+                int cantidad = (item.getCantidad() != null && item.getCantidad() > 0) ? item.getCantidad() : 1;
+                double precioUnitario = (p != null && p.getPrecio() != null) ? p.getPrecio() : 0.0;
+                double subtotalItem = (item.getSubtotal() != null) ? item.getSubtotal() : (precioUnitario * cantidad);
+
+                subtotalCalculado += subtotalItem;
+
+                String imagenUrl = (p != null) ? p.getImageSRC() : "/img/blank-product.jpg";
+
+                itemsDTO.add(PedidoDetalleDTO.PedidoItemDetalleDTO.builder()
+                        .productoId(p != null ? p.getId() : null)
+                        .nombre(nombre)
+                        .vendedor(vendedor)
+                        .cantidad(cantidad)
+                        .precioUnitario(precioUnitario)
+                        .precioUnitarioFormateado(formatearMoneda(precioUnitario))
+                        .subtotal(subtotalItem)
+                        .subtotalFormateado(formatearMoneda(subtotalItem))
+                        .imagenUrl(imagenUrl)
+                        .build());
+            }
+        }
+
+        double totalPedido = (pedido.getTotal() != null) ? pedido.getTotal() : (subtotalCalculado + 5000.0);
+        double costoEnvio = 5000.0;
+        if (pedido.getTotal() != null && pedido.getTotal() > subtotalCalculado) {
+            costoEnvio = pedido.getTotal() - subtotalCalculado;
+        }
+
+        String fechaStr = (pedido.getTimestamp() != null)
+                ? pedido.getTimestamp().format(DETALLE_DATE_FORMATTER)
+                : "Fecha no registrada";
+
+        String estadoPedidoNombre = pedido.obtenerNombreEstado();
+        String estadoPedidoCss = pedido.obtenerClaseCSSEstado();
+
+        String estadoPagoNombre = (pedido.getPago() != null) ? pedido.getPago().obtenerNombreEstado() : "Sin estado";
+        String estadoPagoCss = (pedido.getPago() != null) ? pedido.getPago().obtenerClaseCSSEstado() : "text-bg-secondary";
+        String metodoPagoNombre = (pedido.getPago() != null) ? pedido.getPago().obtenerNombreMetodo() : "No registrado";
+        String metodoPagoRaw = (pedido.getPago() != null) ? pedido.getPago().getMetodo() : "";
+
+        String direccion = "Playa de Bocagrande, Cartagena";
+        String referencia = null;
+        Integer mesa = null;
+        Integer carpa = null;
+
+        if (pedido.getEnvio() != null) {
+            if (pedido.getEnvio().getDirreccion() != null && !pedido.getEnvio().getDirreccion().isBlank()) {
+                direccion = pedido.getEnvio().getDirreccion();
+            }
+            referencia = pedido.getEnvio().getDescripcion();
+            mesa = pedido.getEnvio().getMesa();
+            carpa = pedido.getEnvio().getCarpa();
+        }
+
+        String clienteNombre = (pedido.getCliente() != null && pedido.getCliente().getNombreCompleto() != null)
+                ? pedido.getCliente().getNombreCompleto()
+                : "Cliente PlayApp";
+        String clienteCorreo = (pedido.getCliente() != null && pedido.getCliente().getCorreo() != null)
+                ? pedido.getCliente().getCorreo()
+                : "No registrado";
+
+        return PedidoDetalleDTO.builder()
+                .id(pedido.getId())
+                .clienteNombre(clienteNombre)
+                .clienteCorreo(clienteCorreo)
+                .fecha(fechaStr)
+                .total(totalPedido)
+                .totalFormateado(formatearMoneda(totalPedido))
+                .subtotal(subtotalCalculado)
+                .subtotalFormateado(formatearMoneda(subtotalCalculado))
+                .costoEnvio(costoEnvio)
+                .costoEnvioFormateado(formatearMoneda(costoEnvio))
+                .estadoPedido(pedido.getEstado())
+                .estadoPedidoNombre(estadoPedidoNombre)
+                .estadoPedidoCss(estadoPedidoCss)
+                .estadoPago(pedido.getPago() != null ? pedido.getPago().getEstado() : null)
+                .estadoPagoNombre(estadoPagoNombre)
+                .estadoPagoCss(estadoPagoCss)
+                .metodoPago(metodoPagoRaw)
+                .metodoPagoNombre(metodoPagoNombre)
+                .direccionEntrega(direccion)
+                .referenciaEntrega(referencia)
+                .mesa(mesa)
+                .carpa(carpa)
+                .items(itemsDTO)
+                .build();
+    }
 }
