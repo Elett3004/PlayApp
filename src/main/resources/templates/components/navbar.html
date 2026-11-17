@@ -1,81 +1,118 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<header th:fragment="publicNavbar(active)" class="bg-dark sticky-top">
-    <nav class="container d-flex flex-wrap align-items-center justify-content-center justify-content-md-between p-2">
-        <div class="col-md-3 mb-2 mb-md-0">
-            <a th:href="@{/}" class="d-inline-flex link-body-emphasis text-decoration-none">
-                <img th:src="@{/img/Logo.png}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                <span class="jakarta-extrabold text-light"> PLAYAPP</span>
-            </a>
-        </div>
+<nav th:fragment="publicNavbar(active)" class="navbar navbar-expand-lg playapp-navbar sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+        <!-- Brand / Logo (Izquierda) -->
+        <a th:href="@{/}" class="navbar-brand d-inline-flex align-items-center gap-2 m-0 p-0 text-decoration-none" title="PlayApp Cartagena">
+            <img th:src="@{/img/Logo.png}" alt="PlayApp Logo" class="navbar-brand-logo">
+            <span class="jakarta-extrabold brand-title">PLAYAPP</span>
+            <span class="navbar-brand-tag">Cartagena</span>
+        </a>
 
-        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li>
-                <a th:href="@{/}"
-                   class="nav-link text-light px-2"
-                   th:classappend="${active == 'inicio'} ? ' jakarta-extrabold active' : ''">
-                    Inicio
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/shop}"
-                   class="nav-link text-light px-2"
-                   th:classappend="${active == 'tienda'} ? ' jakarta-bold active' : ''">
-                    Tienda
-                </a>
-            </li>
-            <li>
-                <a th:href="@{/resena}"
-                   class="nav-link text-light px-2"
-                   th:classappend="${active == 'contacto'} ? ' jakarta-bold active' : ''">
-                    Contacto
-                </a>
-            </li>
-        </ul>
+        <!-- Botón Toggler para Móvil -->
+        <button class="navbar-toggler border-0 p-1 d-lg-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#playappNavbarContent" aria-controls="playappNavbarContent"
+                aria-expanded="false" aria-label="Abrir menú de navegación">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-list text-ocean" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+            </svg>
+        </button>
 
-        <div class="col-md-3 text-end d-inline-flex align-items-center justify-content-end gap-2">
-            <a th:href="@{/cart/checkout}" class="btn btn-primary position-relative me-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                     class="bi bi-bag-fill" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/>
-                </svg>
-                <span th:text="${carrito != null ? carrito : 0}"
-                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    0
-                    <span class="visually-hidden">productos agregados</span>
+        <!-- Contenido Central y Acciones Derecha -->
+        <div class="collapse navbar-collapse justify-content-between align-items-center w-100" id="playappNavbarContent">
+            <!-- Enlaces Centrales (Centrado Absoluto en Desktop respecto al viewport) -->
+            <ul class="navbar-nav playapp-nav-center my-0 p-0 d-flex flex-row align-items-center justify-content-center gap-1">
+                <li class="nav-item">
+                    <a th:href="@{/}"
+                       class="playapp-nav-link"
+                       th:classappend="${active == 'inicio'} ? ' active' : ''">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z"/>
+                        </svg>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/shop}"
+                       class="playapp-nav-link"
+                       th:classappend="${active == 'tienda'} ? ' active' : ''">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-shop" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5m2 4a.5.5 0 0 0 0 1h8a.5.5 0 0 0 0-1z"/>
+                        </svg>
+                        <span>Tienda</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/resena}"
+                       class="playapp-nav-link"
+                       th:classappend="${active == 'contacto'} ? ' active' : ''">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-square-text" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6m0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                        </svg>
+                        <span>Contacto</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Acciones Derecha -->
+            <div class="playapp-nav-right d-flex align-items-center my-0 p-0 gap-2 flex-wrap justify-content-center justify-content-lg-end ms-auto">
+                <!-- Botón Carrito con Contador Moderno -->
+                <a th:href="@{/cart/checkout}" class="nav-btn-cart" title="Ver carrito de compras" aria-label="Carrito de compras">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/>
+                    </svg>
+                    <span th:text="${carrito != null ? carrito : 0}" class="nav-cart-badge">0</span>
+                </a>
+
+                <!-- Enlace Panel Administrador (Solo ROLE_ADMIN) -->
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/manager/dashboard}" class="btn-nav-admin" title="Panel de Administración">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-speedometer2" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L10.5 6.5a.5.5 0 0 0 .707.707l.794-.793a.39.39 0 0 0 .02-.527zM8 9a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                        <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M1 8a7 7 0 0 1 12.606-4.148l-.707.707A6 6 0 1 0 2.102 8.793l-.707-.707A7 7 0 0 1 1 8"/>
+                    </svg>
+                    <span>Panel Admin</span>
+                </a>
+
+                <!-- Botón "Mis pedidos" para usuarios autenticados -->
+                <a sec:authorize="isAuthenticated()" th:href="@{/user/orders}"
+                   class="btn-nav-orders"
+                   th:classappend="${active == 'pedidos'} ? ' active' : ''"
+                   title="Ver el historial y estado de mis pedidos">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-box-seam" viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
+                    </svg>
+                    <span>Mis pedidos</span>
+                </a>
+
+                <!-- Saludo al usuario autenticado -->
+                <span class="nav-user-greeting"
+                      th:if="${nombreUsuario != null and !#strings.isEmpty(nombreUsuario)}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                    </svg>
+                    <span>Hola, <strong th:text="${nombreUsuario}">Usuario</strong></span>
                 </span>
-            </a>
 
-            <a sec:authorize="isAuthenticated()" th:href="@{/user/orders}" class="btn btn-outline-primary me-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                     class="bi bi-clock-history" viewBox="0 0 16 16" aria-hidden="true">
-                    <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/>
-                    <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/>
-                    <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
-                </svg>
-            </a>
+                <!-- Botón Salir -->
+                <form sec:authorize="isAuthenticated()" class="d-inline m-0 p-0" th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn-nav-action btn-nav-action-outline">
+                        Salir
+                    </button>
+                </form>
 
-            <form sec:authorize="isAuthenticated()" class="btn p-0" th:action="@{/logout}" method="post">
-                <button type="submit" class="btn btn-outline-primary me-2" value="Sign Out">
-                    Salir
-                </button>
-            </form>
-
-            <a th:href="@{/login}" sec:authorize="!isAuthenticated()" type="button" class="btn btn-outline-primary me-2">
-                Iniciar
-            </a>
-            <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="btn btn-primary me-2">
-                Registrarse
-            </a>
-
-            <span class="navbar-text text-light"
-                  style="white-space: nowrap;"
-                  th:if="${nombreUsuario != null and !#strings.isEmpty(nombreUsuario)}">
-                Hola, <span th:text="${nombreUsuario}">usuario</span>
-            </span>
+                <!-- Botones para visitantes (No autenticados) -->
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="btn-nav-action btn-nav-action-outline">
+                    Iniciar
+                </a>
+                <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="btn-nav-action btn-nav-action-solid">
+                    Registrarse
+                </a>
+            </div>
         </div>
-    </nav>
-</header>
+    </div>
+</nav>
 </body>
 </html>

@@ -1,149 +1,226 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reseñas y Contacto - Restaurante</title>
+    <title>Reseñas y Contacto · PlayApp</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-    <link rel="stylesheet" href="/css/importJakartaFont.css">
-    <link rel="stylesheet" href="/css/contacto.css">
-    <link rel="stylesheet" href="/css/chat-widget.css">
-    <link rel="icon" href="/img/Logo.png" type="image/png">
+    <link rel="stylesheet" th:href="@{/css/importJakartaFont.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout-flow.css}">
+    <link rel="stylesheet" th:href="@{/css/chat-widget.css}">
+    <link rel="icon" th:href="@{/img/Logo.png}" type="image/png">
 </head>
+<body class="checkout-body contacto-body jakarta-regular">
 
-<video class="video-background" autoplay loop muted playsinline>
-    <source src="/img/olas del mar.mp4" type="video/mp4">
-    Tu navegador no soporta el elemento de video.
-</video>
-
-<body class="jakarta-regular">
-<!-- Barra de navegación -->
+<!-- Barra de navegación global unificada y alineada -->
 <header th:replace="~{components/navbar :: publicNavbar('contacto')}"></header>
 
+<!-- Contenedor Principal (Flujo y Orden Original Restaurado) -->
+<main class="container py-4 flex-grow-1" id="mainContent">
 
+    <!-- SECCIÓN 1: RESEÑAS (Orden Original) -->
+    <section class="section reviews mb-5">
+        <div class="text-center mb-4">
+            <span class="user-page-eyebrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                </svg>
+                Experiencias de Clientes en Playa
+            </span>
+            <h1 class="user-page-title text-center">Reseñas</h1>
+        </div>
 
-<section class="section reviews">
-    <br>
-    <br>
-    <h2>Reseñas</h2>
+        <!-- Formulario para nuevas reseñas (rating-box original) -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="playapp-card p-4 rating-box">
+                    <h2 class="fs-4 fw-bold text-ocean text-center mb-4">Deja tu reseña</h2>
+                    <form th:action="@{/resena/submit-review}" th:object="${nuevaResena}" method="post">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold small text-muted">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" placeholder="Tu nombre" required>
+                        </div>
 
-<!-- Formulario para nuevas reseñas -->
-    <div class="rating-box">
-        <h2 class="mb-4">Deja tu reseña</h2>
-        <form th:action="@{/resena/submit-review}" th:object="${nuevaResena}" method="post">
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                        <div class="mb-3">
+                            <label for="valoracion" class="form-label fw-bold small text-muted">Valoración (1-5)</label>
+                            <input type="number" class="form-control" id="valoracion" th:field="*{valoracion}" min="1" max="5" value="5" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comentario" class="form-label fw-bold small text-muted">Comentario</label>
+                            <textarea class="form-control" id="comentario" th:field="*{comentario}" rows="3" placeholder="Escribe tu opinión sobre el servicio o la comida..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-ocean w-100 py-2 mt-2" style="border-radius: 9999px; font-weight: 700;">
+                            Enviar Reseña
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
 
-            <div class="mb-3">
-                <label for="valoracion" class="form-label">Valoración (1-5)</label>
-                <input type="number" class="form-control" id="valoracion" th:field="*{valoracion}" min="1" max="5" required>
+        <!-- Título Reseñas Recientes (Original) -->
+        <h3 class="text-center text-ocean fw-bold mb-4">Reseñas recientes</h3>
+
+        <!-- Reseñas existentes (review-cards original) -->
+        <div class="review-cards">
+            <div class="row g-3 justify-content-center">
+                <div th:each="review : ${reviews}" class="col-12 col-md-6 col-lg-4">
+                    <div class="review-card-modern h-100">
+                        <div class="review-header-modern">
+                            <strong th:text="${review.nombre}" class="text-ocean">Cliente</strong>
+                            <div class="review-stars-gold">
+                                <span th:text="${'★'.repeat(review.valoracion != null ? review.valoracion : 5)}">★★★★★</span>
+                            </div>
+                        </div>
+                        <p th:text="${review.comentario}" class="review-comment-text mt-2 mb-0">Comentario del cliente...</p>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(reviews)}" class="col-12 text-center text-muted py-4">
+                    <div class="playapp-card p-4 mx-auto" style="max-width: 500px;">
+                        <p class="mb-0">No hay reseñas disponibles aún. ¡Sé el primero en compartir tu experiencia!</p>
+                    </div>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="mb-3">
-                <label for="comentario" class="form-label">Comentario</label>
-                <textarea class="form-control" id="comentario" th:field="*{comentario}" rows="3" required></textarea>
-            </div>
+    <!-- SECCIÓN 2: CONTACTO (Orden Original) -->
+    <section class="section contact-section mt-5 pt-3">
+        <div class="text-center mb-4">
+            <h2 class="user-page-title text-center">Contáctanos</h2>
+            <p class="text-center text-muted" style="font-size: 15px; margin-bottom: 25px;">
+                Estamos aquí para ayudarte. Envíanos un mensaje o visítanos.
+            </p>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Enviar Reseña</button>
-        </form>
-    </div>
+        <!-- Grid Equilibrado de Contacto (Info a la izquierda, Formulario a la derecha) -->
+        <div class="row g-4 align-items-start">
+            <!-- Bloque Izquierdo: Información de Contacto y Mapa -->
+            <div class="col-12 col-lg-5">
+                <!-- Tarjeta Dirección (Ancho completo, sin romper palabras) -->
+                <div class="contact-card-wide mb-3">
+                    <div class="contact-icon-bubble">
+                        📍
+                    </div>
+                    <div>
+                        <h3 class="fs-6 fw-bold text-ocean mb-1">Dirección</h3>
+                        <p class="small text-muted mb-0">Cra. 1, Cartagena de Indias<br>Bolívar - Kiosco El Bony</p>
+                    </div>
+                </div>
 
-    <h3 style="text-align: center; color: white;">Reseñas recientes</h3>
+                <!-- Tarjeta Teléfono (Ancho completo) -->
+                <div class="contact-card-wide mb-3">
+                    <div class="contact-icon-bubble">
+                        📞
+                    </div>
+                    <div>
+                        <h3 class="fs-6 fw-bold text-ocean mb-1">Teléfono</h3>
+                        <p class="small text-muted mb-0">+57 323 254 5463</p>
+                    </div>
+                </div>
 
-    <!-- Reseñas existentes -->
-    <div class="review-cards">
-        <div th:each="review : ${reviews}" class="review-card">
-
-            <div class="review-header">
-                <strong th:text="${review.nombre}"></strong>
-                <div class="review-stars">
-                    <span th:text="${'★'.repeat(review.valoracion)}"></span>
+                <!-- Imagen de Mapa / Ubicación (Original) -->
+                <div class="mt-3 text-center">
+                    <img th:src="@{/img/cartagena.avif}" alt="Ubicación" class="map img-fluid rounded-4 shadow-sm border w-100" style="object-fit: cover; max-height: 230px;">
                 </div>
             </div>
 
-            <p th:text="${review.comentario}"></p>
-        </div>
+            <!-- Bloque Derecho: Formulario de Contacto (Alineado y Amplio) -->
+            <div class="col-12 col-lg-7">
+                <div class="playapp-card p-4">
+                    <h3 class="fs-5 fw-bold text-ocean mb-3">Envíanos un mensaje</h3>
 
-        <div th:if="${#lists.isEmpty(reviews)}">
-            <p>No hay reseñas disponibles aún.</p>
+                    <!-- Notificaciones de éxito (Originales) -->
+                    <div th:if="${mensajeEnviado}" class="alert alert-success d-flex align-items-center gap-2 mb-3"
+                         style="background-color: var(--playapp-turquoise-light); border: 1px solid var(--playapp-turquoise); color: var(--playapp-turquoise-dark); border-radius: var(--playapp-radius);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                        <p th:text="${mensajeEnviado}" class="mb-0"></p>
+                    </div>
+
+                    <div th:if="${param.exito}" class="alert alert-success d-flex align-items-center gap-2 mb-3"
+                         style="background-color: var(--playapp-turquoise-light); border: 1px solid var(--playapp-turquoise); color: var(--playapp-turquoise-dark); border-radius: var(--playapp-radius);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                        <span>✓ Mensaje enviado correctamente.</span>
+                    </div>
+
+                    <!-- Formulario de Contacto (Campos y acciones originales) -->
+                    <form class="contact-form" method="post" th:action="@{/contacto/enviar}">
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-muted">Nombre:</label>
+                                <input type="text" name="nombre" class="form-control" placeholder="Tu nombre" required>
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-muted">Email:</label>
+                                <input type="email" name="email" class="form-control" placeholder="tu@correo.com" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">Asunto:</label>
+                                <select name="asunto" class="form-select" required>
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="reserva">Reservación</option>
+                                    <option value="consulta">Consulta</option>
+                                    <option value="sugerencia">Sugerencia</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-muted">Mensaje:</label>
+                                <textarea name="mensaje" class="form-control" rows="4" placeholder="Escribe tu mensaje..." required></textarea>
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn-ocean w-100 py-2" style="border-radius: 9999px; font-weight: 700;">
+                                    Enviar Mensaje
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer Unificado PlayApp (Aparece después de todo el contenido) -->
+<footer class="playapp-footer">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-md-6 text-center text-md-start">
+                <div class="d-inline-flex align-items-center gap-2 mb-2">
+                    <img th:src="@{/img/Logo.png}" alt="PlayApp Logo" width="28" height="28">
+                    <span class="fw-bold text-white fs-5">PLAYAPP</span>
+                    <span class="badge" style="background: var(--playapp-turquoise); color: #000; font-size: 10px;">Cartagena</span>
+                </div>
+                <p class="small text-muted mb-0">
+                    Atención al cliente, reservaciones y reseñas de usuarios de PlayApp Cartagena.
+                </p>
+            </div>
+            <div class="col-12 col-md-6 text-center text-md-end">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item"><a th:href="@{/}" class="small">Inicio</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/shop}" class="small">Tienda</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/resena}" class="small">Contacto</a></li>
+                    <li class="list-inline-item ms-3" sec:authorize="isAuthenticated()"><a th:href="@{/user/orders}" class="small">Mis Pedidos</a></li>
+                </ul>
+                <p class="small text-muted mb-0">
+                    &copy; 2025 PlayApp, Inc. Todos los derechos reservados.
+                </p>
+            </div>
         </div>
     </div>
-</section>
-
-
-<!-- Sección de Contacto -->
-<section class="section">
-    <h2>Contáctanos</h2>
-    <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">
-        Estamos aquí para ayudarte. Envíanos un mensaje o visítanos.
-    </p>
-
-    <div class="contact-info">
-        <div class="info-card">
-            <h3>📍 Dirección</h3>
-            <p>Cra. 1, Cartagena de Indias<br>Bolívar - Kiosco El Bony</p>
-        </div>
-        <div class="info-card">
-            <h3>📞 Teléfono</h3>
-            <p>+57 323 254 5463</p>
-        </div>
-    </div>
-
-    <!-- Mapa -->
-    <img src="/img/cartagena.avif" alt="Ubicación" class="map">
-
-    <!-- Notificación de éxito -->
-    <div th:if="${mensajeEnviado}" class="alert alert-success">
-        <p th:text="${mensajeEnviado}"></p>
-    </div>
-
-    <div th:if="${param.exito}" class="alert alert-success">
-        ✓ Mensaje enviado correctamente.
-    </div>
-
-    <!-- Formulario compacto -->
-    <form class="contact-form" method="post" th:action="@{/contacto/enviar}">
-        <div class="form-group">
-            <label>Nombre:</label>
-            <input type="text" name="nombre" required>
-        </div>
-
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" required>
-        </div>
-
-        <div class="form-group">
-            <label>Asunto:</label>
-            <select name="asunto" required>
-                <option value="">Selecciona una opción</option>
-                <option value="reserva">Reservación</option>
-                <option value="consulta">Consulta</option>
-                <option value="sugerencia">Sugerencia</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Mensaje:</label>
-            <textarea name="mensaje" rows="4" required></textarea>
-        </div>
-
-        <button type="submit">Enviar Mensaje</button>
-    </form>
-</section>
-
-<!-- Footer -->
-<footer class="py-4 bg-dark text-white text-center">
-    <p>&copy; 2025 PlayApp. Todos los derechos reservados.</p>
-    <ul class="list-inline">
-        <li class="list-inline-carritoItem"><a href="#" class="text-white">Términos y condiciones</a></li>
-        <li class="list-inline-carritoItem"><a href="#" class="text-white">Política de privacidad</a></li>
-    </ul>
 </footer>
+
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
-<script src="/js/chat-widget.js"></script>
+<script th:src="@{/js/chat-widget.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
