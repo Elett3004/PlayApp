@@ -1,6 +1,7 @@
 package com.proyecto.PlayApp.Controller;
 
 import com.proyecto.PlayApp.dto.BusquedaDTO;
+import com.proyecto.PlayApp.dto.PedidoDetalleDTO;
 import com.proyecto.PlayApp.entity.Pedido;
 import com.proyecto.PlayApp.entity.Producto;
 import com.proyecto.PlayApp.entity.Usuario;
@@ -11,6 +12,8 @@ import org.bson.BsonBinarySubType;
 import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -167,6 +172,38 @@ public class ManagementController {
             pedidos.marcarPedidoComoPagado(id);
         }
         return "redirect:/manager/orders";
+    }
+
+    @GetMapping("/api/orders/{id}")
+    @ResponseBody
+    public ResponseEntity<?> obtenerDetallePedidoAdmin(@PathVariable String id, Principal session) {
+        if (session == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Debes iniciar sesión como administrador."));
+        }
+
+        Optional<Pedido> pedidoOpt = pedidos.buscarPorId(id);
+        if (pedidoOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Pedido no encontrado."));
+        }
+
+        Pedido pedido = pedidoOpt.get();
+        boolean esAdminGlobal = reportes.esAdminGlobal(session.getName());
+        Usuario adminUser = usuarios.buscarUsuario(session.getName());
+
+        boolean autorizado = esAdminGlobal;
+        if (!autorizado && adminUser != null && pedido.getRestaurantes() != null) {
+            autorizado = pedido.getRestaurantes().contains(adminUser.getId());
+        }
+
+        if (!autorizado) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "No tienes permisos para consultar los detalles de este pedido."));
+        }
+
+        PedidoDetalleDTO dto = pedidos.construirDetalleDTO(pedido);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/product/delete/{id}")

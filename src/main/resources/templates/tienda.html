@@ -1,150 +1,240 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda</title>
-  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-  <link rel="stylesheet" href="/css/importJakartaFont.css">
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/chat-widget.css">
-  <link rel="icon" href="/img/Logo.png" type="image/png">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-          integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-          crossorigin="anonymous">
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda · Menú Playero PlayApp</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/importJakartaFont.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout-flow.css}">
+    <link rel="stylesheet" th:href="@{/css/chat-widget.css}">
+    <link rel="icon" th:href="@{/img/Logo.png}" type="image/png">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous">
+    </script>
 </head>
-<body class="background-grey jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
-<!-- Barra de navegación -->
+<!-- Barra de navegación global unificada -->
 <header th:replace="~{components/navbar :: publicNavbar('tienda')}"></header>
 
+<!-- Contenedor Principal de la Tienda -->
+<main class="container py-4 flex-grow-1" id="mainContent">
 
-<!-- Categorías de Bebidas -->
-<div class="container">
-  <div th:if="${status}" class="alert alert-success d-flex align-items-center" role="alert">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-    </svg>
-    <div>
-      Producto añadido al carrito de compras!
-    </div>
-  </div>
-  <div th:if="${error}" class="alert alert-danger d-flex align-items-center" role="alert">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-    </svg>
-    <div>
-      El producto que intentas agregar no cuenta con suficientes existencias.
-    </div>
-  </div>
-  <form action="#" th:action="@{/shop}" method="GET"  class="row my-2">
-    <div class="d-flex">
-      <div class="me-auto">
-        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-          <div class="input-group">
-            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Producto ..." aria-label="Input group example" aria-describedby="btnGroupAddon">
-            <select id="filtro" name="categoria" class="form-select" aria-label="Default select example">
-              <option selected value="">Todos</option>
-              <option value="1">Comidas</option>
-              <option value="2">Bebidas</option>
-              <option value="3">Servicios</option>
-            </select>
-          </div>
-          <div class="btn-group mx-2" role="group" aria-label="First group">
-            <button type="submit" class="btn btn-outline-primary">Buscar</button>
-          </div>
-        </div>
-      </div>
-      <div>
-        <select id="orden" name="orden" class="form-select" aria-label="Default select example">
-          <option selected value="">Ordenar</option>
-          <option value="1">Nombre</option>
-          <option value="2">Mayor Precio</option>
-          <option value="3">Menor Precio</option>
-        </select>
-      </div>
-    </div>
-  </form>
-  <div class="row g-1">
-    <div class="col-12 col-md-4" th:each="producto : ${productos}">
-      <div class="card shadow-sm h-100">
-        <img th:src="${producto.getImageSRC()}" width="400px" height="400px" class="card-img-top" alt="Imagen de la Bebida">
-        <div class="card-body">
-          <div class="d-flex">
-            <div class="me-auto">
-              <h5 class="card-title " th:text="${producto.nombre}">Nombre de la Bebida</h5>
-            </div>
-            <div>
-              <span class="badge" th:classappend="${producto.obtenerClaseCategoria()}" th:text="${producto.obtenerNombreCategoria()}"></span>
-            </div>
-          </div>
+    <!-- Cabecera de la Tienda -->
+    <section class="user-page-header">
+        <span class="user-page-eyebrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+            </svg>
+            Catálogo Oficial de Playa · Bocagrande Cartagena
+        </span>
+        <h1 class="user-page-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-shop text-ocean" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h12V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5m2 4a.5.5 0 0 0 0 1h8a.5.5 0 0 0 0-1z"/>
+            </svg>
+            <span>Tienda y Menú Playero</span>
+        </h1>
+        <p class="user-page-subtitle">Disfruta de pescados fritos, mariscos, platos típicos, bebidas frías y servicios con entrega directa en tu carpa.</p>
+    </section>
 
-          <h5 class="card-text jakarta-bold"  th:text="${#numbers.formatCurrency(producto.precio)}"> </h5>
-          <p class="card-text jakarta-medium" th:text="'Disponible: '+${#numbers.formatInteger(producto.getStock(),0)}+ ' unidades.'"></p>
-          <p class="card-text jakarta-light text-body-secondary" th:text="${producto.entidad.getNombreCompleto()}"></p>
-          <form action="#"   th:action="@{/cart/add/{id}(id=${producto.id})}"  method="GET" class="row justify-content-center">
-            <div class="col-6">
-              <div class="input-group mb-3">
-                <button type="button" class="btn btn-outline-primary remove" id="button-addon1">-</button>
-                <input th:id="${producto.id}"  name="cantidad" type="number" min="1" class="form-control" aria-label="cantidad" value="1">
-                <button  type="button" class="btn btn-outline-primary add" id="button-addon2">+</button>
-                <button type="submit" class="btn btn-primary">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus-fill" viewBox="0 0 16 16">
-                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"/>
-                  </svg>
+    <!-- Notificaciones de Estado -->
+    <div th:if="${status}" class="alert alert-success d-flex align-items-center mb-4 gap-2"
+         style="background-color: var(--playapp-turquoise-light); border: 1px solid var(--playapp-turquoise); color: var(--playapp-turquoise-dark); border-radius: var(--playapp-radius);"
+         role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill flex-shrink-0" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </svg>
+        <span class="fw-bold">¡Producto añadido al carrito de compras con éxito!</span>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger d-flex align-items-center mb-4 gap-2"
+         style="background-color: var(--playapp-coral-light); border: 1px solid var(--playapp-coral); color: var(--playapp-coral-dark); border-radius: var(--playapp-radius);"
+         role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+        </svg>
+        <span class="fw-bold">El producto que intentas agregar no cuenta con suficientes existencias en este momento.</span>
+    </div>
+
+    <!-- Barra de Búsqueda y Filtros Unificada -->
+    <div class="playapp-card p-3 mb-4">
+        <form th:action="@{/shop}" method="GET" class="row g-2 align-items-center" role="search">
+            <!-- Input Búsqueda por Nombre -->
+            <div class="col-12 col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0" style="border-radius: var(--playapp-radius-pill) 0 0 var(--playapp-radius-pill);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search text-muted" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </span>
+                    <input type="text" id="nombre" name="nombre" class="form-control border-start-0"
+                           th:value="${param.nombre}"
+                           placeholder="Buscar por nombre (ej. Pescado, Cerveza)..."
+                           style="border-radius: 0 var(--playapp-radius-pill) var(--playapp-radius-pill) 0;"
+                           aria-label="Buscar producto">
+                </div>
+            </div>
+
+            <!-- Selector de Categoría -->
+            <div class="col-12 col-sm-6 col-md-3">
+                <select id="filtro" name="categoria" class="form-select" style="border-radius: var(--playapp-radius-pill);" aria-label="Filtrar por categoría">
+                    <option value="" th:selected="${param.categoria == null or param.categoria[0] == ''}">Todas las categorías</option>
+                    <option value="1" th:selected="${param.categoria != null and param.categoria[0] == '1'}">Comidas y Platos</option>
+                    <option value="2" th:selected="${param.categoria != null and param.categoria[0] == '2'}">Bebidas y Licores</option>
+                    <option value="3" th:selected="${param.categoria != null and param.categoria[0] == '3'}">Servicios y Carpas</option>
+                </select>
+            </div>
+
+            <!-- Selector de Ordenamiento -->
+            <div class="col-12 col-sm-6 col-md-2">
+                <select id="orden" name="orden" class="form-select" style="border-radius: var(--playapp-radius-pill);" aria-label="Ordenar productos">
+                    <option value="" th:selected="${param.orden == null or param.orden[0] == ''}">Ordenar por</option>
+                    <option value="1" th:selected="${param.orden != null and param.orden[0] == '1'}">Nombre</option>
+                    <option value="2" th:selected="${param.orden != null and param.orden[0] == '2'}">Mayor Precio</option>
+                    <option value="3" th:selected="${param.orden != null and param.orden[0] == '3'}">Menor Precio</option>
+                </select>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="col-12 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn-ocean flex-grow-1" style="border-radius: var(--playapp-radius-pill); font-weight: 700;">
+                    Buscar
                 </button>
-              </div>
+                <a th:if="${(param.nombre != null and param.nombre[0] != '') or (param.categoria != null and param.categoria[0] != '') or (param.orden != null and param.orden[0] != '')}"
+                   th:href="@{/shop}" class="btn-ocean-outline d-flex align-items-center justify-content-center"
+                   style="border-radius: var(--playapp-radius-pill); width: 40px; height: 38px;" title="Limpiar filtros">
+                    ✕
+                </a>
             </div>
-
-          </form>
-        </div>
-      </div>
+        </form>
     </div>
-  </div>
-  <div class="row my-3">
-    <nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example">
-      <ul class="pagination justify-content-center">
-        <li  th:each="pageNumber : ${paginas}" class="page-carritoItem">
-          <a class="page-link" th:classappend="${pageNumber==productos.number + 1} ? active" th:href="@{/shop(page=${pageNumber - 1})}" th:text="${pageNumber}"></a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  <!-- Footer -->
-  <div class="row">
-    <footer class="d-flex flex-wrap justify-content-between align-carritoItems-center py-3 my-4 border-top">
-      <div class="col-md-4 d-flex align-carritoItems-center">
-        <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-          <img src="/img/Logo.png" class="bi" width="30" height="24" alt="home"/>
+
+    <!-- Grid de Productos -->
+    <div class="row g-4" th:if="${productos != null and !productos.empty}">
+        <div class="col-12 col-sm-6 col-lg-4" th:each="producto : ${productos}">
+            <div class="playapp-product-card">
+                <!-- Imagen con proporción fija y Badge de Categoría -->
+                <div class="product-img-wrapper">
+                    <img th:src="${producto.getImageSRC()}" th:alt="${producto.nombre}" loading="lazy">
+                    <span class="product-badge-category badge"
+                          th:classappend="${producto.obtenerClaseCategoria()}"
+                          th:text="${producto.obtenerNombreCategoria()}">
+                        Categoría
+                    </span>
+                </div>
+
+                <!-- Cuerpo de la Tarjeta -->
+                <div class="product-body">
+                    <h2 class="product-title" th:text="${producto.nombre}">Nombre del Producto</h2>
+
+                    <!-- Vendedor / Kiosco -->
+                    <div class="product-vendor">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-person text-ocean" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                        </svg>
+                        <span th:text="${producto.entidad.getNombreCompleto()}">Kiosco de la Playa</span>
+                    </div>
+
+                    <!-- Precio Destacado en COP -->
+                    <div class="product-price-tag" th:text="${#numbers.formatCurrency(producto.precio)}">
+                        $0.00
+                    </div>
+
+                    <!-- Disponibilidad de Stock -->
+                    <div>
+                        <span class="product-stock-tag" th:text="'Disponible: ' + ${#numbers.formatInteger(producto.getStock(), 0)} + ' unidades'">
+                            Disponible: 0 unidades
+                        </span>
+                    </div>
+
+                    <!-- Formulario Añadir al Carrito (Compatible con store.js) -->
+                    <form th:action="@{/cart/add/{id}(id=${producto.id})}" method="GET" class="mt-auto pt-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Controles accesibles de cantidad (- / +) compatibles con store.js -->
+                            <div class="quantity-control-playapp">
+                                <button type="button" class="btn-qty remove" id="button-addon1" aria-label="Disminuir cantidad">-</button>
+                                <input th:id="${producto.id}" name="cantidad" type="number" min="1" max="99" value="1" aria-label="Cantidad a pedir">
+                                <button type="button" class="btn-qty add" id="button-addon2" aria-label="Aumentar cantidad">+</button>
+                            </div>
+
+                            <!-- Botón Añadir al Carrito -->
+                            <button type="submit" class="btn-add-cart-playapp flex-grow-1" title="Añadir producto al carrito">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus-fill" viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M9 5.5V7h1.5a.5.5 0 0 1 0 1H9v1.5a.5.5 0 0 1-1 0V8H6.5a.5.5 0 0 1 0-1H8V5.5a.5.5 0 0 1 1 0"/>
+                                </svg>
+                                <span>Agregar</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estado Vacío (Sin productos) -->
+    <div th:if="${productos == null or productos.empty}" class="playapp-card text-center py-5 my-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-search text-muted mb-3" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+        </svg>
+        <h3 class="fw-bold fs-5 text-ocean">No se encontraron productos</h3>
+        <p class="text-muted small">Prueba modificando los términos de búsqueda o seleccionando otra categoría.</p>
+        <a th:href="@{/shop}" class="btn-ocean py-2 px-4 mt-2 d-inline-block text-decoration-none" style="border-radius: 9999px;">
+            Ver todos los productos
         </a>
-        <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Playapp, Inc</span>
-      </div>
+    </div>
 
-      <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-        <li class="ms-3"><a class="text-body-secondary" href="#">
-          <svg class="bi" width="24" height="24">
-            <use xlink:href="#twitter"></use>
-          </svg>
-        </a></li>
-        <li class="ms-3"><a class="text-body-secondary" href="#">
-          <svg class="bi" width="24" height="24">
-            <use xlink:href="#instagram"></use>
-          </svg>
-        </a></li>
-        <li class="ms-3"><a class="text-body-secondary" href="#">
-          <svg class="bi" width="24" height="24">
-            <use xlink:href="#facebook"></use>
-          </svg>
-        </a></li>
-      </ul>
-    </footer>
-  </div>
-</div>
+    <!-- Paginación Moderna -->
+    <div class="row my-4" th:if="${productos != null and productos.totalPages > 1}">
+        <nav aria-label="Navegación de páginas de la tienda">
+            <ul class="pagination playapp-pagination justify-content-center">
+                <li th:each="pageNumber : ${paginas}"
+                    class="page-item"
+                    th:classappend="${pageNumber == productos.number + 1} ? ' active' : ''">
+                    <a class="page-link"
+                       th:href="@{/shop(page=${pageNumber - 1}, nombre=${param.nombre}, categoria=${param.categoria}, orden=${param.orden})}"
+                       th:text="${pageNumber}">
+                        1
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
 
-<script src="/js/store.js"></script>
+<!-- Footer Unificado PlayApp -->
+<footer class="playapp-footer">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-md-6 text-center text-md-start">
+                <div class="d-inline-flex align-items-center gap-2 mb-2">
+                    <img th:src="@{/img/Logo.png}" alt="PlayApp Logo" width="28" height="28">
+                    <span class="fw-bold text-white fs-5">PLAYAPP</span>
+                    <span class="badge" style="background: var(--playapp-turquoise); color: #000; font-size: 10px;">Cartagena</span>
+                </div>
+                <p class="small text-muted mb-0">
+                    Menú oficial de pescados, mariscos, cócteles y delicias playeras en Bocagrande.
+                </p>
+            </div>
+            <div class="col-12 col-md-6 text-center text-md-end">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item"><a th:href="@{/}" class="small">Inicio</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/shop}" class="small">Tienda</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/resena}" class="small">Contacto</a></li>
+                    <li class="list-inline-item ms-3" sec:authorize="isAuthenticated()"><a th:href="@{/user/orders}" class="small">Mis Pedidos</a></li>
+                </ul>
+                <p class="small text-muted mb-0">
+                    &copy; 2025 PlayApp, Inc. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script th:src="@{/js/store.js}"></script>
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
-<script src="/js/chat-widget.js"></script>
+<script th:src="@{/js/chat-widget.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,143 +1,316 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - PlayApp</title>
+    <title>Inicio · PlayApp Cartagena</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-    <link rel="stylesheet" href="/css/importJakartaFont.css">
-    <link rel="stylesheet" href="/css/inicio.css"> <!-- Enlaza el nuevo archivo CSS -->
-    <link rel="stylesheet" href="/css/chat-widget.css">
-    <link rel="icon" href="/img/Logo.png" type="image/png">
+    <link rel="stylesheet" th:href="@{/css/importJakartaFont.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout-flow.css}">
+    <link rel="stylesheet" th:href="@{/css/chat-widget.css}">
+    <link rel="icon" th:href="@{/img/Logo.png}" type="image/png">
 </head>
-<body class="jakarta-regular bg-dark">
+<body class="checkout-body jakarta-regular">
 
+<!-- Barra de navegación global unificada -->
 <header th:replace="~{components/navbar :: publicNavbar('inicio')}"></header>
 
-<!-- Sección de Carrusel -->
-<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+<!-- Carrusel Principal Hero -->
+<div id="carouselExampleCaptions" class="carousel slide playapp-carousel" data-bs-ride="carousel">
     <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
     </div>
     <div class="carousel-inner">
+        <!-- Slide 1: Hamburguesa -->
         <div class="carousel-item active" style="background-image: url('/img/Burguer.jpg');">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>Hamburguesa de la casa</h5>
-                <p></p>
-            </div>
-        </div>
-        <div class="carousel-item" style="background-image: url('/img/Pescado.jpg');">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>Mojarra</h5>
-                <p></p>
-            </div>
-        </div>
-        <div class="carousel-item" style="background-image: url('/img/Bebidas.jpeg');">
-            <div class="carousel-caption d-none d-md-block">
-                <h5>Bebidas</h5>
-                <p></p>
-            </div>
-        </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
-</div>
-
-<!-- Descripción de la Página -->
-<section id="description" class="py-5 text-center" style="position: relative;">
-    <div class="container">
-        <h2>Bienvenido a PlayApp</h2>
-        <p>
-            PlayApp es tu compañero ideal para disfrutar de tus vacaciones en las playas de Cartagena y en toda Colombia.
-            Con nuestra plataforma, puedes realizar compras de comida en los mejores establecimientos,
-            reservar carpas para tu comodidad y evitar estafas gracias a nuestras recomendaciones y alertas.
-            Disfruta de una experiencia segura y placentera mientras exploras las maravillas de nuestras costas.
-        </p>
-    </div>
-</section>
-
-<section id="video-section" class="categories-location py-5 text-center">
-    <!-- Sección de Categorías Populares -->
-    <section class="categories py-5 text-center">
-            <div class="container">
-                <h2 class="mb-4">Categorías Populares</h2>
-                <div class="row align-items-end">
-                    <div class="col-md-4">
-                        <a href="/shop?categoria=1">
-                            <img src="/img/Langosta.png" alt="Comida" class="img-fluid rounded">
-                            <p class="mt-2">Comida</p>
-                        </a>
-                    </div>
-                    <div class="col-md-4">
-                        <a href="/shop?categoria=2">
-                            <img src="/img/Bebida.png" alt="Bebidas" class="img-fluid rounded">
-                            <p class="mt-2">Bebidas</p>
-                        </a>
-                    </div>
-                    <div class="col-md-4">
-                        <a href="/shop?categoria=3">
-                            <img src="/img/Moto.png" alt="Moto Acuatica" class="img-fluid rounded">
-                            <p class="mt-2">Servicios</p>
+            <div class="playapp-carousel-overlay">
+                <div class="container text-center">
+                    <div class="playapp-carousel-caption">
+                        <span class="badge bg-turq mb-2 px-3 py-1 text-white" style="background-color: var(--playapp-turquoise); font-size: 0.85rem; border-radius: 9999px;">
+                            Platos Fuertes & Delivery en Playa
+                        </span>
+                        <h2>Hamburguesa de la casa</h2>
+                        <p>Carne artesanal, queso fundido y vegetales frescos servidos directamente en tu carpa o toalla.</p>
+                        <a th:href="@{/shop(categoria=1)}" class="btn-ocean py-2 px-4 shadow-sm" style="border-radius: 9999px; font-weight: 700; text-decoration: none;">
+                            Pedir Comida en Playa
                         </a>
                     </div>
                 </div>
             </div>
-    </section>
+        </div>
 
-    <!-- Sección de Mapa de Ubicación -->
-    <section id="ubicate" class="location py-5 text-center">
-        <div class="container">
-            <h2 class="mb-4">Ubicación</h2>
-            <p>Visítanos o recibe tu pedido en estas zonas:</p>
-            <div id="map-container" class="mb-5" style="height: 400px;">
-                <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.8593800273364!2d-75.55500068523652!3d10.39966699257292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef62f8530bafcc1%3A0x6a021fa5d9e4a4c1!2sPlaya%20de%20Bocagrande!5e0!3m2!1ses!2sco!4v1693407632143!5m2!1ses!2sco"
-                        width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy">
-                </iframe>
+        <!-- Slide 2: Mojarra -->
+        <div class="carousel-item" style="background-image: url('/img/Pescado.jpg');">
+            <div class="playapp-carousel-overlay">
+                <div class="container text-center">
+                    <div class="playapp-carousel-caption">
+                        <span class="badge mb-2 px-3 py-1 text-white" style="background-color: var(--playapp-ocean); font-size: 0.85rem; border-radius: 9999px;">
+                            Sabor Típico Caribeño
+                        </span>
+                        <h2>Mojarra Frita Tradicional</h2>
+                        <p>Acompañada de patacones dorados, arroz de coco fresco y ensalada costeña a orillas del mar.</p>
+                        <a th:href="@{/shop(categoria=1)}" class="btn-ocean py-2 px-4 shadow-sm" style="border-radius: 9999px; font-weight: 700; text-decoration: none;">
+                            Ver Menú de Pescados
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
+
+        <!-- Slide 3: Bebidas -->
+        <div class="carousel-item" style="background-image: url('/img/Bebidas.jpeg');">
+            <div class="playapp-carousel-overlay">
+                <div class="container text-center">
+                    <div class="playapp-carousel-caption">
+                        <span class="badge mb-2 px-3 py-1 text-white" style="background-color: var(--playapp-turquoise-dark); font-size: 0.85rem; border-radius: 9999px;">
+                            Bebidas Bien Frías
+                        </span>
+                        <h2>Bebidas & Refrescos</h2>
+                        <p>Cervezas nacionales heladas, limonadas de coco y jugos tropicales para calmar la sed playera.</p>
+                        <a th:href="@{/shop(categoria=2)}" class="btn-ocean py-2 px-4 shadow-sm" style="border-radius: 9999px; font-weight: 700; text-decoration: none;">
+                            Ver Bebidas Disponibles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de navegación del carrusel -->
+    <button class="carousel-control-prev carousel-control-prev-custom" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev" aria-label="Anterior">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+    </button>
+    <button class="carousel-control-next carousel-control-next-custom" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next" aria-label="Siguiente">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+    <!-- Separador Ondulante Marino hacia la Propuesta de Valor -->
+    <div class="home-wave-shape" aria-hidden="true">
+        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M0 48h1440V24C1200 40 960 16 720 32C480 48 240 38 0 0v48z" fill="#F8F5EF"/>
+        </svg>
+    </div>
+</div>
+
+<!-- Sección: Propuesta de Valor y Bienvenida -->
+<section id="description" class="home-welcome-section">
+    <div class="container text-center">
+        <span class="user-page-eyebrow mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+            </svg>
+            PlayApp Cartagena · Delivery en la orilla del mar
+        </span>
+        <h1 class="home-section-title">Bienvenido a PlayApp</h1>
+        <p class="home-section-subtitle">
+            Tu compañero ideal para disfrutar tus vacaciones en las playas de Cartagena. Pide comida típica, bebidas heladas y servicios en tu carpa sin moverte de la arena y con precios justos garantizados.
+        </p>
+
+        <!-- 3 Tarjetas de Beneficios -->
+        <div class="row g-4 text-start mt-2">
+            <div class="col-12 col-md-4">
+                <div class="home-benefit-card">
+                    <div class="home-benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
+                            <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+                            <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold fs-5 text-ocean mb-2">Precios Justos & Cero Cobros Ocultos</h3>
+                    <p class="text-muted small mb-0">Precios regulados y transparentes en cada producto. Evita estafas y compra con total confianza en los mejores kioscos certificados.</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="home-benefit-card">
+                    <div class="home-benefit-icon" style="background: var(--playapp-turquoise-light); color: var(--playapp-turquoise-dark);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold fs-5 text-ocean mb-2">Entrega a tu Ubicación en Playa</h3>
+                    <p class="text-muted small mb-0">Selecciona tu playa de entrega o ingresa tu punto de referencia (ej. frente al hotel o número de carpa) y te llevamos tu pedido directo a la arena.</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="home-benefit-card">
+                    <div class="home-benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-credit-card-2-front-fill" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold fs-5 text-ocean mb-2">Pago Fácil & Contraentrega</h3>
+                    <p class="text-muted small mb-0">Paga en línea con tarjeta crédito o débito mediante pasarela segura Wompi, o si lo prefieres paga en efectivo o transferencia al recibir tu pedido.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
-<!-- Footer -->
-<footer class="py-4 text-white text-center">
-    <p>&copy; 2025 PlayApp. Todos los derechos reservados.</p>
-    <ul class="list-inline">
-        <li class="list-inline-carritoItem"><a href="#" class="text-white">Términos y condiciones</a></li>
-        <li class="list-inline-carritoItem"><a href="#" class="text-white">Política de privacidad</a></li>
-    </ul>
+
+<!-- Sección: Categorías Populares -->
+<section class="home-categories-section">
+    <div class="container text-center">
+        <span class="user-page-eyebrow mb-2">
+            Catálogo Oficial PlayApp
+        </span>
+        <h2 class="home-section-title">Categorías Populares</h2>
+        <p class="home-section-subtitle">
+            Explora las delicias y servicios disponibles para entrega inmediata en Bocagrande.
+        </p>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Categoría 1: Comida -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <a th:href="@{/shop(categoria=1)}" class="home-category-card">
+                    <img th:src="@{/img/Langosta.png}" alt="Comida PlayApp" class="home-category-img">
+                    <div class="home-category-name">Comidas y Platos</div>
+                    <span class="home-category-action">
+                        <span>Ver 30+ opciones</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Categoría 2: Bebidas -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <a th:href="@{/shop(categoria=2)}" class="home-category-card">
+                    <img th:src="@{/img/Bebida.png}" alt="Bebidas PlayApp" class="home-category-img">
+                    <div class="home-category-name">Bebidas y Licores</div>
+                    <span class="home-category-action">
+                        <span>Ver bebidas frías</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Categoría 3: Servicios -->
+            <div class="col-12 col-sm-6 col-md-4">
+                <a th:href="@{/shop(categoria=3)}" class="home-category-card">
+                    <img th:src="@{/img/Moto.png}" alt="Servicios y Carpas PlayApp" class="home-category-img">
+                    <div class="home-category-name">Servicios y Carpas</div>
+                    <span class="home-category-action">
+                        <span>Ver servicios</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/shop}" class="btn-ocean py-2 px-4" style="border-radius: 9999px; text-decoration: none;">
+                Explorar Todo el Catálogo
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Sección: Ubicación y Zonas de Entrega -->
+<section id="ubicate" class="home-location-section">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="user-page-eyebrow mb-2">
+                Zona de Cobertura en Playa
+            </span>
+            <h2 class="home-section-title">Ubicación y Entregas</h2>
+            <p class="home-section-subtitle">
+                Entregamos tus pedidos directamente en la arena a lo largo de las principales playas de Bocagrande.
+            </p>
+        </div>
+
+        <div class="playapp-card p-4">
+            <div class="row align-items-center g-4">
+                <div class="col-12 col-lg-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="home-benefit-icon mb-0" style="width: 44px; height: 44px; font-size: 18px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="fs-5 fw-bold text-ocean mb-0">Punto Base de Despacho</h3>
+                            <small class="text-muted">Kiosco El Bony · Cra. 1, Bocagrande</small>
+                        </div>
+                    </div>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="d-flex align-items-center gap-2 mb-2 text-muted">
+                            <span class="badge rounded-pill bg-ocean text-white" style="background-color: var(--playapp-ocean);">✓</span>
+                            <span><strong>Playa de Bocagrande:</strong> Entrega promedio 20-30 min.</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-2 mb-2 text-muted">
+                            <span class="badge rounded-pill bg-ocean text-white" style="background-color: var(--playapp-ocean);">✓</span>
+                            <span><strong>Castillogrande & El Laguito:</strong> Entrega directa a carpas.</span>
+                        </li>
+                        <li class="d-flex align-items-center gap-2 mb-2 text-muted">
+                            <span class="badge rounded-pill bg-ocean text-white" style="background-color: var(--playapp-ocean);">✓</span>
+                            <span><strong>Horario de atención:</strong> Lunes a Domingo de 8:00 AM a 7:00 PM.</span>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a th:href="@{/shop}" class="btn-ocean py-2 px-3 text-decoration-none" style="border-radius: 9999px;">
+                            Hacer Pedido Ahora
+                        </a>
+                        <a th:href="@{/resena}" class="btn-ocean-outline py-2 px-3 text-decoration-none" style="border-radius: 9999px;">
+                            Contáctanos
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-7">
+                    <div class="home-map-container" style="height: 380px;">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.8593800273364!2d-75.55500068523652!3d10.39966699257292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef62f8530bafcc1%3A0x6a021fa5d9e4a4c1!2sPlaya%20de%20Bocagrande!5e0!3m2!1ses!2sco!4v1693407632143!5m2!1ses!2sco"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" title="Mapa de Bocagrande">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Unificado PlayApp -->
+<footer class="playapp-footer">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-12 col-md-6 text-center text-md-start">
+                <div class="d-inline-flex align-items-center gap-2 mb-2">
+                    <img th:src="@{/img/Logo.png}" alt="PlayApp Logo" width="28" height="28">
+                    <span class="fw-bold text-white fs-5">PLAYAPP</span>
+                    <span class="badge" style="background: var(--playapp-turquoise); color: #000; font-size: 10px;">Cartagena</span>
+                </div>
+                <p class="small text-muted mb-0">
+                    La plataforma oficial de compras y delivery seguro para las playas de Cartagena de Indias.
+                </p>
+            </div>
+            <div class="col-12 col-md-6 text-center text-md-end">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item"><a th:href="@{/}" class="small">Inicio</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/shop}" class="small">Tienda</a></li>
+                    <li class="list-inline-item ms-3"><a th:href="@{/resena}" class="small">Contacto</a></li>
+                    <li class="list-inline-item ms-3" sec:authorize="isAuthenticated()"><a th:href="@{/user/orders}" class="small">Mis Pedidos</a></li>
+                </ul>
+                <p class="small text-muted mb-0">
+                    &copy; 2025 PlayApp, Inc. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </div>
 </footer>
 
-<script>
-    let lastScrollTop = 0; // Variable para almacenar la posición anterior del scroll
- let navbar = document.querySelector('header nav'); // Selecciona la barra de navegación
-
- // Evento de desplazamiento (scroll)
- window.addEventListener("scroll", function() {
-     let currentScroll = window.pageYOffset || document.documentElement.scrollTop; // Obtiene la posición actual del scroll
-
-     // Si el usuario hace scroll hacia abajo, oculta la barra
-     if (currentScroll > lastScrollTop) {
-         navbar.style.top = "-70px"; // Desplaza la barra hacia arriba para ocultarla
-     } else {
-         // Si el usuario hace scroll hacia arriba, muestra la barra
-         navbar.style.top = "0"; // Muestra la barra en la parte superior
-     }
-
-     // Actualiza la posición anterior del scroll
-     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
- });
-
-</script>
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
-<script src="/js/chat-widget.js"></script>
+<script th:src="@{/js/chat-widget.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

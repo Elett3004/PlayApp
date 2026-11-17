@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/importJakartaFont.css">
     <link rel="stylesheet" href="/css/weather.css">
     <link rel="stylesheet" href="/css/admin-theme.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
     <style>
         .filter-bar {
@@ -175,13 +176,27 @@
                                 <strong class="text-dark" th:text="${#numbers.formatCurrency(pedido.total)}"></strong>
                             </td>
                             <td>
-                                <span class="admin-badge" th:classappend="${pedido.pago.obtenerClaseCSSEstado()}" th:text="${pedido.pago.obtenerNombreEstado()}"></span>
+                                <span class="admin-badge" th:classappend="${pedido.pago != null ? pedido.pago.obtenerClaseCSSEstado() : 'text-bg-secondary'}" th:text="${pedido.pago != null ? pedido.pago.obtenerNombreEstado() : 'Sin estado'}"></span>
                             </td>
                             <td>
                                 <span class="admin-badge" th:classappend="${pedido.obtenerClaseCSSEstado()}" th:text="${pedido.obtenerNombreEstado()}"></span>
                             </td>
                             <td class="text-center">
-                                <span class="badge bg-light text-dark rounded-pill px-2 py-1" th:text="${pedido.getCarrito().size()} + ' items'"></span>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-info rounded-3 px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
+                                        th:data-pedido-id="${pedido.id}"
+                                        onclick="abrirModalDetalleAdmin(this.getAttribute('data-pedido-id'), this)"
+                                        title="Ver detalle completo de la orden"
+                                        aria-haspopup="dialog"
+                                        aria-controls="modalDetallePedidoAdmin"
+                                        th:aria-label="'Ver detalle de la orden #' + ${pedido.id}"
+                                        style="font-size: 0.8rem; font-weight: 700; color: #166b70; border-color: #166b70; background-color: #fffdf9;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16" aria-hidden="true">
+                                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                    </svg>
+                                    <span th:text="${pedido.getCarrito().size()} + ' items'">1 items</span>
+                                </button>
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center align-items-center gap-2">
@@ -239,7 +254,348 @@
     </main>
 </div>
 
+<!-- Modal Elegante y Accesible de Detalle de Orden (Administración) -->
+<div id="modalBackdropAdmin" class="playapp-modal-backdrop" onclick="clickFueraModalAdmin(event)" aria-hidden="true">
+    <div id="modalDetallePedidoAdmin"
+         class="playapp-modal-dialog"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modalTituloAdmin"
+         tabindex="-1">
+
+        <!-- Encabezado del Modal -->
+        <div class="playapp-modal-header" style="background: linear-gradient(135deg, #166b70 0%, #052b37 100%);">
+            <h2 id="modalTituloAdmin" style="font-size: 18px; margin: 0; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M1.92.5a.5.5 0 0 0-.84.453l.732 3.66a.5.5 0 0 1-.366.578L.156 5.5a.5.5 0 0 0 0 .964l1.29.31a.5.5 0 0 1 .366.578l-.732 3.66a.5.5 0 0 0 .84.453l1.202-.601a.5.5 0 0 1 .536.046l1.202.802a.5.5 0 0 0 .556 0l1.202-.802a.5.5 0 0 1 .536-.046l1.202.601a.5.5 0 0 0 .84-.453l-.732-3.66a.5.5 0 0 1 .366-.578l1.29-.31a.5.5 0 0 0 0-.964l-1.29-.31a.5.5 0 0 1-.366-.578l.732-3.66a.5.5 0 0 0-.84-.453l-1.202.601a.5.5 0 0 1-.536-.046l-1.202-.802a.5.5 0 0 0-.556 0l-1.202.802a.5.5 0 0 1-.536.046zm1.535 7.646a.5.5 0 0 1-.708 0l-1-1a.5.5 0 0 1 .708-.708l.646.647 1.646-1.647a.5.5 0 1 1 .708.708l-2 2z"/>
+                </svg>
+                <span id="modalHeaderTituloAdmin">Detalle de la Orden</span>
+            </h2>
+            <button type="button"
+                    class="playapp-modal-close"
+                    onclick="cerrarModalDetalleAdmin()"
+                    aria-label="Cerrar modal de detalle"
+                    id="btnCerrarModalAdminCruz">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Cuerpo del Modal -->
+        <div class="playapp-modal-body" id="modalCuerpoAdmin">
+            <!-- Spinner -->
+            <div id="modalLoadingAdmin" class="modal-spinner-container">
+                <div class="spinner-border text-primary" role="status" style="color: #166b70 !important;">
+                    <span class="visually-hidden">Cargando detalles de la orden...</span>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #166b70;">Cargando información completa del pedido...</p>
+                <span class="small text-muted">Panel de Control PlayApp</span>
+            </div>
+
+            <!-- Alerta de Error -->
+            <div id="modalErrorAdmin" class="alert alert-danger d-none my-3" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                    <strong id="modalErrorTextoAdmin">No se pudo cargar la información del pedido.</strong>
+                </div>
+            </div>
+
+            <!-- Contenido Dinámico -->
+            <div id="modalContenidoAdmin" class="d-none">
+                <!-- Metadatos de la Orden & Cliente -->
+                <div class="modal-meta-grid">
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Cliente</div>
+                        <div class="modal-meta-value text-truncate" id="modalClienteNombreAdmin">-</div>
+                        <div class="text-muted" style="font-size: 11px;" id="modalClienteCorreoAdmin">-</div>
+                    </div>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Fecha y Hora</div>
+                        <div class="modal-meta-value" id="modalFechaAdmin">-</div>
+                    </div>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Estado Orden</div>
+                        <div class="modal-meta-value">
+                            <span id="modalBadgePedidoAdmin" class="admin-badge">-</span>
+                        </div>
+                    </div>
+                    <div class="modal-meta-card">
+                        <div class="modal-meta-label">Estado Pago</div>
+                        <div class="modal-meta-value">
+                            <span id="modalBadgePagoAdmin" class="admin-badge">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lugar de Entrega en Playa -->
+                <div class="modal-section-title" style="color: #166b70;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                    </svg>
+                    <span>Ubicación y Despacho en Playa</span>
+                </div>
+                <div class="modal-meta-card mb-3">
+                    <div class="fw-bold text-dark" id="modalDireccionAdmin">Playa de Bocagrande, Cartagena</div>
+                    <div class="text-muted small mt-1" id="modalDetalleUbicacionAdmin">-</div>
+                </div>
+
+                <!-- Productos de la Orden -->
+                <div class="modal-section-title" style="color: #166b70;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-seam-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15.528 2.973a.75.75 0 0 1 .472.696v8.662a.75.75 0 0 1-.472.696l-7.25 2.9a.75.75 0 0 1-.557 0l-7.25-2.9A.75.75 0 0 1 0 12.331V3.669a.75.75 0 0 1 .471-.696L7.443.184l.01-.003.268-.108a.75.75 0 0 1 .558 0l.269.108.01.003zM10.404 2 4.25 4.461 1.8 3.481 7.954 1.02zm-1.53 3.191L2.684 2.766 1.5 3.24v6.082l7.374 2.95zm1 0V12.27l7.374-2.95V3.24l-1.184-.474zm1.53-3.191 6.154 2.46-2.45 1.02-6.154-2.46z"/>
+                    </svg>
+                    <span>Productos y Cantidades a Preparar</span>
+                </div>
+                <div id="modalItemsListaAdmin" role="list">
+                    <!-- Filas inyectadas dinámicamente -->
+                </div>
+
+                <!-- Resumen Financiero y Método de Pago -->
+                <div class="modal-summary-box" style="background: #fffdf9; border-color: #e3e9e8;">
+                    <div class="modal-summary-line">
+                        <span>Método de Pago:</span>
+                        <span class="fw-bold text-dark" id="modalMetodoPagoAdmin">-</span>
+                    </div>
+                    <div class="modal-summary-line">
+                        <span>Subtotal productos:</span>
+                        <span class="fw-bold text-dark" id="modalSubtotalAdmin">$0.00</span>
+                    </div>
+                    <div class="modal-summary-line">
+                        <span>Costo de envío a playa:</span>
+                        <span class="fw-bold text-dark" id="modalEnvioAdmin">$5,000.00</span>
+                    </div>
+                    <div class="modal-summary-line total" style="color: #166b70; border-top-color: #cbd5e1;">
+                        <span>Total de la Orden:</span>
+                        <span id="modalTotalAdmin">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie del Modal -->
+        <div class="playapp-modal-footer">
+            <button type="button"
+                    class="admin-btn-secondary"
+                    onclick="cerrarModalDetalleAdmin()"
+                    id="btnCerrarModalAdminAbajo">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
+
+<script>
+    let elementoActivoAntesDeModalAdmin = null;
+
+    function abrirModalDetalleAdmin(pedidoId, disparadorBtn) {
+        if (!pedidoId) return;
+
+        elementoActivoAntesDeModalAdmin = disparadorBtn || document.activeElement;
+
+        const backdrop = document.getElementById('modalBackdropAdmin');
+        const modal = document.getElementById('modalDetallePedidoAdmin');
+        const loading = document.getElementById('modalLoadingAdmin');
+        const contenido = document.getElementById('modalContenidoAdmin');
+        const errorBox = document.getElementById('modalErrorAdmin');
+        const headerTitulo = document.getElementById('modalHeaderTituloAdmin');
+
+        headerTitulo.textContent = 'Detalle de la Orden #' + pedidoId;
+        loading.classList.remove('d-none');
+        contenido.classList.add('d-none');
+        errorBox.classList.add('d-none');
+
+        // Mostrar backdrop y modal
+        backdrop.setAttribute('aria-hidden', 'false');
+        backdrop.classList.add('is-visible');
+        modal.focus();
+
+        // Consulta bajo demanda al endpoint de administración
+        fetch('/manager/api/orders/' + encodeURIComponent(pedidoId), {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function(response) {
+            if (response.status === 403) {
+                throw new Error('No tienes permisos sobre este pedido.');
+            }
+            if (response.status === 404) {
+                throw new Error('La orden solicitada no fue encontrada.');
+            }
+            if (!response.ok) {
+                throw new Error('Error al consultar el pedido (Código ' + response.status + ').');
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            renderizarDetalleOrdenAdmin(data);
+            loading.classList.add('d-none');
+            contenido.classList.remove('d-none');
+        })
+        .catch(function(err) {
+            loading.classList.add('d-none');
+            errorBox.classList.remove('d-none');
+            document.getElementById('modalErrorTextoAdmin').textContent = err.message || 'Error al cargar la orden.';
+        });
+    }
+
+    function renderizarDetalleOrdenAdmin(pedido) {
+        // Cliente
+        document.getElementById('modalClienteNombreAdmin').textContent = pedido.clienteNombre || 'Cliente PlayApp';
+        document.getElementById('modalClienteCorreoAdmin').textContent = pedido.clienteCorreo || 'Correo no disponible';
+
+        // Fecha
+        document.getElementById('modalFechaAdmin').textContent = pedido.fecha || 'Fecha no disponible';
+
+        // Badge de Estado Pedido
+        const badgePedido = document.getElementById('modalBadgePedidoAdmin');
+        badgePedido.textContent = pedido.estadoPedidoNombre || 'Sin estado';
+        badgePedido.className = 'admin-badge ' + (pedido.estadoPedidoCss || 'text-bg-secondary');
+
+        // Badge de Estado Pago
+        const badgePago = document.getElementById('modalBadgePagoAdmin');
+        badgePago.textContent = pedido.estadoPagoNombre || 'Sin estado';
+        badgePago.className = 'admin-badge ' + (pedido.estadoPagoCss || 'text-bg-secondary');
+
+        // Método de pago
+        document.getElementById('modalMetodoPagoAdmin').textContent = pedido.metodoPagoNombre || 'No especificado';
+
+        // Dirección de Entrega en Playa
+        document.getElementById('modalDireccionAdmin').textContent = pedido.direccionEntrega || 'Playa de Bocagrande, Cartagena';
+        let ubicacionDetalles = [];
+        if (pedido.mesa !== null && pedido.mesa !== undefined) {
+            ubicacionDetalles.push('Mesa: ' + pedido.mesa);
+        }
+        if (pedido.carpa !== null && pedido.carpa !== undefined) {
+            ubicacionDetalles.push('Carpa: ' + pedido.carpa);
+        }
+        if (pedido.referenciaEntrega && pedido.referenciaEntrega.trim().length > 0) {
+            ubicacionDetalles.push('Referencia: ' + pedido.referenciaEntrega.trim());
+        }
+        document.getElementById('modalDetalleUbicacionAdmin').textContent = ubicacionDetalles.length > 0
+            ? ubicacionDetalles.join(' · ')
+            : 'Entrega en área general de playa.';
+
+        // Lista de Productos
+        const itemsContainer = document.getElementById('modalItemsListaAdmin');
+        itemsContainer.innerHTML = '';
+
+        if (pedido.items && pedido.items.length > 0) {
+            pedido.items.forEach(function(item) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'modal-item-row';
+                itemDiv.setAttribute('role', 'listitem');
+
+                const img = document.createElement('img');
+                img.className = 'modal-item-thumb';
+                img.src = item.imagenUrl || '/img/blank-product.jpg';
+                img.alt = item.nombre || 'Producto';
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.src = '/img/blank-product.jpg';
+                };
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'modal-item-info';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'modal-item-name';
+                nameDiv.textContent = item.nombre;
+
+                const vendorDiv = document.createElement('div');
+                vendorDiv.className = 'modal-item-vendor';
+                vendorDiv.textContent = 'Preparado por: ' + (item.vendedor || 'Restaurante / PlayApp');
+
+                infoDiv.appendChild(nameDiv);
+                infoDiv.appendChild(vendorDiv);
+
+                const pricingDiv = document.createElement('div');
+                pricingDiv.className = 'modal-item-pricing';
+
+                const subtotalDiv = document.createElement('div');
+                subtotalDiv.className = 'modal-item-subtotal';
+                subtotalDiv.style.color = '#166b70';
+                subtotalDiv.textContent = item.subtotalFormateado || ('$' + item.subtotal);
+
+                const unitDiv = document.createElement('div');
+                unitDiv.className = 'modal-item-unit';
+                unitDiv.textContent = item.cantidad + ' × ' + (item.precioUnitarioFormateado || ('$' + item.precioUnitario));
+
+                pricingDiv.appendChild(subtotalDiv);
+                pricingDiv.appendChild(unitDiv);
+
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(infoDiv);
+                itemDiv.appendChild(pricingDiv);
+
+                itemsContainer.appendChild(itemDiv);
+            });
+        } else {
+            const vacioDiv = document.createElement('div');
+            vacioDiv.className = 'text-muted small py-2 text-center';
+            vacioDiv.textContent = 'No hay items registrados para este pedido.';
+            itemsContainer.appendChild(vacioDiv);
+        }
+
+        // Resumen
+        document.getElementById('modalSubtotalAdmin').textContent = pedido.subtotalFormateado || '$0.00';
+        document.getElementById('modalEnvioAdmin').textContent = pedido.costoEnvioFormateado || '$5,000.00';
+        document.getElementById('modalTotalAdmin').textContent = pedido.totalFormateado || '$0.00';
+    }
+
+    function cerrarModalDetalleAdmin() {
+        const backdrop = document.getElementById('modalBackdropAdmin');
+        backdrop.classList.remove('is-visible');
+        backdrop.setAttribute('aria-hidden', 'true');
+
+        if (elementoActivoAntesDeModalAdmin && typeof elementoActivoAntesDeModalAdmin.focus === 'function') {
+            elementoActivoAntesDeModalAdmin.focus();
+        }
+    }
+
+    function clickFueraModalAdmin(event) {
+        if (event.target === document.getElementById('modalBackdropAdmin')) {
+            cerrarModalDetalleAdmin();
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        const backdrop = document.getElementById('modalBackdropAdmin');
+        if (!backdrop.classList.contains('is-visible')) return;
+
+        if (event.key === 'Escape') {
+            cerrarModalDetalleAdmin();
+            return;
+        }
+
+        if (event.key === 'Tab') {
+            const modal = document.getElementById('modalDetallePedidoAdmin');
+            const focusables = modal.querySelectorAll('button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+            if (focusables.length === 0) return;
+
+            const firstElement = focusables[0];
+            const lastElement = focusables[focusables.length - 1];
+
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    event.preventDefault();
+                    lastElement.focus();
+                }
+            } else {
+                if (document.activeElement === lastElement) {
+                    event.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>
