@@ -17,22 +17,34 @@
 </video>
 
 <div class="container-subs">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary rounded" aria-label="Thirteenth navbar example">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg" aria-label="Barra de navegación">
+        <div class="container-fluid px-3 d-flex align-items-center justify-content-between">
+            <a class="navbar-brand d-inline-flex align-items-center gap-2 m-0 text-decoration-none" href="/">
+                <img src="/img/Logo.png" alt="Logo" width="28" height="28" class="d-inline-block align-text-top">
+                <span>PlayApp</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false" aria-label="Abrir menú de navegación">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
-                <a class="navbar-brand col-lg-3 me-0" href="/">
-                    <img src="/img/Logo_oficial.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                    PlayApp
-                </a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarsExample11">
+                <ul class="navbar-nav align-items-lg-center gap-1 gap-lg-3 pt-2 pt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white py-1 px-2" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white py-1 px-2" href="/shop">Tienda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white py-1 px-2" href="/resena">Contacto</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 </div>
 
-<div class="container mt-5">
+<main class="auth-main-wrapper">
+    <div class="container auth-content-container">
     <div class="header text-center">
         <h1>PlayApp</h1>
         <p>Evita estafas en las playas de Cartagena</p>
@@ -96,6 +108,7 @@
         </div>
     </div>
 </div>
+</main>
 
 <script src="/js/log.js"></script>
 <script>
