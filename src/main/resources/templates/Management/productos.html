@@ -1,17 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Catálogo | PlayApp</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/weather.css">
+    <link rel="stylesheet" href="/css/admin-theme.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
+    <style>
+        .catalog-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+        .product-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e3e9e8;
+            margin-right: 12px;
+        }
+    </style>
 </head>
-<body class="container-fluid jakarta-regular">
-<main class="row flex-nowrap">
-    <div class="col-2 border-end p-0">
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
+<body class="jakarta-regular weather-page">
+<div class="weather-shell">
+    <div class="weather-sidebar">
+        <div class="d-flex flex-column flex-shrink-0 p-3 admin-sidebar">
             <a href="/manager/dashboard"
                class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
@@ -21,8 +41,7 @@
             <ul class="nav nav-pills flex-column mb-auto">
                 <li>
                     <a href="/manager/dashboard" class="nav-link link-body-emphasis">
-                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16"
-                             alt="dashboard"/>
+                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16" alt="dashboard"/>
                         Dashboard
                     </a>
                 </li>
@@ -36,15 +55,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/manager/products" class="nav-link active nav-item">
+                    <a href="/manager/products" class="nav-link active" aria-current="page">
                         <img src="/img/icons/boxes.svg" class="bi pe-none me-2" width="16" height="16" alt="inventory"/>
                         Catalogo
                     </a>
                 </li>
                 <li>
                     <a href="/manager/prediccion" class="nav-link link-body-emphasis">
-                        <img src="/img/icons/graph-up.svg" width="16" height="16" class="me-2">
-                    Predecir Ventas
+                        <img src="/img/icons/graph-up.svg" class="bi pe-none me-2" width="16" height="16" alt="predict"/>
+                        Predecir Ventas
                     </a>
                 </li>
                 <li>
@@ -65,147 +84,140 @@
                         Crear Admins
                     </a>
                 </li>
-                <li><a href="/manager/clima" class="nav-link link-body-emphasis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true"><path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/></svg>Clima y ocupación estimada</a></li>
+                <li>
+                    <a href="/manager/clima" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true">
+                            <path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/>
+                        </svg>
+                        Clima y ocupación estimada
+                    </a>
+                </li>
             </ul>
             <hr>
             <div class="dropdown">
-                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+                <a href="#" class="d-flex align-carritoItems-center link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <img src="/img/Logo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}"></strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow"
-                    th:insert="fragments/logout-button :: logoutButton">
+                    th:insert="~{fragments/logout-button :: logoutButton}">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-10">
-        <div class="row">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
-                    <li class="breadcrumb-carritoItem">
-                        <a class="link-body-emphasis" href="#">
-                            <img src="/img/icons/house-door-fill.svg" class="bi" width="16" height="16" alt="home"/>
-                            <span class="visually-hidden">Home</span>
-                        </a>
-                    </li>
-                    <li class="breadcrumb-carritoItem active" aria-current="page">
-                        Catalogo
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <div class="row my-2">
-            <div class="d-flex">
-                <div class="me-auto">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Buscar Producto ..."
-                                   aria-label="Input group example" aria-describedby="btnGroupAddon">
-                        </div>
-                        <div class="btn-group mx-2" role="group" aria-label="First group">
-                            <button type="button" class="btn btn-outline-primary">Buscar</button>
-                        </div>
-                    </div>
+
+    <main class="weather-main">
+        <div class="weather-content">
+            <header class="weather-header">
+                <div>
+                    <p class="eyebrow">INVENTARIO Y COMERCIO · PLAYAPP</p>
+                    <h1>
+                        <img src="/img/icons/boxes.svg" width="28" height="28" style="filter: brightness(0) invert(1);" alt="" />
+                        <span>Catálogo de Productos y Servicios</span>
+                    </h1>
+                    <p class="header-subtitle">Controla el catálogo de platos, bebidas, servicios de playa y gestiona precios y stock.</p>
                 </div>
                 <div>
-                    <a href="/manager/product" type="submit" class="btn btn-primary">
+                    <a href="/manager/product" class="admin-btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-plus-fill" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0M8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5z"/>
-                        </svg> Agregar Producto
+                        </svg>
+                        <span>Agregar Producto</span>
                     </a>
                 </div>
+            </header>
+
+            <div class="view-bar">
+                <span class="now-chip"><span class="live-dot"></span>Inventario</span>
+                <span>Listado de productos disponibles</span>
             </div>
 
-
-        </div>
-        <div class="row g-2">
-            <table class="table">
-                <thead class="table-secondary">
-                    <tr>
-                        <th scope="col">CODIGO</th>
-                        <th scope="col">PRODUCTO</th>
-                        <th scope="col">CATEGORIA</th>
-                        <th scope="col">PRECIO</th>
-                        <th scope="col">STOCK</th>
-                        <th scope="col">HERRAMIENTAS</th>                    </tr>
-                </thead>
-                <tbody>
-                <tr th:each="producto : ${productos}">
-                    <th scope="row" th:text="${producto.id}"></th>
-                    <td  th:inline="text">
-                        <img  th:src="${producto.getImageSRC()}"  height="50" width="50" class="img-fluid img-thumbnail" alt="...">
-                        [[${producto.nombre}]]
-                    </td>
-                    <td>
-                        <span class="badge" th:classappend="${producto.obtenerClaseCategoria()}" th:text="${producto.obtenerNombreCategoria()}"></span>
-                    </td>
-                    <td th:text="${#numbers.formatCurrency(producto.precio)}"></td>
-                    <td th:text="${producto.stock}"></td>
-                    <td>
-                        <div class="d-flex justify-content-center">
-                            <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                <a  th:href="@{/manager/product/{id}(id=${producto.id})}" class="btn btn-outline-primary btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
-                                    </svg>
-                                </a>
-                                <a th:href="@{/manager/product/delete/{id}(id=${producto.id})}"  class="btn btn-outline-primary btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-        <div class="row my-3">
-            <nav th:if="${productos.totalPages > 0}" aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li  th:each="pageNumber : ${paginas}" class="page-carritoItem">
-                        <a class="page-link" th:classappend="${pageNumber==productos.number + 1} ? active" th:href="@{/manager/products(page=${pageNumber - 1})}" th:text="${pageNumber}"></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <div class="row">
-            <footer class="d-flex flex-wrap justify-content-between align-carritoItems-center py-3 my-4 border-top">
-                <div class="col-md-4 d-flex align-carritoItems-center">
-                    <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-                        <img src="/img/Logo.png" class="bi" width="30" height="24" alt="home"/>
-                    </a>
-                    <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Playapp, Inc</span>
+            <div class="admin-card">
+                <div class="catalog-toolbar">
+                    <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 400px;">
+                        <input type="text" class="form-control" placeholder="Buscar por nombre de producto..." aria-label="Buscar producto">
+                        <button type="button" class="admin-btn-action py-2 px-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                            <span>Buscar</span>
+                        </button>
+                    </div>
                 </div>
 
-                <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#twitter"></use>
-                        </svg>
-                    </a></li>
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#instagram"></use>
-                        </svg>
-                    </a></li>
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#facebook"></use>
-                        </svg>
-                    </a></li>
-                </ul>
-            </footer>
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th scope="col">CÓDIGO</th>
+                            <th scope="col">PRODUCTO</th>
+                            <th scope="col">CATEGORÍA</th>
+                            <th scope="col">PRECIO</th>
+                            <th scope="col" class="text-center">STOCK</th>
+                            <th scope="col" class="text-center">ACCIONES</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="producto : ${productos}">
+                            <td class="font-weight-bold" style="color: #125d60;">
+                                <strong th:text="${producto.id}"></strong>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img th:src="${producto.getImageSRC()}" class="product-thumb" alt="Foto">
+                                    <span class="fw-bold text-dark" th:text="${producto.nombre}"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="admin-badge" th:classappend="${producto.obtenerClaseCategoria()}" th:text="${producto.obtenerNombreCategoria()}"></span>
+                            </td>
+                            <td>
+                                <strong class="text-dark" th:text="${#numbers.formatCurrency(producto.precio)}"></strong>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-3 py-2" th:classappend="${producto.stock > 5 ? 'bg-light text-dark' : 'bg-danger text-white'}" th:text="${producto.stock} + ' un.'"></span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a th:href="@{/manager/product/{id}(id=${producto.id})}" class="btn btn-sm btn-outline-primary rounded-3" title="Editar Producto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                                        </svg>
+                                    </a>
+                                    <a th:href="@{/manager/product/delete/{id}(id=${producto.id})}" class="btn btn-sm btn-outline-danger rounded-3" title="Eliminar Producto" onclick="return confirm('¿Seguro que deseas eliminar este producto?')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productos.content)}">
+                            <td colspan="6" class="text-center text-muted py-4">No hay productos en el catálogo actualmente.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4" th:if="${productos.totalPages > 0}">
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="pagination admin-pagination mb-0">
+                            <li th:each="pageNumber : ${paginas}" class="page-item" th:classappend="${pageNumber == productos.number + 1} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/manager/products(page=${pageNumber - 1})}"
+                                   th:text="${pageNumber}">
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</main>
+    </main>
+</div>
 
-<div th:insert="fragments/logout-modal :: logoutModal"></div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
 </body>
 </html>

@@ -1,53 +1,230 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmación de Pedido</title>
-  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-  <link rel="stylesheet" href="/css/importJakartaFont.css">
-  <link rel="stylesheet" href="/css/styles.css">
-  <link rel="stylesheet" href="/css/chat-widget.css">
-  <link rel="icon" href="/img/Logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
+    <link rel="stylesheet" href="/css/chat-widget.css">
+    <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-<body class="jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
+<!-- Navbar oficial -->
 <header th:replace="~{components/navbar :: publicNavbar('tienda')}"></header>
 
-<div class="container mt-5">
+<main class="container my-4 flex-grow-1">
 
+    <!-- Indicador de Progreso: Paso 1 Carrito activo -->
+    <div th:replace="~{fragments/checkout-stepper :: checkoutStepper('carrito')}"></div>
 
-  <div class="row justify-content-center">
-    <div class="col-6">
-      <div class="card">
-        <div class="card-body p-3">
-          <h2 class="jakarta-bold">Verificación</h2>
-          <h5 class="card-title jakarta-medium text-primary">Carrito de Compras</h5>
-          <div class="row border-bottom mb-1" th:each="carritoItem : ${checkout}">
-              <div class="col-1"><a th:href="@{/cart/rm/{id}(id=${carritoItem.getProductoId()})}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-                </svg>
-              </a></div>
-              <div class="col-5" th:text="${carritoItem.getNombre()}+' x '+${carritoItem.getCantidad()}"></div>
-              <div class="col-6 d-flex justify-content-end" th:text="${#numbers.formatCurrency(carritoItem.getPrecio()*carritoItem.getCantidad())}"></div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6 jakarta-bold">TOTAL</div>
-            <div class="col-6 jakarta-bold text-primary d-flex justify-content-end" th:text="${#numbers.formatCurrency(total)}"></div>
-          </div>
-          <div class="d-flex justify-content-end">
-            <a href="/cart/checkout/proceed" class="btn btn-primary">Comprar</a>
-          </div>
+    <!-- ESTADO 1: Carrito Vacío -->
+    <div th:if="${items == null or items.isEmpty()}" class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="checkout-card empty-cart-state">
+                <div class="empty-cart-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                </div>
+                <h3 class="jakarta-bold text-ocean mb-2">Tu carrito de playa está vacío</h3>
+                <p class="text-muted mb-4">Aún no has seleccionado tus bebidas o platos favoritos para disfrutar frente al mar. ¡Explora nuestro catálogo y pide directo a tu carpa!</p>
+                <a href="/shop" class="btn btn-ocean btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                    </svg>
+                    Explorar la Tienda
+                </a>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
+    <!-- ESTADO 2: Carrito con Productos (2 Columnas en Desktop) -->
+    <div th:if="${items != null and !items.isEmpty()}" class="row g-4">
+
+        <!-- Columna Izquierda: Lista de Productos -->
+        <div class="col-12 col-lg-8">
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <h2 class="checkout-card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                        Tus Productos Seleccionados
+                    </h2>
+                    <span class="badge bg-ocean-light text-ocean rounded-pill px-3 py-2" th:text="${items.size()} + ' producto(s)'"></span>
+                </div>
+
+                <!-- Lista de Ítems -->
+                <div class="cart-items-list">
+                    <div class="cart-item-row" th:each="item : ${items}" th:id="'cart-row-' + ${item.productoId}">
+                        <!-- Miniatura -->
+                        <img th:src="${item.imagenSrc}" th:alt="${item.nombre}" class="cart-item-img"
+                             onerror="this.src='/img/blank-product.jpg'">
+
+                        <!-- Información -->
+                        <div class="cart-item-info">
+                            <h3 class="cart-item-name" th:text="${item.nombre}">Nombre Producto</h3>
+                            <p class="cart-item-vendor">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm.178 4.275a1.375 1.375 0 0 0 2.752 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.148 1.005"/>
+                                    <path d="M2 9v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9h-1v5H3V9z"/>
+                                </svg>
+                                <span th:text="${item.vendedor}">Restaurante</span>
+                            </p>
+                            <span class="cart-item-price" th:text="${#numbers.formatCurrency(item.precio)}"></span>
+                        </div>
+
+                        <!-- Control de Cantidad (+ y -) -->
+                        <div class="cart-qty-control" role="group" aria-label="Control de cantidad">
+                            <!-- Botón Restar -->
+                            <a th:href="@{/cart/update/{id}(id=${item.productoId}, cantidad=${item.cantidad - 1})}"
+                               class="cart-qty-btn text-decoration-none"
+                               aria-label="Disminuir cantidad">-</a>
+
+                            <span class="cart-qty-val" th:text="${item.cantidad}">1</span>
+
+                            <!-- Botón Sumar -->
+                            <a th:if="${item.cantidad < item.stock}"
+                               th:href="@{/cart/update/{id}(id=${item.productoId}, cantidad=${item.cantidad + 1})}"
+                               class="cart-qty-btn text-decoration-none"
+                               aria-label="Aumentar cantidad">+</a>
+                            <button th:if="${item.cantidad >= item.stock}"
+                                    class="cart-qty-btn" disabled
+                                    title="Stock máximo alcanzado" aria-label="Aumentar cantidad deshabilitado">+</button>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="cart-item-subtotal" th:text="${#numbers.formatCurrency(item.subtotal)}">
+                            $0
+                        </div>
+
+                        <!-- Botón Eliminar con Modal de Confirmación -->
+                        <button type="button" class="cart-item-delete-btn"
+                                th:data-id="${item.productoId}"
+                                th:data-nombre="${item.nombre}"
+                                onclick="abrirModalEliminar(this.getAttribute('data-id'), this.getAttribute('data-nombre'))"
+                                title="Eliminar producto"
+                                aria-label="Eliminar producto">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <a href="/shop" class="btn btn-ocean-outline btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                        Agregar más productos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen de Pedido (Sticky) -->
+        <div class="col-12 col-lg-4">
+            <div class="checkout-card order-summary-card">
+                <div class="checkout-card-header">
+                    <h3 class="checkout-card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M14 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+                            <path d="M2 5.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m0 3a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                        </svg>
+                        Resumen del Pedido
+                    </h3>
+                </div>
+
+                <div class="summary-body">
+                    <div class="summary-row">
+                        <span>Subtotal productos</span>
+                        <strong class="text-dark" th:text="${#numbers.formatCurrency(subtotal)}">$0</strong>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Entrega en playa</span>
+                        <strong class="text-dark" th:text="${#numbers.formatCurrency(costoEnvio)}">$5.000</strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="badge-delivery-time w-100 justify-content-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                            </svg>
+                            Entrega estimada: 15–25 min
+                        </span>
+                    </div>
+
+                    <div class="summary-row total-row">
+                        <span>Total a pagar</span>
+                        <span th:text="${#numbers.formatCurrency(total)}">$0</span>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="/cart/checkout/proceed" class="btn btn-ocean w-100 btn-lg shadow-sm">
+                            Continuar a entrega
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <p class="text-center text-muted small mt-3 mb-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="me-1 text-turquoise" viewBox="0 0 16 16">
+                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
+                        </svg>
+                        Pago seguro garantizado
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal de Confirmación para Eliminar Producto -->
+<div class="modal fade" id="modalEliminarItem" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title jakarta-bold text-ocean" id="modalEliminarLabel">¿Eliminar producto?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="text-muted mb-0">¿Estás seguro de que deseas retirar <strong id="nombreItemEliminar" class="text-dark">este producto</strong> de tu carrito de compras?</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a id="btnConfirmarEliminar" href="#" class="btn btn-coral-outline" style="background-color: var(--playapp-coral); color: white; border: none;">
+                    Sí, eliminar
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+
+<footer class="mt-auto py-3 text-center text-muted small border-top" style="background-color: #ffffff;">
+    <div class="container">
+        <span>© 2026 PLAYAPP Cartagena — Delivery en la playa</span>
+    </div>
+</footer>
 
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
 <script src="/js/chat-widget.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function abrirModalEliminar(productoId, nombreProducto) {
+        document.getElementById('nombreItemEliminar').textContent = nombreProducto || 'este producto';
+        document.getElementById('btnConfirmarEliminar').setAttribute('href', '/cart/rm/' + productoId);
+        const modal = new bootstrap.Modal(document.getElementById('modalEliminarItem'));
+        modal.show();
+    }
+</script>
 </body>
 </html>

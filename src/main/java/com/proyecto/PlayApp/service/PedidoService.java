@@ -32,9 +32,11 @@ public class PedidoService {
         Usuario usuario = usuarios.findUsuarioByCorreo(compra.getCorreoUsuario());
         if (compra.getCarrito().isEmpty()) throw new IllegalStateException("Carrito vacio");
 
-        double total = compra.getCarrito().stream()
+        double subtotal = compra.getCarrito().stream()
                 .mapToDouble(item -> item.getPrecio() * item.getCantidad())
                 .sum();
+        double costoEnvio = 5000.0;
+        double total = subtotal + costoEnvio;
         compra.getEnvioPago().setValor(total);
         Envio envio = crearEnvio(compra.getEnvioPago(), usuario);
         Pago pago = crearPago(compra.getEnvioPago(),usuario);
@@ -55,11 +57,15 @@ public class PedidoService {
     }
 
     private Envio crearEnvio(EnvioPagoDTO datos , Usuario usuario){
+        String descCompleta = datos.getDescripcion();
+        if (datos.getZona() != null && !datos.getZona().isBlank()) {
+            descCompleta = "[" + datos.getZona() + "] " + (descCompleta != null ? descCompleta : "");
+        }
         return Envio.builder()
                 .latitud(datos.getLatitud())
                 .longitud(datos.getLongitud())
                 .dirreccion(datos.getDireccion())
-                .descripcion(datos.getDescripcion())
+                .descripcion(descCompleta)
                 .carpa(datos.getMesa())
                 .mesa(datos.getMesa())
                 .fecha(LocalDateTime.now())
@@ -68,10 +74,21 @@ public class PedidoService {
     }
 
     private Pago crearPago(EnvioPagoDTO datos , Usuario usuario){
+        String metodo = (datos.getMetodoPago() != null && !datos.getMetodoPago().isBlank())
+                ? datos.getMetodoPago() : "WOMPI";
+
+        Integer estado = 0;
+        String estadoPago = "INICIADO";
+        if ("EFECTIVO_CONTRAENTREGA".equalsIgnoreCase(metodo) || "TRANSFERENCIA_CONTRAENTREGA".equalsIgnoreCase(metodo)) {
+            estado = 6;
+            estadoPago = "PENDIENTE_CONTRAENTREGA";
+        }
+
         return Pago.builder()
                 .valor(datos.getValor())
-                .metodo(datos.getMetodoPago())
-                .estado(0)
+                .metodo(metodo)
+                .estado(estado)
+                .estadoPago(estadoPago)
                 .clienteId(usuario.getId())
                 .fecha(LocalDateTime.now())
                 .build();
@@ -164,7 +181,63 @@ public class PedidoService {
 
     public Pedido actualizarEstadoPagoPedido(Integer estado, String id){
         Pedido pedido = pedidos.findById(id).orElseThrow(() -> new IllegalStateException("Pedido no encontrado"));
-        pedido.getPago().setEstado(estado);
+        if (pedido.getPago() == null) {
+            pedido.setPago(Pago.builder()
+                    .metodo("WOMPI")
+                    .estado(estado)
+                    .valor(pedido.getTotal())
+                    .fecha(LocalDateTime.now())
+                    .build());
+        } else {
+            pedido.getPago().setEstado(estado);
+        }
+        return pedidos.save(pedido);
+    }
+
+    public Pedido actualizarEstadoYMetodoPagoPedido(Integer estado, String metodo, String id){
+        Pedido pedido = pedidos.findById(id).orElseThrow(() -> new IllegalStateException("Pedido no encontrado"));
+        String estadoPago = switch (estado) {
+            case 1 -> "APROBADO";
+            case 2 -> "RECHAZADO";
+            case 3 -> "PENDIENTE";
+            case 4 -> "CANCELADO";
+            case 6 -> "PENDIENTE_CONTRAENTREGA";
+            default -> "ESTADO_" + estado;
+        };
+        if (pedido.getPago() == null) {
+            pedido.setPago(Pago.builder()
+                    .metodo(metodo != null && !metodo.isBlank() ? metodo : "WOMPI")
+                    .estado(estado)
+                    .estadoPago(estadoPago)
+                    .valor(pedido.getTotal())
+                    .fecha(LocalDateTime.now())
+                    .build());
+        } else {
+            pedido.getPago().setEstado(estado);
+            pedido.getPago().setEstadoPago(estadoPago);
+            if (metodo != null && !metodo.isBlank()) {
+                pedido.getPago().setMetodo(metodo);
+            }
+        }
+        return pedidos.save(pedido);
+    }
+
+    public Pedido marcarPedidoComoPagado(String pedidoId) {
+        Pedido pedido = pedidos.findById(pedidoId)
+                .orElseThrow(() -> new IllegalStateException("Pedido no encontrado: " + pedidoId));
+        if (pedido.getPago() == null) {
+            pedido.setPago(Pago.builder()
+                    .metodo("EFECTIVO_CONTRAENTREGA")
+                    .estado(1)
+                    .estadoPago("PAGADO")
+                    .valor(pedido.getTotal())
+                    .fecha(LocalDateTime.now())
+                    .build());
+        } else {
+            pedido.getPago().setEstado(1);
+            pedido.getPago().setEstadoPago("PAGADO");
+            pedido.getPago().setFecha(LocalDateTime.now());
+        }
         return pedidos.save(pedido);
     }
 

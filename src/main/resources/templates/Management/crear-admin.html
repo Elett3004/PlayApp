@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear administrador</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Crear Administrador | PlayApp</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/weather.css">
+    <link rel="stylesheet" href="/css/admin-theme.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-<body class="container-fluid jakarta-regular">
-<main class="row flex-nowrap">
-    <div class="col-2 border-end p-0">
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
+<body class="jakarta-regular weather-page">
+<div class="weather-shell">
+    <div class="weather-sidebar">
+        <div class="d-flex flex-column flex-shrink-0 p-3 admin-sidebar">
             <a href="/manager/dashboard"
-               class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+               class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
                 <span class="fs-4 jakarta-bold">Playapp</span>
             </a>
@@ -51,11 +53,11 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
                             <path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h7A1.5 1.5 0 0 1 13 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5zM4.5 1a.5.5 0 0 0-.5.5V4h8V1.5a.5.5 0 0 0-.5-.5zM4 5v9.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V5zm1 1h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v3H9z"/>
                         </svg>
-                        Modelo Matematico
+                        Modelo Matemático
                     </a>
                 </li>
                 <li th:if="${adminGlobal}">
-                    <a href="/manager/admins/new" class="nav-link active">
+                    <a href="/manager/admins/new" class="nav-link active" aria-current="page">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
                             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
                             <path d="M8 9a5 5 0 0 0-5 5 .5.5 0 0 0 .5.5h5.256A4.5 4.5 0 0 1 8 9"/>
@@ -64,64 +66,91 @@
                         Crear Admins
                     </a>
                 </li>
-                <li><a href="/manager/clima" class="nav-link link-body-emphasis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true"><path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/></svg>Clima y ocupación estimada</a></li>
+                <li>
+                    <a href="/manager/clima" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true">
+                            <path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/>
+                        </svg>
+                        Clima y ocupación estimada
+                    </a>
+                </li>
             </ul>
             <hr>
             <div class="dropdown">
-                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
+                <a href="#" class="d-flex align-carritoItems-center link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <img src="/img/Logo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}"></strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow"
-                    th:insert="fragments/logout-button :: logoutButton">
+                    th:insert="~{fragments/logout-button :: logoutButton}">
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="col-10 p-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
-                <li class="breadcrumb-item active" aria-current="page">Crear administradores</li>
-            </ol>
-        </nav>
+    <main class="weather-main">
+        <div class="weather-content">
+            <header class="weather-header">
+                <div>
+                    <p class="eyebrow">SEGURIDAD Y CONTROL · PLAYAPP</p>
+                    <h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                            <path d="M8 9a5 5 0 0 0-5 5 .5.5 0 0 0 .5.5h5.256A4.5 4.5 0 0 1 8 9"/>
+                            <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                        <span>Crear Administrador</span>
+                    </h1>
+                    <p class="header-subtitle">Registra nuevas cuentas de administrador para restaurantes y entidades de playa.</p>
+                </div>
+            </header>
 
-        <div class="row justify-content-center">
-            <div class="col-lg-7 col-xl-6">
-                <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                        <h1 class="h3 jakarta-bold mb-2">Crear administrador</h1>
-                        <p class="text-muted mb-4">Solo el administrador global puede crear nuevas cuentas administrativas.</p>
+            <div class="view-bar">
+                <span class="now-chip"><span class="live-dot"></span>Superusuario</span>
+                <span>Alta de cuentas administrativas</span>
+            </div>
 
-                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                        <div th:if="${registroExitoso}" class="alert alert-success" th:text="${registroExitoso}"></div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-xl-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header mb-3">
+                            <h2>Datos de la Cuenta</h2>
+                        </div>
+                        <p class="text-muted mb-4" style="font-size: 13px;">Solo el administrador global tiene privilegios para dar de alta nuevas cuentas administrativas.</p>
+
+                        <div th:if="${error}" class="alert alert-danger rounded-3" th:text="${error}"></div>
+                        <div th:if="${registroExitoso}" class="alert alert-success rounded-3" th:text="${registroExitoso}"></div>
 
                         <form th:action="@{/manager/admins/new}" method="post" th:object="${formulario}">
                             <div class="mb-3">
-                                <label for="nombreCompleto" class="form-label fw-bold">Nombre del restaurante</label>
-                                <input type="text" class="form-control" id="nombreCompleto" th:field="*{nombreCompleto}" required>
+                                <label for="nombreCompleto" class="form-label">Nombre del restaurante o entidad</label>
+                                <input type="text" class="form-control" id="nombreCompleto" th:field="*{nombreCompleto}" placeholder="Ej: Restaurante Bocagrande" required>
                             </div>
                             <div class="mb-3">
-                                <label for="correo" class="form-label fw-bold">Correo electronico</label>
-                                <input type="email" class="form-control" id="correo" th:field="*{correo}" required>
+                                <label for="correo" class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-control" id="correo" th:field="*{correo}" placeholder="admin@restaurante.com" required>
                             </div>
                             <div class="mb-4">
-                                <label for="password" class="form-label fw-bold">Contrasena</label>
-                                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                                <label for="password" class="form-label">Contraseña de acceso</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="••••••••" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 fw-bold">Crear administrador</button>
+                            <button type="submit" class="admin-btn-primary w-100 py-3 justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                                    <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                </svg>
+                                <span>Registrar Administrador</span>
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+</div>
 
-<div th:insert="fragments/logout-modal :: logoutModal"></div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+<div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

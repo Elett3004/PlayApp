@@ -1,58 +1,61 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predecir Ventas</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Predecir Ventas | PlayApp</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/weather.css">
+    <link rel="stylesheet" href="/css/admin-theme.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-
-<body class="container-fluid jakarta-regular">
-<main class="row flex-nowrap">
-    <div class="col-2 border-end p-0">
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
-
+<body class="jakarta-regular weather-page">
+<div class="weather-shell">
+    <div class="weather-sidebar">
+        <div class="d-flex flex-column flex-shrink-0 p-3 admin-sidebar">
             <a href="/manager/dashboard"
                class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
                 <span class="fs-4 jakarta-bold">Playapp</span>
             </a>
-
             <hr>
-
             <ul class="nav nav-pills flex-column mb-auto">
-
-                <li><a href="/manager/dashboard" class="nav-link link-body-emphasis">
-                    <img src="/img/icons/speedometer2.svg" width="16" height="16" class="bi pe-none me-2">
-                    Dashboard
-                </a></li>
-
-                <li><a href="/manager/orders" class="nav-link link-body-emphasis">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stickies me-2" viewBox="0 0 16 16">
+                <li>
+                    <a href="/manager/dashboard" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16" alt="dashboard"/>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/orders" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stickies me-2" viewBox="0 0 16 16">
                             <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5V13a1 1 0 0 0 1 1V1.5a.5.5 0 0 1 .5-.5H14a1 1 0 0 0-1-1z"/>
                             <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v11A1.5 1.5 0 0 0 3.5 16h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 16 9.586V3.5A1.5 1.5 0 0 0 14.5 2zM3 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V9h-4.5A1.5 1.5 0 0 0 9 10.5V15H3.5a.5.5 0 0 1-.5-.5zm7 11.293V10.5a.5.5 0 0 1 .5-.5h4.293z"/>
                         </svg>
-                    Ordenes
-                </a></li>
-
-                <li><a href="/manager/products" class="nav-link link-body-emphasis">
-                    <img src="/img/icons/boxes.svg" width="16" height="16" class="bi pe-none me-2">
-                    Catalogo
-                </a></li>
-
-                <li><a href="/manager/prediccion" class="nav-link active">
-                    <img src="/img/icons/graph-up.svg" width="16" height="16" class="bi pe-none me-2">
-                    Predecir Ventas
-                </a></li>
-
-                <li><a href="/manager/modelo-matematico" class="nav-link link-body-emphasis">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
-                        <path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h7A1.5 1.5 0 0 1 13 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5zM4.5 1a.5.5 0 0 0-.5.5V4h8V1.5a.5.5 0 0 0-.5-.5zM4 5v9.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V5zm1 1h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v3H9z"/>
-                    </svg>
-                    Modelo Matemático
-                </a></li>
+                        Ordenes
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/products" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/boxes.svg" class="bi pe-none me-2" width="16" height="16" alt="inventory"/>
+                        Catalogo
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/prediccion" class="nav-link active" aria-current="page">
+                        <img src="/img/icons/graph-up.svg" class="bi pe-none me-2" width="16" height="16" alt="predict"/>
+                        Predecir Ventas
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/modelo-matematico" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h7A1.5 1.5 0 0 1 13 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 14.5zM4.5 1a.5.5 0 0 0-.5.5V4h8V1.5a.5.5 0 0 0-.5-.5zM4 5v9.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V5zm1 1h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v1H9zm-4 2h1v1H5zm2 0h1v1H7zm2 0h1v3H9z"/>
+                        </svg>
+                        Modelo Matemático
+                    </a>
+                </li>
                 <li th:if="${adminGlobal}">
                     <a href="/manager/admins/new" class="nav-link link-body-emphasis">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2" viewBox="0 0 16 16" aria-hidden="true">
@@ -63,106 +66,150 @@
                         Crear Admins
                     </a>
                 </li>
-
-                <li><a href="/manager/clima" class="nav-link link-body-emphasis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true"><path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/></svg>Clima y ocupación estimada</a></li>
+                <li>
+                    <a href="/manager/clima" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true">
+                            <path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/>
+                        </svg>
+                        Clima y ocupación estimada
+                    </a>
+                </li>
             </ul>
-
             <hr>
-
             <div class="dropdown">
-                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle"
-                   data-bs-toggle="dropdown">
-                    <img src="https://github.com/mdo.png" width="32" height="32" class="rounded-circle me-2">
+                <a href="#" class="d-flex align-carritoItems-center link-body-emphasis text-decoration-none dropdown-toggle"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/img/Logo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}"></strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow"
-                    th:insert="fragments/logout-button :: logoutButton">
+                    th:insert="~{fragments/logout-button :: logoutButton}">
                 </ul>
             </div>
-
         </div>
     </div>
 
-    <div class="col-10 p-4">
+    <main class="weather-main">
+        <div class="weather-content">
+            <header class="weather-header">
+                <div>
+                    <p class="eyebrow">MACHINE LEARNING · PLAYAPP</p>
+                    <h1>
+                        <img src="/img/icons/graph-up.svg" width="28" height="28" style="filter: brightness(0) invert(1);" alt="" />
+                        <span>Predicción de Ventas</span>
+                    </h1>
+                    <p class="header-subtitle">Estima la demanda de productos utilizando datos de clima, día de la semana y temporada.</p>
+                </div>
+                <div>
+                    <a href="/manager/prediccion" class="refresh-button" title="Reiniciar formulario">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5" />
+                        </svg>
+                        <span>Reiniciar</span>
+                    </a>
+                </div>
+            </header>
 
-        <h2 class="jakarta-bold mb-3">Predicción de Ventas</h2>
-        <p class="text-muted mb-4">Ingresa los datos para que el sistema prediga el total de ventas esperadas.</p>
-
-        <form id="formPrediccion" class="row g-3">
-
-            <div class="col-md-6">
-                <label class="form-label">Día de la Semana</label>
-                <select class="form-select" id="diaSemana">
-                    <option>Lunes</option>
-                    <option>Martes</option>
-                    <option>Miercoles</option>
-                    <option>Jueves</option>
-                    <option>Viernes</option>
-                    <option>Sabado</option>
-                    <option>Domingo</option>
-                </select>
+            <div class="view-bar">
+                <span class="now-chip"><span class="live-dot"></span>IA Analítica</span>
+                <span>Proyección de demanda</span>
             </div>
 
-            <div class="col-md-6">
-                <label class="form-label">Producto</label>
-                <select class="form-select" id="producto" required>
-                    <option value="Cerveza Club Colombia">Cerveza Club Colombia</option>
-                    <option value="Ceviche de camaron">Ceviche de camaron</option>
-                    <option value="Clase de surf">Clase de surf</option>
-                    <option value="Alquiler de moto acuática">Alquiler de moto acuática</option>
-                    <option value="Coco frio">Coco frio</option>
-                    <option value="Coctel de maracuya">Coctel de maracuya</option>
-                    <option value="Pescado frito">Pescado frito</option>
-                    <option value="Ostras frescas">Ostras frescas</option>
-                    <option value="Limonada de coco">Limonada de coco</option>
-                    <option value="Tinto frio">Tinto frio</option>
-                </select>
+            <div class="row justify-content-center">
+                <div class="col-12 col-xl-10">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h2>Parámetros de la Predicción</h2>
+                        </div>
+                        <p class="text-muted mb-4" style="font-size: 13px;">Completa las características operativas y climáticas para calcular las unidades que se esperan vender.</p>
+
+                        <form id="formPrediccion" class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="diaSemana">Día de la Semana</label>
+                                <select class="form-select" id="diaSemana">
+                                    <option>Lunes</option>
+                                    <option>Martes</option>
+                                    <option>Miercoles</option>
+                                    <option>Jueves</option>
+                                    <option>Viernes</option>
+                                    <option>Sabado</option>
+                                    <option>Domingo</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="producto">Producto</label>
+                                <select class="form-select" id="producto" required>
+                                    <option value="Cerveza Club Colombia">Cerveza Club Colombia</option>
+                                    <option value="Ceviche de camaron">Ceviche de camaron</option>
+                                    <option value="Clase de surf">Clase de surf</option>
+                                    <option value="Alquiler de moto acuática">Alquiler de moto acuática</option>
+                                    <option value="Coco frio">Coco frio</option>
+                                    <option value="Coctel de maracuya">Coctel de maracuya</option>
+                                    <option value="Pescado frito">Pescado frito</option>
+                                    <option value="Ostras frescas">Ostras frescas</option>
+                                    <option value="Limonada de coco">Limonada de coco</option>
+                                    <option value="Tinto frio">Tinto frio</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="categoria">Categoría</label>
+                                <select class="form-select" id="categoria">
+                                    <option>Bebida</option>
+                                    <option>Comida</option>
+                                    <option>Servicio</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="precio">Precio Unitario ($ COP)</label>
+                                <input type="number" step="100" class="form-control" id="precio" placeholder="Ej: 15000">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="clima">Condición del Clima</label>
+                                <select class="form-select" id="clima">
+                                    <option>Soleado</option>
+                                    <option>Nublado</option>
+                                    <option>Lluvioso</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="temporada">Temporada Turística</label>
+                                <select class="form-select" id="temporada">
+                                    <option>Alta</option>
+                                    <option>Baja</option>
+                                    <option>Normal</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-4 text-end">
+                                <button type="button" class="admin-btn-primary px-4 py-3" onclick="predecir()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cpu" viewBox="0 0 16 16">
+                                        <path d="M5 0a.5.5 0 0 1 .5.5V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2h1V.5a.5.5 0 0 1 1 0V2A2.5 2.5 0 0 1 14 4.5h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14v1h1.5a.5.5 0 0 1 0 1H14a2.5 2.5 0 0 1-2.5 2.5v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14h-1v1.5a.5.5 0 0 1-1 0V14A2.5 2.5 0 0 1 2 11.5H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2v-1H.5a.5.5 0 0 1 0-1H2A2.5 2.5 0 0 1 4.5 2V.5A.5.5 0 0 1 5 0m-.5 3A1.5 1.5 0 0 0 3 4.5v7A1.5 1.5 0 0 0 4.5 13h7a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11.5 3zM5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5zM6.5 6a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z"/>
+                                    </svg>
+                                    <span>Calcular Predicción</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div id="resultado" class="d-none mt-4 p-4 rounded-4 text-center" style="background: #e7f1ec; border: 1px solid #cce5dc;">
+                            <p class="eyebrow mb-1" style="color: #347164 !important; font-size: 11px;">PROYECCIÓN ESTIMADA DE VENTAS</p>
+                            <div id="resultadoNumero" style="font-size: clamp(42px, 5vw, 68px); font-weight: 800; color: #125d60; letter-spacing: -2px; line-height: 1.1; margin: 10px 0;">
+                                0
+                            </div>
+                            <p class="mb-0 text-muted" style="font-size: 13px;">Unidades estimadas para la jornada según los factores seleccionados.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </main>
+</div>
 
-            <div class="col-md-6">
-                <label class="form-label">Categoría</label>
-                <select class="form-select" id="categoria">
-                    <option>Bebida</option>
-                    <option>Comida</option>
-                    <option>Servicio</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Precio</label>
-                <input type="" class="form-control" id="precio">
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Clima</label>
-                <select class="form-select" id="clima">
-                    <option>Soleado</option>
-                    <option>Nublado</option>
-                    <option>Lluvioso</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Temporada</label>
-                <select class="form-select" id="temporada">
-                    <option>Alta</option>
-                    <option>Baja</option>
-                    <option>Normal</option>
-                </select>
-            </div>
-
-            <div class="col-12 mt-4">
-                <button type="button" class="btn btn-primary" onclick="predecir()">Calcular Predicción</button>
-            </div>
-        </form>
-
-        <div id="resultado" class="alert alert-info mt-4 d-none"></div>
-
-    </div>
-</main>
-
-<div th:insert="fragments/logout-modal :: logoutModal"></div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     async function predecir() {
         const datos = {
@@ -174,21 +221,31 @@
             temporada: document.getElementById('temporada').value
         };
 
-        const response = await fetch('/manager/prediccion/predecir', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(datos)
-        });
-
-        const json = await response.json();
-
         const resultDiv = document.getElementById('resultado');
-        resultDiv.classList.remove('d-none');
-        resultDiv.innerHTML = `<strong>Resultado:</strong> ${json.prediccion.toFixed(2)}`;
+        const resultNum = document.getElementById('resultadoNumero');
+
+        try {
+            const response = await fetch('/manager/prediccion/predecir', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(datos)
+            });
+
+            if (!response.ok) {
+                throw new Error("Error en el cálculo");
+            }
+
+            const json = await response.json();
+            resultDiv.classList.remove('d-none');
+            resultNum.textContent = json.prediccion.toFixed(2) + " unid.";
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } catch (err) {
+            resultDiv.classList.remove('d-none');
+            resultNum.textContent = "Error al calcular";
+        }
     }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
 </body>
 </html>

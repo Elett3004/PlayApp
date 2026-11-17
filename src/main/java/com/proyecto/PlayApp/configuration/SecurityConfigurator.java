@@ -84,7 +84,7 @@ public class SecurityConfigurator {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/payment/proceed").permitAll()
+                        .requestMatchers("/payment/proceed", "/payment/wompi/**", "/api/wompi/**").permitAll()
                         .requestMatchers(pathsToUserEndpoints).hasRole("USER")
                         .requestMatchers(pathsToAdminEndpoints).hasRole("ADMIN")
                         .requestMatchers(pathsToStaticResources).permitAll()

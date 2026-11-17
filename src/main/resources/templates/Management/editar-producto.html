@@ -1,17 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Editar Producto | PlayApp</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/weather.css">
+    <link rel="stylesheet" href="/css/admin-theme.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-<body class="container-fluid jakarta-regular">
-<main class="row flex-nowrap">
-    <div class="col-2 border-end p-0">
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
+<body class="jakarta-regular weather-page">
+<div class="weather-shell">
+    <div class="weather-sidebar">
+        <div class="d-flex flex-column flex-shrink-0 p-3 admin-sidebar">
             <a href="/manager/dashboard"
                class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
@@ -21,8 +23,7 @@
             <ul class="nav nav-pills flex-column mb-auto">
                 <li>
                     <a href="/manager/dashboard" class="nav-link link-body-emphasis">
-                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16"
-                             alt="dashboard"/>
+                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16" alt="dashboard"/>
                         Dashboard
                     </a>
                 </li>
@@ -36,9 +37,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/manager/products" class="nav-link active nav-item">
+                    <a href="/manager/products" class="nav-link active" aria-current="page">
                         <img src="/img/icons/boxes.svg" class="bi pe-none me-2" width="16" height="16" alt="inventory"/>
                         Catalogo
+                    </a>
+                </li>
+                <li>
+                    <a href="/manager/prediccion" class="nav-link link-body-emphasis">
+                        <img src="/img/icons/graph-up.svg" class="bi pe-none me-2" width="16" height="16" alt="predict"/>
+                        Predecir Ventas
                     </a>
                 </li>
                 <li>
@@ -59,116 +66,120 @@
                         Crear Admins
                     </a>
                 </li>
-                <li><a href="/manager/clima" class="nav-link link-body-emphasis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true"><path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/></svg>Clima y ocupación estimada</a></li>
+                <li>
+                    <a href="/manager/clima" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true">
+                            <path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/>
+                        </svg>
+                        Clima y ocupación estimada
+                    </a>
+                </li>
             </ul>
             <hr>
             <div class="dropdown">
                 <a href="#" class="d-flex align-carritoItems-center link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <img src="/img/Logo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}">Restaurante</strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow"
-                    th:insert="fragments/logout-button :: logoutButton">
+                    th:insert="~{fragments/logout-button :: logoutButton}">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-10">
-        <div class="row">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
-                    <li class="breadcrumb-carritoItem">
-                        <a class="link-body-emphasis" href="/manager/dashboard">
-                            <img src="/img/icons/house-door-fill.svg" class="bi" width="16" height="16" alt="home"/>
-                            <span class="visually-hidden">Home</span>
-                        </a>
-                    </li>
-                    <li class="breadcrumb-carritoItem">
-                        <a class="link-body-emphasis fw-semibold text-decoration-none" href="/manager/products">Catalogo</a>
-                    </li>
-                    <li class="breadcrumb-carritoItem active" aria-current="page">
-                        Editar producto
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <div class="row">
-            <div class="col">
-                <form action="#"   th:action="@{/manager/product/edit/{id}(id=${producto.id})}" th:object="${producto}" method="post"  enctype="multipart/form-data" class="row g-3">
-                    <div class="col-6">
-                        <label class="form-label" for="nombre">Nombre</label>
-                        <input class="form-control" type="text" th:field="*{nombre}" id="nombre" required>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label" for="precio">Precio</label>
-                        <input class="form-control" type="number" th:field="*{precio}" step="0.01" id="precio" required>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label" for="descripcion">Descripción</label>
-                        <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3" required></textarea>
-                    </div>
-                    <div class="col-4">
-                        <label class="form-label" for="stock">Stock</label>
-                        <input  class="form-control" th:field="*{stock}" type="number" id="stock" required>
-                    </div>
-                    <div class="col-4">
-                        <label class="form-label" for="categoria">Categoria</label>
-                        <select th:field="*{categoria}" id="categoria" class="form-select">
-                            <option th:value="${0}">Seleccione...</option>
-                            <option th:value="${1}">Comida</option>
-                            <option th:value="${2}">Bebida</option>
-                            <option th:value="${3}">Servicio</option>
-                        </select>
-                    </div>
-                    <div class="col-4">
-                        <label class="form-label" for="tipo">Tipo</label>
-                        <select class="form-select" th:field="*{tipo}" id="tipo" name="tipo">
-                            <option th:each="carritoItem : ${T(com.proyecto.PlayApp.entity.TipoBebida).values()}"
-                                    th:value="${carritoItem.ordinal()}"
-                                    th:text="${carritoItem}"></option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label" for="archivoimagen">Imagen:</label>
-                        <input class="form-control" type="file" id="archivoimagen" name="archivoimagen" accept="image/*">
-                    </div>
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-primary">Editar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <footer class="d-flex flex-wrap justify-content-between align-carritoItems-center py-3 my-4 border-top">
-                <div class="col-md-4 d-flex align-carritoItems-center">
-                    <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-                        <img src="/img/Logo.png" class="bi" width="30" height="24" alt="home"/>
-                    </a>
-                    <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Playapp, Inc</span>
-                </div>
 
-                <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#twitter"></use>
+    <main class="weather-main">
+        <div class="weather-content">
+            <header class="weather-header">
+                <div>
+                    <p class="eyebrow">CATÁLOGO · PLAYAPP</p>
+                    <h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                         </svg>
-                    </a></li>
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#instagram"></use>
+                        <span>Editar Producto</span>
+                    </h1>
+                    <p class="header-subtitle">Modifica precio, descripción, stock o imagen de este producto en el catálogo.</p>
+                </div>
+                <div>
+                    <a href="/manager/products" class="refresh-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                         </svg>
-                    </a></li>
-                    <li class="ms-3"><a class="text-body-secondary" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#facebook"></use>
-                        </svg>
-                    </a></li>
-                </ul>
-            </footer>
+                        <span>Volver al Catálogo</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="view-bar">
+                <span class="now-chip"><span class="live-dot"></span>Edición</span>
+                <span>Modificación de datos</span>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-xl-10">
+                    <div class="admin-card">
+                        <div class="admin-card-header mb-4">
+                            <h2>Editar: <span class="text-primary" th:text="${producto.nombre}"></span></h2>
+                        </div>
+
+                        <form action="#" th:action="@{/manager/product/edit/{id}(id=${producto.id})}" th:object="${producto}" method="post" enctype="multipart/form-data" class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="nombre">Nombre del Producto</label>
+                                <input class="form-control" type="text" th:field="*{nombre}" id="nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="precio">Precio ($ COP)</label>
+                                <input class="form-control" type="number" th:field="*{precio}" step="0.01" id="precio" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="descripcion">Descripción</label>
+                                <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="stock">Stock Disponible</label>
+                                <input class="form-control" th:field="*{stock}" type="number" id="stock" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="categoria">Categoría</label>
+                                <select th:field="*{categoria}" id="categoria" class="form-select">
+                                    <option th:value="${0}">Seleccione...</option>
+                                    <option th:value="${1}">Comida</option>
+                                    <option th:value="${2}">Bebida</option>
+                                    <option th:value="${3}">Servicio</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="tipo">Subtipo / Variedad</label>
+                                <select class="form-select" th:field="*{tipo}" id="tipo" name="tipo">
+                                    <option th:each="carritoItem : ${T(com.proyecto.PlayApp.entity.TipoBebida).values()}"
+                                            th:value="${carritoItem.ordinal()}"
+                                            th:text="${carritoItem}"></option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="archivoimagen">Actualizar Imagen (opcional)</label>
+                                <input class="form-control" type="file" id="archivoimagen" name="archivoimagen" accept="image/*">
+                            </div>
+                            <div class="col-12 mt-4 text-end">
+                                <button type="submit" class="admin-btn-primary px-4 py-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+                                    </svg>
+                                    <span>Actualizar Producto</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</main>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
 </body>
 </html>

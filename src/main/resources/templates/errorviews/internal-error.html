@@ -1,37 +1,56 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Inconveniente Inesperado | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-<body class="background-grey jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
-<!-- Barra de navegación -->
 <header th:replace="~{components/navbar :: publicNavbar('inicio')}"></header>
 
+<main class="container my-5 flex-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="checkout-card text-center p-4 shadow-sm" style="border-radius: 16px;">
+                <div class="mx-auto mb-3" style="width: 80px; height: 80px; border-radius: 50%; background-color: var(--playapp-coral-light, #fee2e2); color: var(--playapp-coral-dark, #dc2626); display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                    </svg>
+                </div>
+                
+                <h3 class="jakarta-bold text-ocean mb-2">Algo no ha funcionado correctamente</h3>
+                <p class="text-muted mb-4">
+                    Ocurrió un error inesperado al procesar la solicitud. Por favor intenta volver a la tienda o recargar la página.
+                </p>
 
-<div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 text-center">
-            <h1 class="jakarta-extrabold">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20vh" height="20vh" fill="currentColor" class="bi bi-wrench-adjustable-circle me-2" viewBox="0 0 16 16">
-                    <path d="M12.496 8a4.5 4.5 0 0 1-1.703 3.526L9.497 8.5l2.959-1.11q.04.3.04.61"/>
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-1 0a7 7 0 1 0-13.202 3.249l1.988-1.657a4.5 4.5 0 0 1 7.537-4.623L7.497 6.5l1 2.5 1.333 3.11c-.56.251-1.18.39-1.833.39a4.5 4.5 0 0 1-1.592-.29L4.747 14.2A7 7 0 0 0 15 8m-8.295.139a.25.25 0 0 0-.288-.376l-1.5.5.159.474.808-.27-.595.894a.25.25 0 0 0 .287.376l.808-.27-.595.894a.25.25 0 0 0 .287.376l1.5-.5-.159-.474-.808.27.596-.894a.25.25 0 0 0-.288-.376l-.808.27z"/>
-                </svg>
-            </h1>
-            <h1 class="jakarta-extrabold text-primary">500</h1>
-            <h2 class="jakarta-extrabold">Opps! algo no esta funcionado</h2>
-            <p th:text="${exception}"></p>
-            <a class="btn btn btn-primary my-2" th:href="@{${link}}">Volver al inicio</a>
+                <div class="d-flex justify-content-center flex-wrap gap-3">
+                    <a th:href="@{${link != null ? link : '/shop'}}" class="btn btn-ocean px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                        Volver al inicio
+                    </a>
+                    <a href="/shop" class="btn btn-ocean-outline px-4">
+                        Ir a la tienda
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</main>
 
+<footer class="mt-auto py-3 text-center text-muted small border-top" style="background-color: #ffffff;">
+    <div class="container">
+        <span>© 2026 PLAYAPP Cartagena — Delivery en la playa</span>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

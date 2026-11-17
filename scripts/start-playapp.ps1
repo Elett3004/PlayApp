@@ -214,17 +214,19 @@ if (!$skipDocker -and (Test-Path $composeFile)) {
 
 $redisHost = if ($env:REDIS_HOST) { $env:REDIS_HOST } else { "localhost" }
 $redisPort = if ($env:REDIS_PORT) { [int]$env:REDIS_PORT } else { 6379 }
-$mongoHost = "localhost"
-$mongoPort = 27017
-if ($mongoUri -match "mongodb:\/\/([^:\/]+):(\d+)") {
-    $mongoHost = $matches[1]
-    $mongoPort = [int]$matches[2]
-}
+if ($usesLocalMongo) {
+    $mongoHost = "localhost"
+    $mongoPort = if ($env:PLAYAPP_MONGO_PORT) { [int]$env:PLAYAPP_MONGO_PORT } else { 27017 }
+    if ($mongoUri -match "mongodb:\/\/([^:\/]+):(\d+)") {
+        $mongoHost = $matches[1]
+        $mongoPort = [int]$matches[2]
+    }
 
-if (($mongoHost -eq "localhost" -or $mongoHost -eq "127.0.0.1") -and !(Test-TcpEndpoint $mongoHost $mongoPort)) {
-    Write-Host "MongoDB no esta disponible en ${mongoHost}:${mongoPort}." -ForegroundColor Red
-    Write-Host "Inicia Docker Desktop y ejecuta scripts/dev-up.ps1, o cambia MONGODB_URI a una instancia activa." -ForegroundColor Yellow
-    exit 1
+    if (($mongoHost -eq "localhost" -or $mongoHost -eq "127.0.0.1") -and !(Test-TcpEndpoint $mongoHost $mongoPort)) {
+        Write-Host "MongoDB no esta disponible en ${mongoHost}:${mongoPort}." -ForegroundColor Red
+        Write-Host "Inicia Docker Desktop y ejecuta scripts/dev-up.ps1, o cambia MONGODB_URI a una instancia activa." -ForegroundColor Yellow
+        exit 1
+    }
 }
 
 if (($redisHost -eq "localhost" -or $redisHost -eq "127.0.0.1") -and !(Test-TcpEndpoint $redisHost $redisPort)) {
@@ -233,7 +235,7 @@ if (($redisHost -eq "localhost" -or $redisHost -eq "127.0.0.1") -and !(Test-TcpE
     exit 1
 }
 
-$port = 8080
+$port = if ($env:PLAYAPP_APP_PORT) { [int]$env:PLAYAPP_APP_PORT } else { 8080 }
 while (Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue) {
     Write-Host "El puerto $port ya esta ocupado. Probando el puerto $($port + 1)..." -ForegroundColor Yellow
     $port++

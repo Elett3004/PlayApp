@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inconveniente Inesperado | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
+    <link rel="icon" href="/img/Logo.png" type="image/png">
+</head>
+<body class="checkout-body jakarta-regular">
+
+<header th:replace="~{components/navbar :: publicNavbar('inicio')}"></header>
+
+<main class="container my-5 flex-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="checkout-card text-center p-4 shadow-sm" style="border-radius: 16px;">
+                <div class="mx-auto mb-3" style="width: 80px; height: 80px; border-radius: 50%; background-color: var(--playapp-coral-light, #fee2e2); color: var(--playapp-coral-dark, #dc2626); display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                    </svg>
+                </div>
+                
+                <h3 class="jakarta-bold text-ocean mb-2">Algo no salió como esperábamos</h3>
+                <p class="text-muted mb-4">
+                    Tuvimos un inconveniente temporal para procesar esta página. No te preocupes, tus datos y tus compras están a salvo.
+                </p>
+
+                <div class="d-flex justify-content-center flex-wrap gap-3">
+                    <a href="/shop" class="btn btn-ocean px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                        Volver a la tienda
+                    </a>
+                    <a href="/" class="btn btn-ocean-outline px-4">
+                        Ir al inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="mt-auto py-3 text-center text-muted small border-top" style="background-color: #ffffff;">
+    <div class="container">
+        <span>© 2026 PLAYAPP Cartagena — Delivery en la playa</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

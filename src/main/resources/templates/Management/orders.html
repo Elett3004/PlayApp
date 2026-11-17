@@ -1,17 +1,34 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Órdenes | PlayApp</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/weather.css">
+    <link rel="stylesheet" href="/css/admin-theme.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
+    <style>
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
 </head>
-<body class="container-fluid jakarta-regular">
-<main class="row flex-nowrap">
-    <div class="col-2 border-end p-0">
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary min-vh-100">
+<body class="jakarta-regular weather-page">
+<div class="weather-shell">
+    <div class="weather-sidebar">
+        <div class="d-flex flex-column flex-shrink-0 p-3 admin-sidebar">
             <a href="/manager/dashboard"
                class="d-flex align-carritoItems-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <img src="/img/Logo.png" class="bi pe-none me-2" width="40" height="32" alt="home"/>
@@ -21,13 +38,12 @@
             <ul class="nav nav-pills flex-column mb-auto">
                 <li>
                     <a href="/manager/dashboard" class="nav-link link-body-emphasis">
-                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16"
-                             alt="dashboard"/>
+                        <img src="/img/icons/speedometer2.svg" class="bi pe-none me-2" width="16" height="16" alt="dashboard"/>
                         Dashboard
                     </a>
                 </li>
                 <li>
-                    <a href="/manager/orders" class="nav-link active nav-item" >
+                    <a href="/manager/orders" class="nav-link active" aria-current="page">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stickies me-2" viewBox="0 0 16 16">
                             <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5V13a1 1 0 0 0 1 1V1.5a.5.5 0 0 1 .5-.5H14a1 1 0 0 0-1-1z"/>
                             <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v11A1.5 1.5 0 0 0 3.5 16h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 16 9.586V3.5A1.5 1.5 0 0 0 14.5 2zM3 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V9h-4.5A1.5 1.5 0 0 0 9 10.5V15H3.5a.5.5 0 0 1-.5-.5zm7 11.293V10.5a.5.5 0 0 1 .5-.5h4.293z"/>
@@ -43,8 +59,8 @@
                 </li>
                 <li>
                     <a href="/manager/prediccion" class="nav-link link-body-emphasis">
-                        <img src="/img/icons/graph-up.svg" width="16" height="16" class="me-2">
-                    Predecir Ventas
+                        <img src="/img/icons/graph-up.svg" class="bi pe-none me-2" width="16" height="16" alt="predict"/>
+                        Predecir Ventas
                     </a>
                 </li>
                 <li>
@@ -65,119 +81,165 @@
                         Crear Admins
                     </a>
                 </li>
-                <li><a href="/manager/clima" class="nav-link link-body-emphasis"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true"><path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/></svg>Clima y ocupación estimada</a></li>
+                <li>
+                    <a href="/manager/clima" class="nav-link link-body-emphasis">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="bi pe-none me-2 align-text-bottom" aria-hidden="true">
+                            <path d="M12 3V1M5.6 5.6 4.2 4.2M3 12H1M18.4 5.6l1.4-1.4"/><path d="M7.5 15a6 6 0 1 1 10-6"/><path d="M9 21a4 4 0 1 1 1-7.9 5 5 0 0 1 9.3-1.1A4.5 4.5 0 0 1 19.5 21Z"/>
+                        </svg>
+                        Clima y ocupación estimada
+                    </a>
+                </li>
             </ul>
             <hr>
             <div class="dropdown">
                 <a href="#" class="d-flex align-carritoItems-center link-body-emphasis text-decoration-none dropdown-toggle"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <img src="/img/Logo.png" alt="" width="32" height="32" class="rounded-circle me-2">
                     <strong class="admin-display-name d-inline-block text-truncate" style="max-width: 150px;" th:text="${nombreAdmin}"></strong>
                 </a>
                 <ul class="dropdown-menu text-small shadow"
-                    th:insert="fragments/logout-button :: logoutButton">
+                    th:insert="~{fragments/logout-button :: logoutButton}">
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-10">
-        <div class="row">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
-                    <li class="breadcrumb-carritoItem">
-                        <a class="link-body-emphasis" href="#">
-                            <img src="/img/icons/house-door-fill.svg" class="bi" width="16" height="16" alt="home"/>
-                            <span class="visually-hidden">Home</span>
-                        </a>
-                    </li>
-                    <li class="breadcrumb-carritoItem active" aria-current="page">
-                        Ordenes
-                    </li>
-                </ol>
-            </nav>
-        </div>
-        <form action="#" th:action="@{/manager/orders}" method="GET"  class="row my-2">
-            <div class="d-flex">
-                <div class="me-auto">
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                        <div class="input-group">
-                            <select id="filtro" name="estado" class="form-select" aria-label="Default select example">
-                                <option selected value="">Todos</option>
-                                <option value="0">Recibidos</option>
-                                <option value="1">En preparación</option>
-                                <option value="2">Terminados</option>
-                            </select>
-                        </div>
-                        <div class="btn-group mx-2" role="group" aria-label="First group">
-                            <button type="submit" class="btn btn-outline-primary">Buscar</button>
-                        </div>
+
+    <main class="weather-main">
+        <div class="weather-content">
+            <header class="weather-header">
+                <div>
+                    <p class="eyebrow">GESTIÓN DE PEDIDOS · PLAYAPP</p>
+                    <h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-stickies" viewBox="0 0 16 16">
+                            <path d="M1.5 0A1.5 1.5 0 0 0 0 1.5V13a1 1 0 0 0 1 1V1.5a.5.5 0 0 1 .5-.5H14a1 1 0 0 0-1-1z"/>
+                            <path d="M3.5 2A1.5 1.5 0 0 0 2 3.5v11A1.5 1.5 0 0 0 3.5 16h6.086a1.5 1.5 0 0 0 1.06-.44l4.915-4.914A1.5 1.5 0 0 0 16 9.586V3.5A1.5 1.5 0 0 0 14.5 2zM3 3.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5V9h-4.5A1.5 1.5 0 0 0 9 10.5V15H3.5a.5.5 0 0 1-.5-.5zm7 11.293V10.5a.5.5 0 0 1 .5-.5h4.293z"/>
+                        </svg>
+                        <span>Órdenes y Entregas</span>
+                    </h1>
+                    <p class="header-subtitle">Monitorea los pedidos recibidos, actualiza su estado de preparación y despacho en playa.</p>
+                </div>
+                <div>
+                    <a href="/manager/orders" class="refresh-button" title="Refrescar lista de órdenes">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 8a8 8 0 1 0 0 8M20 3v5h-5" />
+                        </svg>
+                        <span>Actualizar</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="view-bar">
+                <span class="now-chip"><span class="live-dot"></span>Despacho</span>
+                <span>Listado de transacciones</span>
+            </div>
+
+            <div class="admin-card">
+                <form action="#" th:action="@{/manager/orders}" method="GET" class="filter-bar">
+                    <div class="filter-controls">
+                        <label for="filtro" class="form-label mb-0 me-2">Filtrar por estado:</label>
+                        <select id="filtro" name="estado" class="form-select form-select-sm" style="min-width: 170px;">
+                            <option selected value="">Todos los pedidos</option>
+                            <option value="0" th:selected="${param.estado != null and param.estado[0] == '0'}">Recibidos</option>
+                            <option value="1" th:selected="${param.estado != null and param.estado[0] == '1'}">En preparación</option>
+                            <option value="2" th:selected="${param.estado != null and param.estado[0] == '2'}">Terminados</option>
+                        </select>
+                        <button type="submit" class="admin-btn-primary py-2 px-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                            <span>Buscar</span>
+                        </button>
                     </div>
+                </form>
+
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th scope="col">PEDIDO</th>
+                            <th scope="col">FECHA</th>
+                            <th scope="col">TOTAL</th>
+                            <th scope="col">ESTADO PAGO</th>
+                            <th scope="col">ESTADO PEDIDO</th>
+                            <th scope="col" class="text-center">PRODUCTOS</th>
+                            <th scope="col" class="text-center">GESTIONAR ESTADO</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="pedido : ${pedidos}">
+                            <td class="font-weight-bold" style="color: #125d60;">
+                                <strong th:text="'#' + ${pedido.id}"></strong>
+                            </td>
+                            <td th:text="${#temporals.format(pedido.timestamp, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <strong class="text-dark" th:text="${#numbers.formatCurrency(pedido.total)}"></strong>
+                            </td>
+                            <td>
+                                <span class="admin-badge" th:classappend="${pedido.pago.obtenerClaseCSSEstado()}" th:text="${pedido.pago.obtenerNombreEstado()}"></span>
+                            </td>
+                            <td>
+                                <span class="admin-badge" th:classappend="${pedido.obtenerClaseCSSEstado()}" th:text="${pedido.obtenerNombreEstado()}"></span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark rounded-pill px-2 py-1" th:text="${pedido.getCarrito().size()} + ' items'"></span>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <a th:href="'/manager/order?id='+${pedido.id}+'&estado=1'" class="btn btn-sm btn-outline-warning rounded-3" title="Marcar En Preparación">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
+                                            <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
+                                        </svg>
+                                    </a>
+                                    <a th:href="'/manager/order?id='+${pedido.id}+'&estado=2'" class="btn btn-sm btn-outline-success rounded-3" title="Marcar Terminado / Entregado">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg>
+                                    </a>
+                                    <!-- Acción exclusiva para repartidor o administrador al momento de la entrega -->
+                                    <a th:if="${pedido.pago != null and !pedido.pago.estaPagado()}"
+                                       th:href="'/manager/order/mark-paid?id='+${pedido.id}"
+                                       class="btn btn-sm btn-success text-white rounded-3 px-2 py-1 d-inline-flex align-items-center gap-1 shadow-sm"
+                                       title="Marcar pedido como Pagado al entregar"
+                                       style="font-size: 0.78rem;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+                                            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/>
+                                        </svg>
+                                        <span>Marcar Pagado</span>
+                                    </a>
+                                    <span th:if="${pedido.pago != null and pedido.pago.estaPagado()}"
+                                          class="badge bg-success text-white rounded-pill px-2 py-1"
+                                          style="font-size: 0.75rem;">
+                                        ✓ Pagado
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(pedidos.content)}">
+                            <td colspan="7" class="text-center text-muted py-4">No se encontraron órdenes registradas con los criterios seleccionados.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4" th:if="${pedidos.totalPages > 0}">
+                    <nav aria-label="Navegación de páginas">
+                        <ul class="pagination admin-pagination mb-0">
+                            <li th:each="pageNumber : ${paginas}" class="page-item" th:classappend="${pageNumber == pedidos.number + 1} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/manager/orders(page=${pageNumber - 1}, estado=${param.estado})}"
+                                   th:text="${pageNumber}">
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
-        </form>
-        <div class="row g-1">
-            <table class="table">
-                <thead class="table-secondary">
-                <tr>
-                    <th scope="col">PEDIDO</th>
-                    <th scope="col">FECHA</th>
-                    <th scope="col">TOTAL</th>
-                    <th scope="col">PAGO</th>
-                    <th scope="col">ESTADO</th>
-                    <th scope="col">PRODUCTOS</th>
-                    <th scope="col">ACCION</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="pedido : ${pedidos}">
-                    <th scope="row" th:text="'#'+${pedido.id}"></th>
-                    <td th:text="${#temporals.format(pedido.timestamp, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:text="${#numbers.formatCurrency(pedido.total)}"></td>
-                    <td>
-                        <span class="badge" th:classappend="${pedido.pago.obtenerClaseCSSEstado()}" th:text="${pedido.pago.obtenerNombreEstado()}"></span>
-                    </td>
-                    <td>
-                        <span class="badge" th:classappend="${pedido.obtenerClaseCSSEstado()}" th:text="${pedido.obtenerNombreEstado()}"></span>
-                    </td>
-                    <td th:text="${pedido.getCarrito().size()}"></td>
-                    <td>
-                        <div class="d-flex justify-content-center">
-                            <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                <a  th:href="'/manager/order?id='+${pedido.id}+'&estado=1'" class="btn btn-outline-warning btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
-                                        <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
-                                    </svg>
-                                </a>
-                                <a th:href="'/manager/order?id='+${pedido.id}+'&estado=2'"  class="btn btn-outline-success btn-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
         </div>
-        <div class="row my-3">
-            <nav th:if="${pedidos.totalPages > 0}" aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li th:each="pageNumber : ${paginas}" class="page-carritoItem">
-                        <a class="page-link"
-                        th:classappend="${pageNumber == pedidos.number + 1} ? 'active'"
-                        th:href="@{/manager/orders(page=${pageNumber - 1}, estado=${param.estado})}"
-                        th:text="${pageNumber}">
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</main>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<div th:insert="~{fragments/logout-modal :: logoutModal}"></div>
 </body>
-
-<div th:insert="fragments/logout-modal :: logoutModal"></div>
-
 </html>

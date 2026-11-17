@@ -1,41 +1,174 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmación de Pedido</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Estado del Pedido | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
     <link rel="stylesheet" href="/css/chat-widget.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
 </head>
-<body class="jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
+<!-- Navbar oficial -->
 <header th:replace="~{components/navbar :: publicNavbar('tienda')}"></header>
 
-<div class="container mt-5">
-    <div  class="row justify-content-center">
-        <div class="col-6">
-            <div class="card">
-                <div class="card-body p-3">
-                    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-                    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                    <h2 class="jakarta-bold">Información del Pedido</h2>
-                    <h5 class="card-title jakarta-medium">Items</h5>
-                    <div th:if="${pedidos}" class="row border-bottom mb-1" th:each="carritoItem : ${pedidos}">
-                        <div class="col-6" th:text="${carritoItem.getNombre()}+' x '+${carritoItem.getCantidad()}"></div>
-                        <div class="col-6 d-flex justify-content-end" th:text="${#numbers.formatCurrency(carritoItem.getPrecio()*carritoItem.getCantidad())}"></div>
+<main class="container my-4 flex-grow-1">
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-7">
+
+            <div class="checkout-card text-center p-4">
+
+                <!-- ESTADO: Contraentrega Confirmado -->
+                <div th:if="${contraentrega}">
+                    <div class="mx-auto mb-3" style="width: 72px; height: 72px; border-radius: 50%; background-color: var(--playapp-turquoise-light); color: var(--playapp-turquoise-dark); display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
                     </div>
-                    <div class="d-flex justify-content-end">
-                        <a href="/shop" class="btn btn-primary">Seguir comprando</a>
+                    <h2 class="jakarta-bold text-ocean mb-2">¡Pedido confirmado!</h2>
+                    <p class="text-muted mb-3">Tu pedido para la playa ha sido recibido con éxito y ya se encuentra en preparación.</p>
+                    
+                    <!-- Aviso destacado: Pago pendiente contraentrega -->
+                    <div class="alert alert-warning border-0 p-3 mb-3 fw-bold text-dark d-flex align-items-center justify-content-center gap-2 shadow-sm" style="background-color: #fef3c7; border-radius: 12px; font-size: 1.05rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#b45309" class="flex-shrink-0" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/>
+                        </svg>
+                        <span>Pago pendiente contraentrega: paga al recibir tu pedido.</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="badge-delivery-time">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                            </svg>
+                            Tiempo estimado de entrega: 15–25 min
+                        </span>
                     </div>
                 </div>
+
+                <!-- ESTADO: Aprobado / Éxito -->
+                <div th:if="${success}">
+                    <div class="mx-auto mb-3" style="width: 72px; height: 72px; border-radius: 50%; background-color: var(--playapp-turquoise-light); color: var(--playapp-turquoise-dark); display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                    </div>
+                    <h2 class="jakarta-bold text-ocean mb-1">¡Pago Aprobado con Éxito!</h2>
+                    <p class="text-muted mb-3" th:text="${success}">Tu pedido para la playa ha sido confirmado y ya se encuentra en preparación.</p>
+                    <div class="mb-4">
+                        <span class="badge-delivery-time">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                            </svg>
+                            Tiempo estimado de entrega: 15–25 min
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ESTADO: Pendiente / Info -->
+                <div th:if="${info}">
+                    <div class="mx-auto mb-3" style="width: 72px; height: 72px; border-radius: 50%; background-color: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+                        </svg>
+                    </div>
+                    <h2 class="jakarta-bold text-ocean mb-1">Pago en Proceso</h2>
+                    <p class="text-muted mb-4" th:text="${info}">Tu transacción está siendo procesada por la pasarela de pago.</p>
+                </div>
+
+                <!-- ESTADO: Rechazado / Cancelado / Error -->
+                <div th:if="${error}">
+                    <div class="mx-auto mb-3" style="width: 72px; height: 72px; border-radius: 50%; background-color: var(--playapp-coral-light); color: var(--playapp-coral-dark); display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                        </svg>
+                    </div>
+                    <h2 class="jakarta-bold text-ocean mb-1">Transacción no completada</h2>
+                    <p class="text-muted mb-4" th:text="${error}">Ha ocurrido un inconveniente al procesar tu pago.</p>
+                </div>
+
+                <!-- Detalles del Pedido si existe en contexto -->
+                <div th:if="${pedido != null}" class="text-start bg-light p-3 rounded border mb-4">
+                    <h5 class="jakarta-bold text-ocean mb-3 pb-2 border-bottom">Detalles del Pedido</h5>
+
+                    <div class="summary-row mb-2">
+                        <span>Orden ID:</span>
+                        <strong class="text-dark" th:text="'#' + ${pedido.id}">#12345</strong>
+                    </div>
+
+                    <div th:if="${pedido.envio != null}" class="summary-row mb-2">
+                        <span>Punto de Entrega:</span>
+                        <strong class="text-dark text-truncate" style="max-width: 280px;" th:text="${pedido.envio.dirreccion != null ? pedido.envio.dirreccion : 'Playa de Cartagena'}">Playa</strong>
+                    </div>
+
+                    <div th:if="${pedido.envio != null and pedido.envio.mesa != null and pedido.envio.mesa > 0}" class="summary-row mb-2">
+                        <span>Carpa / Mesa:</span>
+                        <strong class="text-dark" th:text="'#' + ${pedido.envio.mesa}">Carpa #1</strong>
+                    </div>
+
+                    <div th:if="${pedido.pago != null}" class="summary-row mb-2">
+                        <span>Método de Pago:</span>
+                        <strong class="text-dark" th:text="${pedido.pago.obtenerNombreMetodo()}">Tarjeta (Wompi)</strong>
+                    </div>
+
+                    <div th:if="${pedido.pago != null}" class="summary-row mb-2">
+                        <span>Estado del Pago:</span>
+                        <span class="badge" th:classappend="${pedido.pago.obtenerClaseCSSEstado()}" th:text="${pedido.pago.obtenerNombreEstado()}">Pendiente</span>
+                    </div>
+
+                    <div th:if="${pedido.carrito != null and !pedido.carrito.isEmpty()}" class="mt-3 pt-2 border-top">
+                        <span class="d-block small text-muted mb-2 font-weight-bold">Productos:</span>
+                        <div class="summary-row mb-1 small" th:each="pItem : ${pedido.carrito}">
+                            <span th:text="${(pItem.producto != null and pItem.producto.nombre != null ? pItem.producto.nombre : 'Producto') + ' × ' + pItem.cantidad}">Producto x 1</span>
+                            <span class="text-dark" th:text="${#numbers.formatCurrency(pItem.subtotal != null ? pItem.subtotal : 0.0)}">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-row total-row mb-0 pt-2">
+                        <span th:text="${contraentrega ? 'Total a Pagar al Recibir:' : 'Total Pagado:'}">Total:</span>
+                        <span class="text-ocean fs-5" th:text="${#numbers.formatCurrency(pedido.total != null ? pedido.total : 0.0)}">$0</span>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-center flex-wrap gap-3">
+                    <a th:if="${puedeReintentar == true and ordenReintentar != null}" th:href="@{/payment/paymentgateway(orden=${ordenReintentar})}" class="btn btn-ocean px-4 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                        </svg>
+                        Intentar nuevamente
+                    </a>
+                    <a href="/shop" class="btn btn-ocean-outline px-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                        Volver a la tienda
+                    </a>
+                    <a href="/user/orders" class="btn btn-ocean px-4">
+                        Ver mis pedidos
+                    </a>
+                </div>
+
             </div>
+
         </div>
     </div>
+</main>
 
-
-</div>
+<footer class="mt-auto py-3 text-center text-muted small border-top" style="background-color: #ffffff;">
+    <div class="container">
+        <span>© 2026 PLAYAPP Cartagena — Delivery en la playa</span>
+    </div>
+</footer>
 
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
 <script src="/js/chat-widget.js"></script>

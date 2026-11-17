@@ -219,12 +219,67 @@ Notas de seguridad:
 - no subas archivos de secretos al repo
 - usa variables de entorno en Railway para `MONGODB_URI`, `MP_ACCESS_TOKEN`, `GEMINI_API_KEY`, etc.
 
+## 8) Pasarela de Pago Wompi Sandbox y Flujo de Compra
+
+PlayApp cuenta con una arquitectura de pagos desacoplada compatible con **Wompi Sandbox (Bancolombia)** para tarjetas de crédito/débito y opciones de pago contraentrega en playa (**Efectivo contraentrega** y **Transferencia contraentrega**).
+
+### Configuración de Wompi Sandbox
+
+En tu archivo `config/application-secrets.env` (o en variables de entorno del servidor), configura tus credenciales de prueba obtenidas en el portal de desarrolladores de Wompi:
+
+```properties
+WOMPI_PUBLIC_KEY=pub_test_TU_LLAVE_PUBLICA
+WOMPI_PRIVATE_KEY=prv_test_TU_LLAVE_PRIVADA
+WOMPI_INTEGRITY_SECRET=test_integrity_TU_SECRETO_INTEGRIDAD
+WOMPI_EVENTS_SECRET=test_events_TU_SECRETO_EVENTOS
+WOMPI_SANDBOX_URL=https://sandbox.wompi.co/v1
+PLAYAPP_BASE_URL=http://localhost:8080
+```
+
+> [!IMPORTANT]
+> - Nunca expongas la llave privada (`prv_test_...`) ni el secreto de integridad en el frontend ni en repositorios públicos.
+> - La firma de integridad (`SHA-256`) se calcula exclusivamente en el backend de PlayApp antes de inicializar el widget de pago.
+
+### Cómo Probar Pagos en Modo Sandbox
+
+1. **Configurar Credenciales:** En `config/application-secrets.env`, ingresa tus credenciales de prueba obtenidas en el portal de comercios de Wompi (`https://comercios.wompi.co/`):
+   ```properties
+   WOMPI_PUBLIC_KEY=pub_test_TU_LLAVE_PUBLICA
+   WOMPI_PRIVATE_KEY=prv_test_TU_LLAVE_PRIVADA
+   WOMPI_INTEGRITY_SECRET=test_integrity_TU_SECRETO
+   ```
+2. **Iniciar la aplicación:** Ejecuta `.\scripts\start-playapp.ps1` o ejecuta el proyecto en VS Code.
+3. **Flujo de Compra:**
+   - Ve a la tienda (`/shop`) y agrega productos al carrito.
+   - Ve al carrito (`/cart/checkout`), revisa las cantidades y pulsa **"Continuar a entrega"**.
+   - En entrega (`/shipment/place`), define tu dirección en la playa de Cartagena, carpa/mesa opcional y pulsa **"Continuar al pago"**.
+4. **Demostración de Pago Aprobado:**
+   - Pulsa **"Pagar con tarjeta"** para abrir el formulario seguro oficial de Wompi.
+   - **Número de tarjeta:** `4242 4242 4242 4242`
+   - **Fecha de expiración:** Cualquier fecha futura (ej. `12/28`)
+   - **CVC:** `123`
+   - **Nombre del titular:** Cualquier nombre (ej. `Usuario Demo`)
+   - Al procesarse, Wompi redirige a `/payment/wompi/redirect`, el backend valida la transacción con el API de Wompi y se muestra el mensaje de confirmación:
+     > **"¡Pago aprobado! Tu pedido está siendo preparado."**
+5. **Demostración de Transacción Rechazada:**
+   - Repite el proceso e ingresa la tarjeta de rechazo de prueba:
+     - **Número de tarjeta:** `4111 1111 1111 1111`
+     - **Fecha de expiración:** Cualquier fecha futura
+     - **CVC:** `123`
+   - Al procesarse, se muestra un mensaje amable explicando que el pago fue rechazado y un botón destacado **"Intentar nuevamente"** para volver a la pasarela de pago.
+
+### Guía de Desarrollo cuando Faltan Credenciales
+
+Si las credenciales `WOMPI_PUBLIC_KEY`, `WOMPI_PRIVATE_KEY` o `WOMPI_INTEGRITY_SECRET` están vacías en `config/application-secrets.env`:
+- La pantalla de pago **no simula un pago falso**.
+- En su lugar, muestra una guía visible en amarillo con un checklist de las variables de entorno que faltan y el formato requerido (`pub_test_...` y `prv_test_...`) para orientar al desarrollador o evaluador.
+
 ## Seguridad
 
 Se removieron secretos hardcodeados del codigo:
 
 - credenciales de correo en `application.properties`
-- token de MercadoPago en `PaymentService`
-- URL fija de ngrok para callbacks de pago
+- token de MercadoPago reemplazado por arquitectura desacoplada Wompi
+- firmas SHA-256 calculadas en backend
 
 Ahora todo viene por variables locales del proyecto.

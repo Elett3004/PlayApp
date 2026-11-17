@@ -70,9 +70,20 @@ def resolver(datos):
     if relacion_bebidas_comidas > 0:
         model.balance_bebidas_comidas = Constraint(expr=model.B <= model.C / relacion_bebidas_comidas)
 
-    solver = SolverFactory("glpk")
-    if not solver.available(False):
-        raise RuntimeError("GLPK no esta disponible. Instala glpk/glpsol para resolver el modelo.")
+    solver = None
+    solver_nombre = None
+    for nombre in ("glpk", "appsi_highs", "highs", "cbc"):
+        try:
+            candidato = SolverFactory(nombre)
+            if candidato.available(False):
+                solver = candidato
+                solver_nombre = nombre
+                break
+        except Exception:
+            continue
+
+    if solver is None:
+        raise RuntimeError("No se encontró un solver disponible (GLPK o HiGHS). Instala glpk o ejecuta: pip install highspy")
 
     result = solver.solve(model)
     estado = str(result.solver.status)

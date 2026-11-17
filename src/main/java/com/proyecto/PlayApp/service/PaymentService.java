@@ -93,10 +93,11 @@ public class PaymentService {
     }
 
     private boolean canUseMercadoPagoBackUrls(String baseUrl) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            return false;
+        }
         String normalizedUrl = baseUrl.toLowerCase();
-        return normalizedUrl.startsWith("https://")
-                && !normalizedUrl.contains("localhost")
-                && !normalizedUrl.contains("127.0.0.1");
+        return normalizedUrl.startsWith("https://");
     }
 
     private boolean shouldUseSandboxInitPoint(Preference preference) {

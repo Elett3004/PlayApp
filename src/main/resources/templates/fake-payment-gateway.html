@@ -1,89 +1,391 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda</title>
-    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <title>Pasarela de Pago Wompi | PlayApp</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" href="/css/importJakartaFont.css">
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/checkout-flow.css">
     <link rel="stylesheet" href="/css/chat-widget.css">
     <link rel="icon" href="/img/Logo.png" type="image/png">
+    <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
 </head>
-<body class="background-grey jakarta-regular">
+<body class="checkout-body jakarta-regular">
 
-<!-- Barra de navegación -->
-<header class="bg-info sticky-top mb-3">
-    <nav class="container d-flex flex-wrap align-items-center justify-content-center justify-content-md-between p-2">
-        <div class="col-md-3 mb-2 mb-md-0">
-            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-                <span class="jakarta-extrabold text-light">PLAYAPP</span>
-            </a>
-        </div>
-    </nav>
-</header>
+<!-- Navbar oficial -->
+<header th:replace="~{components/navbar :: publicNavbar('tienda')}"></header>
 
+<main class="container my-4 flex-grow-1">
 
-<!-- Categorías de Bebidas -->
-<div class="container">
+    <!-- Indicador de Progreso: Paso 3 Pago activo -->
+    <div th:replace="~{fragments/checkout-stepper :: checkoutStepper('pago')}"></div>
+
     <div class="row justify-content-center">
-        <div class="col-5">
-            <div class="card">
-                <div class="card-body p-3">
-                    <h2 class="jakarta-bold">Realizar Pago</h2>
-                    <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="${param.error[0]}"></div>
-                    <p class="jakarta-medium card-text" th:text="'Valor de la compra: '+${#numbers.formatCurrency(valor)}"></p>
-                    <p class="jakarta-medium card-text" th:text="'Metodo de Pago: '+${metodo}"></p>
-                    <div class="row">
-                        <div class="col-6 d-flex justify-content-center">
-                            <a th:href="'/api/mercadopago/mercadopago?valor='+${valor}+'&orden='+${orden}" class="btn btn-outline-success">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                </svg> Efectuar Pago</a>
-                        </div>
-                        <div class="col-6 d-flex justify-content-center">
-                            <a th:href="'/payment/proceed?estado=CANCELED&orden='+${orden}" class="btn btn-outline-danger">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-                                </svg> Cancelar Pago
-                            </a>
+        <div class="col-12 col-lg-8">
+
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <h2 class="checkout-card-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                            <path d="M2 10a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                        </svg>
+                        Pago Seguro con Tarjeta
+                    </h2>
+                    <span class="badge bg-ocean-light text-ocean rounded-pill px-3 py-1">Paso 3 de 3</span>
+                </div>
+
+                <!-- Mensaje de error si viene en query params -->
+                <div th:if="${param.error}" class="alert alert-danger py-2 small mb-3" role="alert" th:text="${param.error[0]}"></div>
+
+                <!-- Sello de Confianza Wompi -->
+                <div class="wompi-trust-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="text-ocean flex-shrink-0" viewBox="0 0 16 16">
+                        <path d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.464 9.99a11.8 11.8 0 0 0 4.17 3.193.5.5 0 0 0 .45 0c1.378-.718 2.8-1.83 4.17-3.193 1.677-2.195 3.06-5.513 2.464-9.99a1.54 1.54 0 0 0-1.044-1.263 63 63 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m2.146 5.146a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793z"/>
+                    </svg>
+                    <div>
+                        <strong class="text-dark d-block">Pago seguro procesado por Wompi (Bancolombia)</strong>
+                        <span>Los datos de tu tarjeta viajan directamente encriptados hacia Wompi. PlayApp nunca captura ni almacena números de tarjeta.</span>
+                    </div>
+                </div>
+
+                <!-- RESUMEN VISIBLE DEL PEDIDO (Productos, Dirección, Subtotal, Envío y Total) -->
+                <div class="bg-light p-3 rounded mb-4 border">
+                    <h5 class="jakarta-bold text-ocean mb-3 pb-2 border-bottom" style="font-size: 1.05rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path d="M14 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
+                        </svg>
+                        Resumen del Pedido #<span th:text="${orden}">12345</span>
+                    </h5>
+
+                    <!-- Lista de Productos -->
+                    <div th:if="${pedido != null and pedido.carrito != null and !pedido.carrito.isEmpty()}" class="mb-3">
+                        <span class="d-block text-muted small fw-bold mb-2">Productos a entregar:</span>
+                        <div class="summary-row mb-1 small" th:each="pItem : ${pedido.carrito}">
+                            <span>
+                                <strong class="text-dark" th:text="${pItem.producto != null ? pItem.producto.nombre : 'Producto'}">Producto</strong>
+                                <span class="text-muted" th:text="' × ' + ${pItem.cantidad}">x 1</span>
+                            </span>
+                            <span class="text-dark fw-semibold" th:text="${#numbers.formatCurrency(pItem.subtotal)}">$0</span>
                         </div>
                     </div>
+
+                    <!-- Dirección de Entrega -->
+                    <div th:if="${pedido != null and pedido.envio != null}" class="mb-3 pt-2 border-top">
+                        <div class="summary-row mb-1">
+                            <span class="text-muted small">Dirección en playa:</span>
+                            <strong class="text-dark text-truncate text-end" style="max-width: 300px;" th:text="${pedido.envio.dirreccion}">Playa de Bocagrande</strong>
+                        </div>
+                        <div th:if="${pedido.envio.mesa != null and pedido.envio.mesa > 0}" class="summary-row mb-1">
+                            <span class="text-muted small">Carpa / Mesa:</span>
+                            <strong class="text-dark" th:text="'#' + ${pedido.envio.mesa}">Carpa #1</strong>
+                        </div>
+                        <div th:if="${pedido.envio.descripcion != null and !pedido.envio.descripcion.isBlank()}" class="summary-row mb-0">
+                            <span class="text-muted small">Referencia:</span>
+                            <span class="text-dark small text-end" th:text="${pedido.envio.descripcion}">Sombrilla</span>
+                        </div>
+                    </div>
+
+                    <!-- Desglose Económico -->
+                    <div class="pt-2 border-top">
+                        <div class="summary-row mb-1">
+                            <span>Subtotal productos:</span>
+                            <strong class="text-dark" th:text="${#numbers.formatCurrency(subtotal)}">$0</strong>
+                        </div>
+                        <div class="summary-row mb-2">
+                            <span>Costo de envío a playa:</span>
+                            <strong class="text-dark" th:text="${#numbers.formatCurrency(costoEnvio)}">$5.000</strong>
+                        </div>
+                        <div class="summary-row mb-2">
+                            <span>Método seleccionado:</span>
+                            <strong class="text-ocean">Tarjeta de Crédito / Débito (Wompi)</strong>
+                        </div>
+                        <div class="summary-row total-row mb-0 pt-2">
+                            <span>Total a pagar:</span>
+                            <span class="text-ocean fs-4" th:text="${#numbers.formatCurrency(valor)}">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                    <!-- Botón Principal: Pagar con Tarjeta -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="button" id="btnPagarTarjeta" class="btn btn-ocean btn-lg py-3 shadow">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                                <path d="M2 10a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                            </svg>
+                            Pagar con tarjeta
+                        </button>
+                    </div>
+
+
+
+                <!-- Enlace de Cancelación -->
+                <div class="text-center mt-4 pt-3 border-top">
+                    <a th:href="@{/payment/proceed(estado='CANCELADO', orden=${orden})}" class="btn btn-link text-muted text-decoration-none small">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                        </svg>
+                        Cancelar y regresar a la tienda
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<!-- Modal Oficial Wompi Checkout -->
+<div class="modal fade" id="modalWompiCheckout" tabindex="-1" aria-labelledby="modalWompiCheckoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
+            <div class="modal-header bg-dark text-white p-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="background-color: #2b2b2b; padding: 4px 8px; border-radius: 6px;">
+                        <span class="text-white fw-bold">wompi</span>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fs-6 mb-0 text-white" id="modalWompiCheckoutLabel">Checkout Seguro — Wompi Bancolombia</h5>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <div>
+                        <span class="text-muted small d-block">Comercio</span>
+                        <strong class="text-dark">PLAYAPP CARTAGENA</strong>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted small d-block">Total a Pagar</span>
+                        <span class="fs-5 text-ocean fw-bold" th:text="${#numbers.formatCurrency(valor)}">$84.000</span>
+                    </div>
+                </div>
+
+                <form id="formWompiModal" onsubmit="return false;">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Número de tarjeta</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                                    <path d="M2 10a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                                </svg>
+                            </span>
+                            <input type="text" id="wompiCardNumber" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-dark">Vencimiento</label>
+                            <input type="text" id="wompiCardExpiry" class="form-control" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-dark">CVC / CVV</label>
+                            <input type="password" id="wompiCardCvc" class="form-control" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Nombre del titular</label>
+                        <input type="text" id="wompiCardHolder" class="form-control" placeholder="Ej. Carlos Mendoza" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Número de cuotas</label>
+                        <select class="form-select" id="wompiInstallments">
+                            <option value="1" selected>1 cuota</option>
+                            <option value="3">3 cuotas</option>
+                            <option value="6">6 cuotas</option>
+                            <option value="12">12 cuotas</option>
+                        </select>
+                    </div>
+
+                    <div id="modalAlertError" class="alert alert-danger py-2 small d-none" role="alert"></div>
+
+                    <div class="d-grid gap-2 pt-2">
+                        <button type="button" id="btnModalEjecutarPago" class="btn btn-ocean py-2 fw-semibold">
+                            Pagar con Wompi
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        🔒 Transacción segura encriptada con TLS 1.3 vía Wompi Bancolombia
+                    </small>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Footer -->
-    <div class="row">
-        <footer class="d-flex flex-wrap justify-content-between align-carritoItems-center py-3 my-4 border-top">
-            <div class="col-md-4 d-flex align-carritoItems-center">
-                <span class="mb-3 mb-md-0 text-body-secondary">© 2025 PLAYAPP, Inc</span>
-            </div>
-
-            <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#twitter"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#instagram"></use>
-                    </svg>
-                </a></li>
-                <li class="ms-3"><a class="text-body-secondary" href="#">
-                    <svg class="bi" width="24" height="24">
-                        <use xlink:href="#facebook"></use>
-                    </svg>
-                </a></li>
-            </ul>
-        </footer>
-    </div>
 </div>
 
+<footer class="mt-auto py-3 text-center text-muted small border-top" style="background-color: #ffffff;">
+    <div class="container">
+        <span>© 2026 PLAYAPP Cartagena — Delivery en la playa</span>
+    </div>
+</footer>
 
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
 <script src="/js/chat-widget.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para Inicializar Wompi (Widget Oficial o Modal Sandbox) -->
+<script th:inline="javascript">
+    const moneda = /*[[${paymentInit.moneda}]]*/ 'COP';
+    const montoEnCentavos = /*[[${paymentInit.montoEnCentavos}]]*/ 0;
+    const referencia = /*[[${paymentInit.referencia}]]*/ '';
+    const publicKey = /*[[${paymentInit.widgetPublicKey}]]*/ '';
+    const signature = /*[[${paymentInit.signatureIntegrity}]]*/ '';
+    const redirectUrl = /*[[${paymentInit.redirectUrl}]]*/ '';
+    const ordenId = /*[[${orden}]]*/ '';
+    const configurado = /*[[${paymentInit.configurado}]]*/ false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnPagar = document.getElementById('btnPagarTarjeta');
+        if (!btnPagar) return;
+
+        const originalButtonHtml = btnPagar.innerHTML;
+
+        // Auto-formato de número de tarjeta en el modal
+        const cardInput = document.getElementById('wompiCardNumber');
+        if (cardInput) {
+            cardInput.addEventListener('input', function(e) {
+                let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+                let formatted = val.replace(/(\d{4})(?=\d)/g, '$1 ');
+                e.target.value = formatted;
+            });
+        }
+
+        // Auto-formato de fecha de vencimiento
+        const expInput = document.getElementById('wompiCardExpiry');
+        if (expInput) {
+            expInput.addEventListener('input', function(e) {
+                let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+                if (val.length >= 2) {
+                    val = val.substring(0, 2) + '/' + val.substring(2);
+                }
+                e.target.value = val;
+            });
+        }
+
+        btnPagar.addEventListener('click', function() {
+            if (configurado) {
+                // Si las llaves de Wompi están en .env, usa el widget oficial de Wompi
+                btnPagar.disabled = true;
+                btnPagar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Abriendo formulario seguro Wompi...';
+
+                try {
+                    if (typeof WidgetCheckout === 'undefined') {
+                        alert('No se pudo cargar el script del widget de Wompi. Revisa tu conexión a internet.');
+                        btnPagar.disabled = false;
+                        btnPagar.innerHTML = originalButtonHtml;
+                        return;
+                    }
+
+                    const config = {
+                        currency: moneda,
+                        amountInCents: montoEnCentavos,
+                        reference: referencia,
+                        publicKey: publicKey,
+                        redirectUrl: redirectUrl
+                    };
+
+                    if (signature && signature.trim().length > 0) {
+                        config.signature = {
+                            integrity: signature
+                        };
+                    }
+
+                    const checkout = new WidgetCheckout(config);
+
+                    checkout.open(function (result) {
+                        const transaction = result.transaction;
+                        console.log('Resultado de la transacción Wompi: ', transaction);
+
+                        if (transaction && transaction.id) {
+                            btnPagar.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Verificando pago con el banco...';
+                            window.location.href = '/payment/wompi/redirect?id=' + encodeURIComponent(transaction.id) + '&orden=' + encodeURIComponent(ordenId);
+                        } else {
+                            btnPagar.disabled = false;
+                            btnPagar.innerHTML = originalButtonHtml;
+                        }
+                    });
+
+                } catch (err) {
+                    console.error('Error al instanciar Wompi Widget: ', err);
+                    btnPagar.disabled = false;
+                    btnPagar.innerHTML = originalButtonHtml;
+                    alert('Ocurrió un error al abrir el checkout de Wompi: ' + err.message);
+                }
+            } else {
+                // Modo Sandbox Demostración Universitaria
+                const modalEl = document.getElementById('modalWompiCheckout');
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+
+        // Botón Ejecutar Pago dentro del Modal
+        const btnModalPagar = document.getElementById('btnModalEjecutarPago');
+        if (btnModalPagar) {
+            btnModalPagar.addEventListener('click', function() {
+                const cardNum = (document.getElementById('wompiCardNumber').value || '').replace(/\s+/g, '');
+                const cardExp = document.getElementById('wompiCardExpiry').value.trim();
+                const cardCvc = document.getElementById('wompiCardCvc').value.trim();
+                const cardHolder = document.getElementById('wompiCardHolder').value.trim();
+                const alertEl = document.getElementById('modalAlertError');
+
+                if (cardNum.length < 15) {
+                    alertEl.textContent = 'Por favor ingresa un número de tarjeta válido.';
+                    alertEl.classList.remove('d-none');
+                    return;
+                }
+                if (cardExp.length < 5) {
+                    alertEl.textContent = 'Por favor ingresa la fecha de vencimiento en formato MM/AA.';
+                    alertEl.classList.remove('d-none');
+                    return;
+                }
+                if (cardCvc.length < 3) {
+                    alertEl.textContent = 'Por favor ingresa el código de seguridad (CVC).';
+                    alertEl.classList.remove('d-none');
+                    return;
+                }
+                if (cardHolder.length < 3) {
+                    alertEl.textContent = 'Por favor ingresa el nombre del titular de la tarjeta.';
+                    alertEl.classList.remove('d-none');
+                    return;
+                }
+
+                alertEl.classList.add('d-none');
+                btnModalPagar.disabled = true;
+                btnModalPagar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Procesando pago seguro con el banco...';
+
+                setTimeout(function() {
+                    if (cardNum.startsWith('4111')) {
+                        // Tarjeta de prueba Rechazada
+                        window.location.href = '/payment/proceed?estado=RECHAZADO&orden=' + encodeURIComponent(ordenId) + '&metodo=' + encodeURIComponent('Tarjeta (Wompi)');
+                    } else if (cardNum.startsWith('4242') || cardNum.length >= 15) {
+                        // Tarjeta de prueba Aprobada
+                        window.location.href = '/payment/proceed?estado=APROBADO&orden=' + encodeURIComponent(ordenId) + '&metodo=' + encodeURIComponent('Tarjeta (Wompi)');
+                    } else {
+                        btnModalPagar.disabled = false;
+                        btnModalPagar.innerHTML = 'Pagar con Wompi';
+                        alertEl.textContent = 'Por favor verifica los datos de la tarjeta e inténtalo nuevamente.';
+                        alertEl.classList.remove('d-none');
+                    }
+                }, 1200);
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

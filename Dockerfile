@@ -14,7 +14,7 @@ WORKDIR /app
 
 RUN apk add --no-cache python3 py3-pip glpk \
     && python3 -m venv /opt/pyomo \
-    && /opt/pyomo/bin/pip install --no-cache-dir pyomo
+    && /opt/pyomo/bin/pip install --no-cache-dir pyomo highspy
 
 ENV PYTHON_EXECUTABLE=/opt/pyomo/bin/python
 

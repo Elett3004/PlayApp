@@ -159,6 +159,16 @@ public class ManagementController {
         return "redirect:/manager/orders";
     }
 
+    @GetMapping("/order/mark-paid")
+    public String marcarPedidoPagado(
+            @RequestParam(name = "id", defaultValue = "") String id
+    ){
+        if (!id.isBlank()) {
+            pedidos.marcarPedidoComoPagado(id);
+        }
+        return "redirect:/manager/orders";
+    }
+
     @GetMapping("/product/delete/{id}")
     public String editarProducto(
             @PathVariable String id

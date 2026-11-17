@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+
+<div th:fragment="checkoutStepper(currentStep)" class="checkout-stepper-container">
+    <div class="checkout-stepper">
+        <div class="stepper-track">
+            <div class="stepper-track-progress"
+                 th:style="${currentStep == 'carrito' ? 'width: 0%;' : (currentStep == 'entrega' ? 'width: 50%;' : 'width: 100%;')}">
+            </div>
+        </div>
+
+        <!-- Paso 1: Carrito -->
+        <a th:href="@{/cart/checkout}"
+           class="stepper-item"
+           th:classappend="${currentStep == 'carrito' ? 'active' : (currentStep == 'entrega' || currentStep == 'pago' ? 'completed' : '')}">
+            <div class="stepper-circle">
+                <span th:if="${currentStep == 'carrito'}">1</span>
+                <span th:if="${currentStep == 'entrega' || currentStep == 'pago'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                </span>
+            </div>
+            <span class="stepper-label">1. Carrito</span>
+        </a>
+
+        <!-- Paso 2: Entrega -->
+        <a th:href="${currentStep == 'pago' ? '/shipment/place' : 'javascript:void(0);'}"
+           class="stepper-item"
+           th:classappend="${currentStep == 'entrega' ? 'active' : (currentStep == 'pago' ? 'completed' : '')}">
+            <div class="stepper-circle">
+                <span th:if="${currentStep == 'carrito' || currentStep == 'entrega'}">2</span>
+                <span th:if="${currentStep == 'pago'}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                    </svg>
+                </span>
+            </div>
+            <span class="stepper-label">2. Entrega</span>
+        </a>
+
+        <!-- Paso 3: Pago -->
+        <div class="stepper-item"
+             th:classappend="${currentStep == 'pago' ? 'active' : ''}">
+            <div class="stepper-circle">
+                <span>3</span>
+            </div>
+            <span class="stepper-label">3. Pago Seguro</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

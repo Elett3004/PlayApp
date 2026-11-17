@@ -1,0 +1,588 @@
+/* ==========================================================================
+   PlayApp Checkout Flow Stylesheet
+   Paleta:
+     Fondo Arena:        #F8F5EF
+     Azul Océano:        #075985 (Principal)
+     Azul Océano Oscuro: #034265
+     Turquesa Caribe:    #14B8A6 (Acento)
+     Coral Tropical:     #F97360 (Alertas / Acciones críticas)
+     Superficie:         #FFFFFF (Tarjetas con radio 16px)
+   ========================================================================== */
+
+:root {
+    --playapp-sand: #F8F5EF;
+    --playapp-sand-dark: #eee8dc;
+    --playapp-ocean: #075985;
+    --playapp-ocean-dark: #034265;
+    --playapp-ocean-light: #e0f2fe;
+    --playapp-turquoise: #14B8A6;
+    --playapp-turquoise-dark: #0d9488;
+    --playapp-turquoise-light: #ccfbf1;
+    --playapp-coral: #F97360;
+    --playapp-coral-dark: #e05440;
+    --playapp-coral-light: #fee2e2;
+    --playapp-surface: #FFFFFF;
+    --playapp-text-main: #0f172a;
+    --playapp-text-muted: #64748b;
+    --playapp-border: #e2e8f0;
+    --playapp-border-focus: #14B8A6;
+    --playapp-radius: 16px;
+    --playapp-radius-sm: 10px;
+    --playapp-radius-pill: 9999px;
+    --playapp-shadow: 0 4px 20px rgba(7, 89, 133, 0.07);
+    --playapp-shadow-hover: 0 8px 30px rgba(7, 89, 133, 0.12);
+}
+
+body.checkout-body {
+    background-color: var(--playapp-sand);
+    color: var(--playapp-text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Indicador de Progreso (Stepper): Carrito > Entrega > Pago
+   ========================================================================== */
+.checkout-stepper-container {
+    padding: 24px 0 16px;
+    max-width: 760px;
+    margin: 0 auto 20px;
+}
+
+.checkout-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.stepper-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    text-decoration: none;
+    color: var(--playapp-text-muted);
+    transition: all 0.25s ease;
+}
+
+.stepper-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--playapp-radius-pill);
+    background-color: #ffffff;
+    border: 2px solid #cbd5e1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+}
+
+.stepper-label {
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+/* Estado Activo */
+.stepper-item.active .stepper-circle {
+    background-color: var(--playapp-ocean);
+    border-color: var(--playapp-ocean);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(7, 89, 133, 0.35);
+    transform: scale(1.08);
+}
+
+.stepper-item.active .stepper-label {
+    color: var(--playapp-ocean);
+    font-weight: 800;
+}
+
+/* Estado Completado */
+.stepper-item.completed .stepper-circle {
+    background-color: var(--playapp-turquoise);
+    border-color: var(--playapp-turquoise);
+    color: #ffffff;
+}
+
+.stepper-item.completed .stepper-label {
+    color: var(--playapp-turquoise-dark);
+}
+
+/* Línea conectora */
+.stepper-track {
+    position: absolute;
+    top: 22px;
+    left: 15%;
+    right: 15%;
+    height: 3px;
+    background-color: #cbd5e1;
+    z-index: 1;
+}
+
+.stepper-track-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--playapp-turquoise), var(--playapp-ocean));
+    transition: width 0.4s ease;
+}
+
+/* ==========================================================================
+   Tarjetas Modernas PlayApp (16px de radio, sombra suave)
+   ========================================================================== */
+.checkout-card {
+    background: var(--playapp-surface);
+    border-radius: var(--playapp-radius);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: var(--playapp-shadow);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.checkout-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--playapp-border);
+}
+
+.checkout-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--playapp-ocean);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ==========================================================================
+   Botones PlayApp
+   ========================================================================== */
+.btn-ocean {
+    background-color: var(--playapp-ocean);
+    border-color: var(--playapp-ocean);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: var(--playapp-radius-sm);
+    padding: 12px 22px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-ocean:hover {
+    background-color: var(--playapp-ocean-dark);
+    border-color: var(--playapp-ocean-dark);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(7, 89, 133, 0.25);
+}
+
+.btn-ocean:active {
+    transform: translateY(0);
+}
+
+.btn-ocean:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.4);
+}
+
+.btn-ocean:disabled,
+.btn-ocean[disabled] {
+    background-color: #94a3b8;
+    border-color: #94a3b8;
+    color: #f1f5f9;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-ocean-outline {
+    background-color: transparent;
+    border: 2px solid var(--playapp-ocean);
+    color: var(--playapp-ocean);
+    font-weight: 600;
+    border-radius: var(--playapp-radius-sm);
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+}
+
+.btn-ocean-outline:hover {
+    background-color: var(--playapp-ocean-light);
+    color: var(--playapp-ocean-dark);
+}
+
+.btn-coral-outline {
+    background-color: transparent;
+    border: 1px solid var(--playapp-coral);
+    color: var(--playapp-coral-dark);
+    font-weight: 500;
+    border-radius: var(--playapp-radius-sm);
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-coral-outline:hover {
+    background-color: var(--playapp-coral-light);
+    color: var(--playapp-coral-dark);
+}
+
+.btn-turquoise {
+    background-color: var(--playapp-turquoise);
+    border-color: var(--playapp-turquoise);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: var(--playapp-radius-sm);
+    padding: 10px 18px;
+    transition: all 0.2s ease;
+}
+
+.btn-turquoise:hover {
+    background-color: var(--playapp-turquoise-dark);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+/* ==========================================================================
+   Ítems del Carrito (Lista y Acciones)
+   ========================================================================== */
+.cart-item-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--playapp-border);
+}
+
+.cart-item-row:last-child {
+    border-bottom: none;
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--playapp-radius-sm);
+    object-fit: cover;
+    background-color: #f1f5f9;
+    border: 1px solid var(--playapp-border);
+    flex-shrink: 0;
+}
+
+.cart-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cart-item-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--playapp-text-main);
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cart-item-vendor {
+    font-size: 0.85rem;
+    color: var(--playapp-text-muted);
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cart-item-price {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--playapp-ocean);
+}
+
+.cart-qty-control {
+    display: inline-flex;
+    align-items: center;
+    border: 1.5px solid #cbd5e1;
+    border-radius: var(--playapp-radius-sm);
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.cart-qty-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: var(--playapp-ocean);
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.cart-qty-btn:hover:not(:disabled) {
+    background-color: var(--playapp-ocean-light);
+}
+
+.cart-qty-btn:disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.cart-qty-val {
+    width: 42px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--playapp-text-main);
+    border: none;
+    background: transparent;
+}
+
+.cart-item-subtotal {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--playapp-ocean);
+    text-align: right;
+    min-width: 100px;
+}
+
+.cart-item-delete-btn {
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    padding: 8px;
+    border-radius: var(--playapp-radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-item-delete-btn:hover {
+    color: var(--playapp-coral);
+    background-color: var(--playapp-coral-light);
+}
+
+/* ==========================================================================
+   Resumen de Pedido (Sticky)
+   ========================================================================== */
+.order-summary-card {
+    position: sticky;
+    top: 90px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    color: var(--playapp-text-muted);
+}
+
+.summary-row.total-row {
+    border-top: 2px dashed var(--playapp-border);
+    padding-top: 16px;
+    margin-top: 16px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--playapp-ocean);
+}
+
+.badge-delivery-time {
+    background-color: var(--playapp-turquoise-light);
+    color: var(--playapp-turquoise-dark);
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: var(--playapp-radius-pill);
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ==========================================================================
+   Estado de Carrito Vacío
+   ========================================================================== */
+.empty-cart-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-cart-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    background: var(--playapp-ocean-light);
+    color: var(--playapp-ocean);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+/* ==========================================================================
+   Formulario de Entrega & Mapa
+   ========================================================================== */
+.form-floating-custom {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.form-label-custom {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--playapp-text-main);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-control-custom,
+.form-select-custom {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--playapp-radius-sm);
+    border: 1.5px solid var(--playapp-border);
+    font-size: 0.95rem;
+    color: var(--playapp-text-main);
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control-custom:focus,
+.form-select-custom:focus {
+    outline: none;
+    border-color: var(--playapp-turquoise);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+
+.form-control-custom:read-only {
+    background-color: #f8fafc;
+    color: #475569;
+}
+
+.delivery-map-container {
+    height: 380px;
+    border-radius: var(--playapp-radius);
+    overflow: hidden;
+    border: 1px solid var(--playapp-border);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* Tarjetas de Selección de Método de Pago */
+.payment-method-card {
+    border: 2px solid var(--playapp-border);
+    border-radius: var(--playapp-radius-sm);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    margin-bottom: 12px;
+}
+
+.payment-method-card:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+}
+
+.payment-method-card.selected,
+.payment-method-card:has(input[type="radio"]:checked) {
+    border-color: var(--playapp-ocean);
+    background-color: #f0f9ff;
+    box-shadow: 0 0 0 1px var(--playapp-ocean);
+}
+
+.payment-method-card input[type="radio"] {
+    accent-color: var(--playapp-ocean);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Pasarela de Pago Wompi
+   ========================================================================== */
+.wompi-trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--playapp-radius-sm);
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: #475569;
+}
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .checkout-stepper-container {
+        padding: 16px 10px;
+    }
+    
+    .stepper-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+    
+    .stepper-track {
+        top: 18px;
+    }
+    
+    .stepper-label {
+        font-size: 12px;
+    }
+    
+    .order-summary-card {
+        position: static;
+        margin-top: 24px;
+    }
+    
+    .delivery-map-container {
+        height: 280px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .cart-item-row {
+        flex-wrap: wrap;
+    }
+    
+    .cart-item-subtotal {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+    }
+}
