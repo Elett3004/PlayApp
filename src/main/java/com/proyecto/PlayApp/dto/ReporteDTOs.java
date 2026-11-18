@@ -30,7 +30,8 @@ public final class ReporteDTOs {
             String categoriaNombre,
             long cantidadVendida,
             double ingresos,
-            long pedidos
+            long pedidos,
+            double precioUnitario
     ) {
     }
 

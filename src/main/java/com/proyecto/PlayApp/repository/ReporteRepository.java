@@ -159,6 +159,13 @@ public class ReporteRepository {
 
     public List<Document> productosMasVendidos(int limite, String restauranteId) {
         List<Document> pipeline = new ArrayList<>();
+        pipeline.add(new Document("$match", new Document("$and", List.of(
+                new Document("carrito", new Document("$exists", true).append("$ne", List.of())),
+                new Document("$or", List.of(
+                        new Document("estado", new Document("$nin", List.of(3, -1))),
+                        new Document("estado", new Document("$exists", false))
+                ))
+        ))));
         pipeline.add(unwindCarrito());
         if (restauranteId != null) {
             pipeline.add(matchItemRestaurante(restauranteId));
@@ -167,16 +174,18 @@ public class ReporteRepository {
                 new Document("$group", new Document("_id", new Document("productoId", productIdExpression())
                         .append("nombre", ifNull("$carrito.producto.nombre", "Sin producto"))
                         .append("categoria", "$carrito.producto.categoria"))
-                        .append("cantidadVendida", new Document("$sum", ifNull("$carrito.cantidad", 0)))
+                        .append("cantidadVendida", new Document("$sum", ifNull("$carrito.cantidad", 1)))
                         .append("ingresos", new Document("$sum", subtotalExpression()))
+                        .append("precioUnitarioHistorico", new Document("$avg", ifNull("$carrito.producto.precio", 0)))
                         .append("pedidosIds", new Document("$addToSet", "$_id"))
                 ),
                 new Document("$project", new Document("_id", 1)
                         .append("cantidadVendida", 1)
                         .append("ingresos", 1)
+                        .append("precioUnitarioHistorico", 1)
                         .append("pedidos", new Document("$size", "$pedidosIds"))
                 ),
-                new Document("$sort", new Document("cantidadVendida", -1).append("ingresos", -1)),
+                new Document("$sort", new Document("ingresos", -1).append("cantidadVendida", -1)),
                 new Document("$limit", limite)
         ));
         return aggregate(PEDIDOS, pipeline);
@@ -337,8 +346,11 @@ public class ReporteRepository {
     }
 
     private Document subtotalExpression() {
-        return ifNull("$carrito.subtotal",
-                new Document("$multiply", List.of(ifNull("$carrito.producto.precio", 0), ifNull("$carrito.cantidad", 0))));
+        return new Document("$cond", List.of(
+                new Document("$gt", List.of(ifNull("$carrito.subtotal", 0), 0)),
+                "$carrito.subtotal",
+                new Document("$multiply", List.of(ifNull("$carrito.producto.precio", 0), ifNull("$carrito.cantidad", 1)))
+        ));
     }
 
     private Document ifNull(Object value, Object fallback) {

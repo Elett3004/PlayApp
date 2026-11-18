@@ -16,8 +16,10 @@ import org.bson.types.Binary;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -177,11 +179,52 @@ public class ApiAdminController {
                 if (cleanBase64.contains(",")) {
                     String[] parts = cleanBase64.split(",");
                     if (parts[0].contains("image/png")) contentType = "image/png";
+                    else if (parts[0].contains("image/webp")) contentType = "image/webp";
                     cleanBase64 = parts[1];
                 }
                 byte[] decoded = Base64.getDecoder().decode(cleanBase64);
                 nuevo.setImagen(new Binary(BsonBinarySubType.BINARY, decoded));
                 nuevo.setImagenContentType(contentType);
+            } catch (Exception ignored) {}
+        }
+
+        Producto guardado = productoService.crearProducto(nuevo, correo.trim());
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
+                "success", true,
+                "id", guardado.getId(),
+                "nombre", guardado.getNombre(),
+                "mensaje", "Producto creado exitosamente"
+        ));
+    }
+
+    @PostMapping(value = "/products/multipart", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> crearProductoMultipart(
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") Double precio,
+            @RequestParam(name = "stock", defaultValue = "10.0") Double stock,
+            @RequestParam(name = "categoria", defaultValue = "1") Integer categoria,
+            @RequestParam(name = "tipo", defaultValue = "1") Integer tipo,
+            @RequestParam(name = "correo") String correo,
+            @RequestParam(name = "imagen", required = false) MultipartFile imagen
+    ) {
+        if (!validarAdmin(correo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "No tienes permisos de administrador"));
+        }
+
+        Producto nuevo = new Producto();
+        nuevo.setNombre(nombre);
+        nuevo.setDescripcion(descripcion);
+        nuevo.setPrecio(precio);
+        nuevo.setStock(stock);
+        nuevo.setCategoria(categoria);
+        nuevo.setTipo(tipo);
+
+        if (imagen != null && !imagen.isEmpty()) {
+            try {
+                nuevo.setImagen(new Binary(BsonBinarySubType.BINARY, imagen.getBytes()));
+                nuevo.setImagenContentType(imagen.getContentType() != null ? imagen.getContentType() : "image/jpeg");
             } catch (Exception ignored) {}
         }
 
@@ -217,13 +260,17 @@ public class ApiAdminController {
         if (body.containsKey("stock")) existente.setStock(((Number) body.get("stock")).doubleValue());
         if (body.containsKey("categoria")) existente.setCategoria(((Number) body.get("categoria")).intValue());
 
-        if (body.containsKey("base64Image") && body.get("base64Image") != null) {
+        if (body.containsKey("removeImage") && Boolean.TRUE.equals(body.get("removeImage"))) {
+            existente.setImagen(null);
+            existente.setImagenContentType(null);
+        } else if (body.containsKey("base64Image") && body.get("base64Image") != null) {
             try {
                 String cleanBase64 = (String) body.get("base64Image");
                 String contentType = "image/jpeg";
                 if (cleanBase64.contains(",")) {
                     String[] parts = cleanBase64.split(",");
                     if (parts[0].contains("image/png")) contentType = "image/png";
+                    else if (parts[0].contains("image/webp")) contentType = "image/webp";
                     cleanBase64 = parts[1];
                 }
                 byte[] decoded = Base64.getDecoder().decode(cleanBase64);
@@ -239,6 +286,42 @@ public class ApiAdminController {
                 "nombre", guardado.getNombre(),
                 "mensaje", "Producto actualizado exitosamente"
         ));
+    }
+
+    @PostMapping(value = "/products/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> subirImagenProducto(
+            @PathVariable String id,
+            @RequestParam("imagen") MultipartFile imagen,
+            @RequestParam(name = "correo") String correo
+    ) {
+        if (!validarAdmin(correo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "No tienes permisos de administrador"));
+        }
+
+        Optional<Producto> opt = productoService.buscarProductoPorId(id);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Producto no encontrado"));
+        }
+
+        try {
+            if (!imagen.isEmpty()) {
+                Producto producto = opt.get();
+                producto.setImagen(new Binary(BsonBinarySubType.BINARY, imagen.getBytes()));
+                producto.setImagenContentType(imagen.getContentType() != null ? imagen.getContentType() : "image/jpeg");
+                productoRepository.save(producto);
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "imageUrl", "/api/products/" + id + "/image",
+                        "mensaje", "Imagen subida exitosamente"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Archivo de imagen vacío"));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error procesando la imagen: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/products/{id}")

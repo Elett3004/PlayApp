@@ -199,14 +199,21 @@ public class ReporteService {
     private ProductoTopDTO toProductoTop(Document document) {
         Document id = document.get("_id", Document.class);
         Integer categoria = asNullableInt(id.get("categoria"));
+        long cantidad = asLong(document.get("cantidadVendida"));
+        double ingresos = asDouble(document.get("ingresos"));
+        double precioUnitario = asDouble(document.get("precioUnitarioHistorico"));
+        if (precioUnitario <= 0 && cantidad > 0) {
+            precioUnitario = ingresos / cantidad;
+        }
         return new ProductoTopDTO(
                 stringValue(id.get("productoId")),
                 stringValue(id.get("nombre")),
                 categoria,
                 nombreCategoria(categoria),
-                asLong(document.get("cantidadVendida")),
-                asDouble(document.get("ingresos")),
-                asLong(document.get("pedidos"))
+                cantidad,
+                ingresos,
+                asLong(document.get("pedidos")),
+                precioUnitario
         );
     }
 

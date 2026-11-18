@@ -20,8 +20,12 @@ public class ApiReviewController {
     private final ResenaRepository resenaRepository;
 
     @GetMapping("/reviews")
-    public ResponseEntity<List<Resena>> listarResenas() {
-        List<Resena> lista = resenaRepository.findAllByOrderByFechaDesc();
+    public ResponseEntity<List<Resena>> listarResenas(
+            @RequestParam(name = "limit", defaultValue = "5") int limit
+    ) {
+        List<Resena> todas = resenaRepository.findAllByOrderByFechaDesc();
+        int safeLimit = Math.max(1, limit);
+        List<Resena> lista = todas.stream().limit(safeLimit).toList();
         return ResponseEntity.ok(lista);
     }
 
