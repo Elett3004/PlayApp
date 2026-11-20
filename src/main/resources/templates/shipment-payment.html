@@ -41,13 +41,14 @@
                         <span class="badge bg-ocean-light text-ocean rounded-pill px-3 py-1">Paso 2 de 3</span>
                     </div>
 
-                    <div id="geoErrorAlert" class="alert alert-warning py-2 small d-none" role="alert"></div>
+                    <div id="geoErrorAlert" class="alert alert-warning py-2 small d-none" role="status" aria-live="polite"></div>
 
                     <!-- Campo: Dirección Principal -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label for="address" class="form-label-custom mb-0">Dirección o Punto de Entrega *</label>
-                            <button type="button" id="btnGeolocalizacion" class="btn btn-sm btn-ocean-outline py-0 px-2" onclick="obtenerUbicacionActual()" style="font-size: 0.8rem;">
+                            <button type="button" id="btnGeolocalizacion" class="btn btn-sm btn-ocean-outline py-0 px-2" style="font-size: 0.8rem;">
+                                <span id="geoLocationSpinner" class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="me-1" viewBox="0 0 16 16">
                                     <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
                                 </svg>

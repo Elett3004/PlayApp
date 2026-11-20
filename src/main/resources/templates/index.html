@@ -6,6 +6,7 @@
     <title>Inicio · PlayApp Cartagena</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/importJakartaFont.css}">
+    <link rel="stylesheet" th:href="@{/css/leaflet.css}">
     <link rel="stylesheet" th:href="@{/css/checkout-flow.css}">
     <link rel="stylesheet" th:href="@{/css/chat-widget.css}">
     <link rel="icon" th:href="@{/img/Logo.png}" type="image/png">
@@ -265,14 +266,26 @@
                             Contáctanos
                         </a>
                     </div>
+
+                    <div class="mt-3">
+                        <button type="button" id="btnUbicacionInicio" class="btn-ocean-outline py-2 px-3" style="border-radius: 9999px; width: auto;">
+                            <span id="geoInicioSpinner" class="spinner-border spinner-border-sm d-none" aria-hidden="true"></span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                            </svg>
+                            Usar mi ubicación
+                        </button>
+                        <div id="geoInicioStatus" class="alert alert-info py-2 px-3 small mt-2 d-none" role="status" aria-live="polite"></div>
+                        <a id="geoInicioMapa" class="small d-none" target="_blank" rel="noopener noreferrer">Ver mi ubicación en Google Maps</a>
+                    </div>
                 </div>
 
                 <div class="col-12 col-lg-7">
                     <div class="home-map-container" style="height: 380px;">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.8593800273364!2d-75.55500068523652!3d10.39966699257292!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ef62f8530bafcc1%3A0x6a021fa5d9e4a4c1!2sPlaya%20de%20Bocagrande!5e0!3m2!1ses!2sco!4v1693407632143!5m2!1ses!2sco"
-                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" title="Mapa de Bocagrande">
-                        </iframe>
+                        <div id="homeLocationMap"
+                             role="region"
+                             aria-label="Mapa de ubicacion y entregas"
+                             style="height: 100%; border-radius: 16px;"></div>
                     </div>
                 </div>
             </div>
@@ -310,7 +323,9 @@
 </footer>
 
 <div th:replace="~{fragments/chat-widget :: playappChatWidget}"></div>
+<script th:src="@{/js/leaflet.js}"></script>
 <script th:src="@{/js/chat-widget.js}"></script>
+<script th:src="@{/js/home-geolocation.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

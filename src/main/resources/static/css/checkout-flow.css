@@ -491,6 +491,28 @@ body.checkout-body {
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
 }
 
+.playapp-current-location-icon {
+    background: transparent;
+    border: 0;
+}
+
+.playapp-current-location-icon span {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 4px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    background: var(--playapp-turquoise);
+    box-shadow: 0 0 0 7px rgba(20, 184, 166, 0.25), 0 2px 8px rgba(15, 23, 42, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .playapp-current-location-icon span {
+        box-shadow: 0 0 0 5px rgba(20, 184, 166, 0.2), 0 2px 8px rgba(15, 23, 42, 0.4);
+    }
+}
+
 /* Tarjetas de Selección de Método de Pago */
 .payment-method-card {
     border: 2px solid var(--playapp-border);
