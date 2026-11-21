@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @RestController
@@ -39,6 +41,7 @@ public class ApiAdminController {
     private final WekaPredictionService wekaPredictionService;
     private final ResenaRepository resenaRepository;
     private final UsuarioService usuarioService;
+    private final SalesChartsService salesChartsService;
 
     @Value("${playapp.admin.email:adminplayapp01@gmail.com}")
     private String adminGlobalCorreo;
@@ -496,5 +499,34 @@ public class ApiAdminController {
 
         resenaRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("success", true, "mensaje", "Reseña eliminada correctamente"));
+    }
+
+    /**
+     * Datos de la pestaña "Gráficos" de la app móvil, calculados en vivo desde MongoDB.
+     * rango: 7d | 30d | 90d | 365d | todo | personalizado (con desde y hasta en formato AAAA-MM-DD).
+     * granularidad: auto | day | week | month. categoria: 1 Comida, 2 Bebida, 3 Servicio (opcional).
+     */
+    @GetMapping("/charts")
+    public ResponseEntity<?> graficos(
+            @RequestParam(name = "correo") String correo,
+            @RequestParam(name = "rango", defaultValue = "30d") String rango,
+            @RequestParam(name = "desde", required = false) String desde,
+            @RequestParam(name = "hasta", required = false) String hasta,
+            @RequestParam(name = "categoria", required = false) Integer categoria,
+            @RequestParam(name = "granularidad", defaultValue = "auto") String granularidad
+    ) {
+        if (!validarAdmin(correo)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "No tienes permisos de administrador"));
+        }
+        try {
+            LocalDate fechaDesde = desde == null || desde.isBlank() ? null : LocalDate.parse(desde.trim());
+            LocalDate fechaHasta = hasta == null || hasta.isBlank() ? null : LocalDate.parse(hasta.trim());
+            return ResponseEntity.ok(salesChartsService.build(correo.trim(), rango, fechaDesde, fechaHasta, categoria, granularidad));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Formato de fecha no válido. Usa AAAA-MM-DD."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

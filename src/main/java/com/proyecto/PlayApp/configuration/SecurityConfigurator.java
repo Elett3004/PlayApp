@@ -88,8 +88,8 @@ public class SecurityConfigurator {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Keep these APIs closed until they use verifiable client authentication.
-                        .requestMatchers("/api/admin/**", "/api/orders/**").permitAll()
+                        // Keep administrative APIs closed until verifiable client authentication is available.
+                        .requestMatchers("/api/admin/**", "/api/orders/**").denyAll()
                         .requestMatchers("/payment/proceed", "/payment/wompi/**", "/api/wompi/**").permitAll()
                         .requestMatchers(pathsToUserEndpoints).hasRole("USER")
                         .requestMatchers(pathsToAdminEndpoints).hasRole("ADMIN")
